@@ -10,12 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2024_01_01_000000) do
+ActiveRecord::Schema[8.0].define(version: 2024_03_20_000000) do
   create_table "users", force: :cascade do |t|
     t.string "slack_uid", null: false
     t.string "email", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "username"
+    t.string "avatar_url"
     t.index ["slack_uid"], name: "index_users_on_slack_uid", unique: true
   end
 end

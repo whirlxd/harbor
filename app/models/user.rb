@@ -1,6 +1,7 @@
 class User < ApplicationRecord
   validates :email, presence: true, uniqueness: true
   validates :slack_uid, presence: true, uniqueness: true
+  validates :username, presence: true
 
   def self.authorize_url(redirect_uri)
     params = {
@@ -8,7 +9,7 @@ class User < ApplicationRecord
       # scope: "identity.basic,identity.email",
       redirect_uri: redirect_uri,
       state: SecureRandom.hex(24),
-      user_scope: "identity.basic,identity.email"
+      user_scope: "identity.basic,identity.email,identity.avatar"
     }
 
     r = "https://slack.com/oauth/v2/authorize?#{params.to_query}"
@@ -39,6 +40,8 @@ class User < ApplicationRecord
 
     user = find_or_initialize_by(slack_uid: user_data["user"]["id"])
     user.email = user_data["user"]["email"]
+    user.username = user_data["user"]["name"]
+    user.avatar_url = user_data["user"]["image_192"] || user_data["user"]["image_72"]
     user.save!
     user
   rescue => e
