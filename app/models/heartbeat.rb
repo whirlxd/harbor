@@ -7,8 +7,8 @@ class Heartbeat < WakatimeRecord
     end
   end
 
-  scope :recent, -> { where("created_at > ?", 24.hours.ago) }
-  scope :today, -> { where("DATE(created_at) = ?", Date.current) }
+  scope :recent, -> { where("time > ?", 24.hours.ago) }
+  scope :today, -> { where("DATE(time) = ?", Date.current) }
 
   # This is a hack to avoid using the default Rails inheritance column– Rails is confused by the field `type` in the db
   self.inheritance_column = nil
@@ -16,8 +16,8 @@ class Heartbeat < WakatimeRecord
   self.ignored_columns += [ "hash" ]
 
   def self.duration_seconds(scope = all)
-    scope.order(created_at: :asc).each_cons(2).sum do |current, next_beat|
-      time_diff = (next_beat.created_at - current.created_at)
+    scope.order(time: :asc).each_cons(2).sum do |current, next_beat|
+      time_diff = (next_beat.time - current.time)
       [ time_diff, TIMEOUT_DURATION ].min
     end.to_i
   end
