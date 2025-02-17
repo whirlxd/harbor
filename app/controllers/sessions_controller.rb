@@ -2,7 +2,9 @@ class SessionsController < ApplicationController
   def new
     redirect_uri = url_for(action: :create, only_path: false)
     Rails.logger.info "Starting Slack OAuth flow with redirect URI: #{redirect_uri}"
-    redirect_to User.authorize_url(redirect_uri), host: "https://slack.com"
+    redirect_to User.authorize_url(redirect_uri),
+                host: "https://slack.com",
+                allow_other_host: true
   end
 
   def create
