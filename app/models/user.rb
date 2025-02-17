@@ -30,9 +30,7 @@ class User < ApplicationRecord
       user_scope: "identity.basic,identity.email,identity.avatar"
     }
 
-    r = "https://slack.com/oauth/v2/authorize?#{params.to_query}"
-    Rails.logger.info "Authorize URL: #{r}"
-    r
+    URI.parse("https://slack.com/oauth/v2/authorize?#{params.to_query}")
   end
 
   def self.from_slack_token(code, redirect_uri)
