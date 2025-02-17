@@ -5,6 +5,16 @@ class User < ApplicationRecord
   validates :slack_uid, presence: true, uniqueness: true
   validates :username, presence: true
 
+  has_many :heartbeats,
+    foreign_key: :user_id,
+    primary_key: :slack_uid,
+    class_name: "Heartbeat"
+
+  has_many :projects,
+    foreign_key: :user_id,
+    primary_key: :slack_uid,
+    class_name: "Project"
+
   def admin?
     is_admin
   end
@@ -15,10 +25,6 @@ class User < ApplicationRecord
 
   def remove_admin!
     update!(is_admin: false)
-  end
-
-  def heartbeats
-    Heartbeat.where(user_id: self.slack_uid)
   end
 
   def self.authorize_url(redirect_uri)
@@ -63,5 +69,9 @@ class User < ApplicationRecord
   rescue => e
     Rails.logger.error "Error creating user from Slack data: #{e.message}"
     nil
+  end
+
+  def project_names
+    heartbeats.select(:project).distinct.pluck(:project)
   end
 end

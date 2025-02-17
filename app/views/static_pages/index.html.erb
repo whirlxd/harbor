@@ -5,5 +5,14 @@
     You've logged 
     <%= current_user.heartbeats.today.duration_formatted %> today across
     <%= pluralize(current_user.heartbeats.today.count, 'heartbeat') %>
+
+    <ul>
+      <% @project_durations.each do |project| %>
+        <li>
+          <strong><%= project[:project] || "Unknown" %></strong>
+          <%= project[:duration] %>
+        </li>
+      <% end %>
+    </ul>
   <% end %>
 </div> 
