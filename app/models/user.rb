@@ -1,7 +1,21 @@
 class User < ApplicationRecord
+  has_paper_trail
+
   validates :email, presence: true, uniqueness: true
   validates :slack_uid, presence: true, uniqueness: true
   validates :username, presence: true
+
+  def admin?
+    is_admin
+  end
+
+  def make_admin!
+    update!(is_admin: true)
+  end
+
+  def remove_admin!
+    update!(is_admin: false)
+  end
 
   def self.authorize_url(redirect_uri)
     params = {
