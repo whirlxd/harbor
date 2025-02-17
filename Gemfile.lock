@@ -199,6 +199,7 @@ GEM
       net-smtp
     marcel (1.0.4)
     matrix (0.4.2)
+    memory_profiler (1.1.0)
     meta-tags (2.22.1)
       actionpack (>= 6.0.0, < 8.1)
     method_source (1.1.0)
@@ -260,9 +261,14 @@ GEM
     public_suffix (6.0.1)
     puma (6.6.0)
       nio4r (~> 2.0)
+    query_count (1.1.1)
+      activerecord (>= 4.2)
+      railties (>= 4.2)
     raabro (1.4.0)
     racc (1.8.1)
     rack (2.2.11)
+    rack-mini-profiler (3.3.1)
+      rack (>= 1.2.0)
     rack-session (1.0.2)
       rack (< 3)
     rack-test (2.2.0)
@@ -380,6 +386,7 @@ GEM
       net-sftp (>= 2.1.2)
       net-ssh (>= 2.8.0)
       ostruct
+    stackprof (0.2.27)
     stimulus-rails (1.3.4)
       railties (>= 6.0.0)
     stringio (3.1.3)
@@ -442,10 +449,13 @@ DEPENDENCIES
   importmap-rails
   jbuilder
   kamal
+  memory_profiler
   paper_trail
   pg
   propshaft
   puma (>= 5.0)
+  query_count
+  rack-mini-profiler
   rails (~> 8.0.1)
   rubocop-rails-omakase
   selenium-webdriver
@@ -453,6 +463,7 @@ DEPENDENCIES
   solid_cache
   solid_queue
   sqlite3 (>= 2.1)
+  stackprof
   stimulus-rails
   thruster
   turbo-rails
