@@ -1,5 +1,5 @@
 # Get the first 6 characters of the current git commit hash
-git_hash = ENV["SOURCE_COMMIT"] ||
+git_hash = ENV["SOURCE_COMMIT"]&.[](0..5) ||
            `git rev-parse HEAD`.strip[0..5] rescue "unknown"
 
 # Check if there are any uncommitted changes
