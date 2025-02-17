@@ -1,5 +1,6 @@
 # Get the first 6 characters of the current git commit hash
-git_hash = `git rev-parse HEAD`.strip[0..5] rescue "unknown"
+git_hash = ENV["SOURCE_COMMIT"] ||
+           `git rev-parse HEAD`.strip[0..5] rescue "unknown"
 
 # Check if there are any uncommitted changes
 is_dirty = `git status --porcelain`.strip.length > 0 rescue false
