@@ -18,7 +18,13 @@ WORKDIR /rails
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libjemalloc2 libvips sqlite3 libpq5 && \
+    apt-get install --no-install-recommends -y \
+    curl \
+    libjemalloc2 \
+    libvips \
+    sqlite3 \
+    libpq5 \
+    wget && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Set production environment
