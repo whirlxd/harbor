@@ -16,10 +16,15 @@ class Heartbeat < WakatimeRecord
   self.ignored_columns += [ "hash" ]
 
   def self.duration_seconds(scope = all)
-    scope.order(time: :asc).each_cons(2).sum do |current, next_beat|
-      time_diff = (next_beat.time - current.time)
-      [ time_diff, TIMEOUT_DURATION ].min
-    end.to_i
+    capped_diffs = scope
+      .select("CASE
+        WHEN LAG(time) OVER (ORDER BY time) IS NULL THEN 0
+        ELSE LEAST(EXTRACT(EPOCH FROM (time - LAG(time) OVER (ORDER BY time))), #{TIMEOUT_DURATION.to_i})
+      END as diff")
+      .where.not(time: nil)
+      .order(time: :asc)
+
+    connection.select_value("SELECT COALESCE(SUM(diff), 0)::integer FROM (#{capped_diffs.to_sql}) AS diffs").to_i
   end
 
   def self.duration_formatted(scope = all)
