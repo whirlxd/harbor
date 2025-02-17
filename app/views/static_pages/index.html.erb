@@ -1,4 +1,9 @@
 <div class="container">
   <h1>Welcome to Harbor</h1>
   <p>Your application is ready!</p>
+  <% if current_user %>
+    You've logged 
+    <%= current_user.heartbeats.today.duration_formatted %> today across
+    <%= pluralize(current_user.heartbeats.today.count, 'heartbeat') %>
+  <% end %>
 </div> 

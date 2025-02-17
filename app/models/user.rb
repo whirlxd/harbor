@@ -17,6 +17,10 @@ class User < ApplicationRecord
     update!(is_admin: false)
   end
 
+  def heartbeats
+    Heartbeat.where(user_id: self.slack_uid)
+  end
+
   def self.authorize_url(redirect_uri)
     params = {
       client_id: ENV["SLACK_CLIENT_ID"],
