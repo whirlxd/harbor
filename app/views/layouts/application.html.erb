@@ -23,6 +23,12 @@
   </head>
 
   <body>
+    <% flash.each do |name, msg| %>
+      <div class="flash-message <%= name %>">
+        <%= msg %>
+      </div>
+    <% end %>
+
     <div class="header">
       <% if current_user %>
         <div class="user-info">
