@@ -5,7 +5,7 @@ class Avo::Resources::Version < Avo::BaseResource
   #   query: -> { query.ransack(id_eq: params[:q], m: "or").result(distinct: false) }
   # }
 
-  self.model_class = PaperTrail::Version
+  self.model_class = PaperTrail::VERSION
 
   def fields
     field :id, as: :id
