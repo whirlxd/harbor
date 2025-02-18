@@ -17,4 +17,6 @@ Rails.application.routes.draw do
   get "/auth/slack", to: "sessions#new", as: :slack_auth
   get "/auth/slack/callback", to: "sessions#create"
   delete "signout", to: "sessions#destroy", as: "signout"
+
+  resources :leaderboards, only: [ :index ]
 end

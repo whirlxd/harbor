@@ -1,0 +1,37 @@
+<div class="leaderboard">
+  <div class="header">
+    <h1>Today's Leaderboard</h1>
+    <p class="date">
+      <%= Date.current.strftime("%B %d, %Y") %>
+      <em>Updated <%= time_ago_in_words(@leaderboard.updated_at) %> ago</em>
+    </p>
+  </div>
+
+  <div class="content">
+    <% if @entries.any? %>
+      <table>
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>User</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @entries.each_with_index do |entry, index| %>
+            <tr>
+              <td><%= (index + 1).ordinalize %></td>
+              <td><%= render "shared/user_mention", user: entry.user %></td>
+              <td><%= Time.at(entry.total_seconds).utc.strftime("%H:%M:%S") %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <div class="empty-state">
+        <h3>No data available</h3>
+        <p>Check back later for today's results!</p>
+      </div>
+    <% end %>
+  </div>
+</div> 
