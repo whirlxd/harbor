@@ -10,7 +10,6 @@ class LeaderboardUpdateJob < ApplicationJob
 
     ActiveRecord::Base.transaction do
       # Reset the leaderboard to recalculate
-      # leaderboard.calculating!
       leaderboard.entries.destroy_all
 
       begin
@@ -28,7 +27,6 @@ class LeaderboardUpdateJob < ApplicationJob
         leaderboard.save!
       rescue => e
         Rails.logger.error "Failed to update current leaderboard: #{e.message}"
-        # leaderboard.failed!
         raise
       end
     end
