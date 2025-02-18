@@ -70,6 +70,10 @@ USER 1000:1000
 # Entrypoint prepares the database.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
-# Start server via Thruster by default, this can be overwritten at runtime
+# Start either web server or job worker based on WORKER env var
 EXPOSE 80
-CMD ["./bin/thrust", "./bin/rails", "server"]
+CMD if [ "$WORKER" = "true" ]; then \
+      ./bin/jobs start; \
+    else \
+      ./bin/thrust ./bin/rails server; \
+    fi
