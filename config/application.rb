@@ -24,7 +24,7 @@ module Harbor
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
 
-    ActiveSupport::Notifications.subscribe('cache_read.active_support') do |*args|
+    ActiveSupport::Notifications.subscribe("cache_read.active_support") do |*args|
       event = ActiveSupport::Notifications::Event.new(*args)
       if event.payload[:hit]
         Thread.current[:cache_hits] += 1
@@ -33,7 +33,7 @@ module Harbor
       end
     end
 
-    ActiveSupport::Notifications.subscribe('cache_fetch_hit.active_support') do |*args|
+    ActiveSupport::Notifications.subscribe("cache_fetch_hit.active_support") do |*args|
       Thread.current[:cache_hits] += 1
     end
   end
