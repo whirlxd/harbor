@@ -89,3 +89,5 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+gem "avo-record_link_field", "~> 0.0.2"
