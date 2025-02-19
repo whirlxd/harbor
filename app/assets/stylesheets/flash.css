@@ -31,21 +31,11 @@ footer {
   background-color: rgba(245, 245, 245, 0.8);
   text-align: center;
   font-size: 12px;
-  color: #999;
+  color: var(--uchu-gray);
   transition: all 0.2s ease;
 }
 
 footer:hover {
   background-color: #f5f5f5;
-  color: #333;
-}
-
-.cache-stats {
-  font-size: 12px;
-  color: #666;
-  margin-top: 5px;
-}
-
-.cache-stats span {
-  font-weight: bold;
+  color: var(--uchu-dark-gray);
 }

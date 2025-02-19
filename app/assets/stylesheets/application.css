@@ -9,6 +9,7 @@
  * Consider organizing styles into separate files for maintainability.
  */
 
+@import "https://uchu.style/color.css";
 
 .avatar {
   border-radius: 50%;
