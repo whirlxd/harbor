@@ -9,8 +9,8 @@ class Avo::Resources::User < Avo::BaseResource
     field :slack_uid, as: :text
     field :avatar_url, as: :text
     field :is_admin, as: :boolean
-    field :created_at, as: :date_time
-    field :updated_at, as: :date_time
+    field :created_at, as: :date_time, readonly: true
+    field :updated_at, as: :date_time, readonly: true
 
     # Show versions/history in the show page
     field :versions, as: :has_many

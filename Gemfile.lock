@@ -95,6 +95,7 @@ GEM
       view_component (>= 3.7.0)
       zeitwerk (>= 2.6.12)
     avo-heroicons (0.1.1)
+    avo-record_link_field (0.0.2)
     base64 (0.2.0)
     bcrypt_pbkdf (1.1.1)
     benchmark (0.4.0)
@@ -444,6 +445,7 @@ PLATFORMS
 
 DEPENDENCIES
   avo (>= 3.2.1)
+  avo-record_link_field (~> 0.0.2)
   bootsnap
   brakeman
   capybara
