@@ -13,6 +13,7 @@ class Avo::Resources::Version < Avo::BaseResource
     field :item_id, as: :number
     field :event, as: :text
     field :whodunnit, as: :text
+    field :user, as: :record_link
     field :object, as: :code
     field :created_at, as: :date_time
   end
