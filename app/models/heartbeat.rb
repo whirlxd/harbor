@@ -35,4 +35,23 @@ class Heartbeat < WakatimeRecord
 
     format("%02d:%02d:%02d", hours, minutes, remaining_seconds)
   end
+
+  def self.duration_simple(scope = all)
+    # 3 hours 10 min => "3 hrs"
+    # 1 hour 10 min => "1 hr"
+    # 10 min => "10 min"
+    seconds = duration_seconds(scope)
+    hours = seconds / 3600
+    minutes = (seconds % 3600) / 60
+
+    if hours > 1
+      "#{hours} hrs"
+    elsif hours == 1
+      "1 hr"
+    elsif minutes > 0
+      "#{minutes} min"
+    else
+      "0 min"
+    end
+  end
 end

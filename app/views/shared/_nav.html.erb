@@ -26,6 +26,13 @@
         Leaderboards
       <% end %>
     </li>
+    <% if current_user %>
+      <li>
+        <%= link_to my_settings_path, class: "nav-item #{current_page?(my_settings_path) ? 'active' : ''}" do %>
+          Settings
+        <% end %>
+      </li>
+    <% end %>
     <% admin_tool(nil, "li") do %>
       <%= link_to avo_path, class: "nav-item #{current_page?(avo_path) ? 'active' : ''}" do %>
         Avo

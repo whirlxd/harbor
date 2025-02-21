@@ -1,5 +1,6 @@
 class User < ApplicationRecord
   has_paper_trail
+  encrypts :slack_access_token
 
   validates :email, presence: true, uniqueness: true
   validates :slack_uid, presence: true, uniqueness: true
@@ -27,13 +28,28 @@ class User < ApplicationRecord
     update!(is_admin: false)
   end
 
+  def update_slack_status
+    return unless uses_slack_status?
+
+    current_project = heartbeats.order(time: :desc).first&.project
+    current_project_duration = Heartbeat.duration_simple(heartbeats.today.where(project: current_project))
+
+    # Update the user's status
+    HTTP.auth("Bearer #{slack_access_token}")
+      .post("https://slack.com/api/users.profile.set", form: {
+        profile: {
+          status_text: "#{current_project_duration} spent on #{current_project} today",
+          status_emoji: ":thinking_face:"
+        }
+      })
+  end
+
   def self.authorize_url(redirect_uri)
     params = {
       client_id: ENV["SLACK_CLIENT_ID"],
-      # scope: "identity.basic,identity.email",
       redirect_uri: redirect_uri,
       state: SecureRandom.hex(24),
-      user_scope: "identity.basic,identity.email,identity.avatar"
+      user_scope: "users.profile:read,users.profile:write"
     }
 
     URI.parse("https://slack.com/oauth/v2/authorize?#{params.to_query}")
@@ -64,6 +80,9 @@ class User < ApplicationRecord
     user.email = user_data["user"]["email"]
     user.username = user_data["user"]["name"]
     user.avatar_url = user_data["user"]["image_192"] || user_data["user"]["image_72"]
+    # Store the OAuth data
+    user.slack_access_token = data["authed_user"]["access_token"]
+    user.slack_scopes = data["authed_user"]["scope"]&.split(/,\s*/)
     user.save!
     user
   rescue => e

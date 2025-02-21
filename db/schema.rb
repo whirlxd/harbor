@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_16_173459) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_21_205702) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -40,6 +40,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_16_173459) do
     t.string "username"
     t.string "avatar_url"
     t.boolean "is_admin", default: false, null: false
+    t.boolean "uses_slack_status", default: false, null: false
+    t.string "slack_scopes", default: [], array: true
+    t.text "slack_access_token"
     t.index ["slack_uid"], name: "index_users_on_slack_uid", unique: true
   end
 
