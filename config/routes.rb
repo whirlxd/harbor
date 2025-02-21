@@ -19,4 +19,13 @@ Rails.application.routes.draw do
   delete "signout", to: "sessions#destroy", as: "signout"
 
   resources :leaderboards, only: [ :index ]
+
+  # Nested under users for admin access
+  resources :users, only: [] do
+    get "settings", on: :member, to: "users#edit"
+  end
+
+  # Namespace for current user actions
+  get "my/settings", to: "users#edit", as: :my_settings
+  patch "my/settings", to: "users#update"
 end
