@@ -36,5 +36,7 @@ module Harbor
     ActiveSupport::Notifications.subscribe("cache_fetch_hit.active_support") do |*args|
       Thread.current[:cache_hits] += 1
     end
+
+    config.active_job.queue_adapter = :good_job
   end
 end

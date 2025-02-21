@@ -9,8 +9,8 @@
 #     priority: 2
 #     schedule: at 5am every day
 
-production:
-  leaderboard_update:
-    class: LeaderboardUpdateJob
-    queue: default
-    schedule: every 5.minutes
+# production:
+#   leaderboard_update:
+#     class: LeaderboardUpdateJob
+#     queue: default
+#     schedule: every 5.minutes

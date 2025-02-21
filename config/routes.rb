@@ -28,4 +28,6 @@ Rails.application.routes.draw do
   # Namespace for current user actions
   get "my/settings", to: "users#edit", as: :my_settings
   patch "my/settings", to: "users#update"
+
+  mount GoodJob::Engine => "good_job"
 end
