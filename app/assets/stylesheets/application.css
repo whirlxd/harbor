@@ -16,3 +16,8 @@
   --primary-color: var(--uchu-red);
   --muted-color: var(--uchu-gray);
 }
+
+.admin-tool {
+  border-radius: 5px;
+  border: 1px solid var(--uchu-gray);
+}
