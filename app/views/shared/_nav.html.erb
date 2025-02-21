@@ -1,0 +1,32 @@
+<aside>
+  <% flash.each do |name, msg| %>
+    <div class="flash-message <%= name %>">
+      <%= msg %>
+    </div>
+  <% end %>
+
+  <% if current_user %>
+    <%= render "shared/user_mention", user: current_user %>
+    <% if current_user.active_project %>
+      <div class="project-info">
+        <div>Currently working on: <%= current_user.active_project %></div>
+        <div>Duration: <%= current_user.active_project_duration %></div>
+      </div>
+    <% end %>
+    <%= link_to "Logout", signout_path, data: { turbo_method: :delete } %>
+  <% else %>
+    <%= link_to "Login", slack_auth_path %>
+  <% end %>
+  <ul>
+    <li>
+      <%= link_to root_path, class: "nav-item #{current_page?(root_path) ? 'active' : ''}" do %>
+        Home
+      <% end %>
+    </li>
+    <li>
+      <%= link_to leaderboards_path, class: "nav-item #{current_page?(leaderboards_path) ? 'active' : ''}" do %>
+        Leaderboards
+      <% end %>
+    </li>
+  </ul>
+</aside> 

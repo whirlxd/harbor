@@ -74,4 +74,14 @@ class User < ApplicationRecord
   def project_names
     heartbeats.select(:project).distinct.pluck(:project)
   end
+
+  def active_project
+    heartbeats.order(time: :desc).first&.project
+  end
+
+  def active_project_duration
+    return nil unless active_project
+
+    Heartbeat.duration_formatted(heartbeats.where(project: active_project))
+  end
 end

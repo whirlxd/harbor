@@ -1,0 +1,7 @@
+.nav-item.active {
+  color: var(--muted-color);
+}
+
+.nav-item.active {
+  color: var(--primary-color);
+}

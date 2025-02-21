@@ -11,6 +11,8 @@
 
 @import "https://uchu.style/color.css";
 
-.avatar {
-  border-radius: 50%;
+/* colors */
+:root {
+  --primary-color: var(--uchu-red);
+  --muted-color: var(--uchu-gray);
 }

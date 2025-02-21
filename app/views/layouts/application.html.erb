@@ -23,22 +23,11 @@
   </head>
 
   <body>
-    <% flash.each do |name, msg| %>
-      <div class="flash-message <%= name %>">
-        <%= msg %>
-      </div>
-    <% end %>
-
-    <div class="header">
-      <% if current_user %>
-        <%= render "shared/user_mention", user: current_user %>
-        <%= link_to "Sign Out", signout_path, method: :delete, data: { "turbo-method": :delete } %>
-      <% else %>
-        <%= link_to "Sign in with Slack", slack_auth_path %>
-      <% end %>
-    </div>
-
-    <%= yield %>
+    <%= render "shared/nav" %>
+    
+    <main style="margin-left: 250px; padding: 20px;">
+      <%= yield %>
+    </main>
 
     <footer>
       <div class="container">
