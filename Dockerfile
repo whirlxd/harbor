@@ -72,8 +72,4 @@ ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
 # Start either web server or job worker based on WORKER env var
 EXPOSE 80
-CMD if [ "$WORKER" = "true" ]; then \
-      ./bin/jobs start; \
-    else \
-      ./bin/thrust ./bin/rails server; \
-    fi
+CMD ["./bin/thrust", "./bin/rails", "server"]
