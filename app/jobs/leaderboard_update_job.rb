@@ -11,19 +11,14 @@ class LeaderboardUpdateJob < ApplicationJob
     drop: true
   )
 
-  def perform(date = nil, leaderboard = nil)
-    if !leaderboard
-      date ||= Date.current
-      leaderboard = Leaderboard.find_or_initialize_by(start_date: date)
-    end
+  def perform(date = Date.current)
+    leaderboard = Leaderboard.create!(start_date: date)
 
     # Get list of valid user IDs from our database
     valid_user_ids = User.pluck(:slack_uid)
     return if valid_user_ids.empty?
 
     ActiveRecord::Base.transaction do
-      LeaderboardEntry.where(leaderboard: leaderboard).delete_all
-
       valid_user_ids.each_slice(BATCH_SIZE) do |batch_user_ids|
         user_durations = Heartbeat.connection.select_all(<<-SQL).to_a
           WITH time_diffs AS (
@@ -52,9 +47,7 @@ class LeaderboardUpdateJob < ApplicationJob
           {
             leaderboard_id: leaderboard.id,
             user_id: row["user_id"],
-            total_seconds: row["total_seconds"],
-            created_at: Time.current,
-            updated_at: Time.current
+            total_seconds: row["total_seconds"]
           }
         end
 
@@ -63,9 +56,12 @@ class LeaderboardUpdateJob < ApplicationJob
       end
     end
 
-    # Touch the leaderboard after all batches are processed
-    leaderboard.touch(:updated_at) unless leaderboard.new_record?
-    leaderboard.save! if leaderboard.new_record?
+    # Set finished_generating_at after successful completion
+    leaderboard.finished_generating_at = Time.current
+    leaderboard.save!
+
+    # Delete previous leaderboard entries from today
+    Leaderboard.where.not(id: leaderboard.id).where(start_date: date).where(deleted_at: nil).update_all(deleted_at: Time.current)
   rescue => e
     Rails.logger.error "Failed to update current leaderboard: #{e.message}"
     raise
