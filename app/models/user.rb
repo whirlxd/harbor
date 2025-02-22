@@ -92,6 +92,7 @@ class User < ApplicationRecord
     })
 
     data = JSON.parse(response.body.to_s)
+    puts "data: #{data}"
 
     return nil unless data["ok"]
 

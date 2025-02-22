@@ -22,7 +22,7 @@ class SessionsController < ApplicationController
       session[:user_id] = @user.id
       redirect_to root_path, notice: "Successfully signed in with Slack!"
     else
-      Rails.logger.error "Failed to create/update user from Slack data", error: @user.errors.full_messages
+      Rails.logger.error "Failed to create/update user from Slack data"
       redirect_to root_path, alert: "Failed to sign in with Slack"
     end
   end
