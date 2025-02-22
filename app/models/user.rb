@@ -76,7 +76,7 @@ class User < ApplicationRecord
       client_id: ENV["SLACK_CLIENT_ID"],
       redirect_uri: redirect_uri,
       state: SecureRandom.hex(24),
-      user_scope: "users.profile:read,users.profile:write,identify"
+      user_scope: "users.profile:read,users.profile:write,users:read"
     }
 
     URI.parse("https://slack.com/oauth/v2/authorize?#{params.to_query}")
