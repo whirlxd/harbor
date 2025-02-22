@@ -6,6 +6,6 @@ class SailorsLogSlackNotification < ApplicationRecord
   def notify_user
     return if sent?
 
-    SailorsLogSlackNotificationJob.perform_later(self)
+    SailorsLogNotifyJob.perform_later(self.id)
   end
 end

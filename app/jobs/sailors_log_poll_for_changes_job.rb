@@ -18,18 +18,17 @@ class SailorsLogPollForChangesJob < ApplicationJob
         if new_project_time > (log.projects_summary[project] || 0) + 1.hour
           # create a new SailorsLogSlackNotification
           log.notification_preferences.each do |preference|
-            new_notification << {
+            log.notifications << SailorsLogSlackNotification.new(
               slack_uid: log.slack_uid,
               slack_channel_id: preference.slack_channel_id,
               project_name: project,
               project_duration: new_project_time
-            }
+            )
           end
           log.projects_summary[project] = new_project_time
         end
       end
       ActiveRecord::Base.transaction do
-        SailorsLogSlackNotification.insert_all(new_notification)
         log.save! if log.changed?
       end
     end

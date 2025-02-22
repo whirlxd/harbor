@@ -1,11 +1,13 @@
-class SailorsLogSlackNotificationJob < ApplicationJob
+class SailorsLogNotifyJob < ApplicationJob
   queue_as :default
 
-  def perform(sailors_log_slack_notification)
-    slack_uid = sailors_log_slack_notification.slack_uid
-    slack_channel_id = sailors_log_slack_notification.slack_channel_id
-    project_name = sailors_log_slack_notification.project_name
-    project_duration = sailors_log_slack_notification.project_duration
+  def perform(sailors_log_slack_notification_id)
+    slsn = SailorsLogSlackNotification.find(sailors_log_slack_notification_id)
+
+    slack_uid = slsn.slack_uid
+    slack_channel_id = slsn.slack_channel_id
+    project_name = slsn.project_name
+    project_duration = slsn.project_duration
 
     kudos_message = [
       "Great work!",
@@ -23,7 +25,7 @@ class SailorsLogSlackNotificationJob < ApplicationJob
 
     message = ":boat: <@#{slack_uid}> just coded 1 more hour on #{project_name} (total: #{hours}hrs). #{kudos_message}"
 
-    response = HTTP.auth("Bearer #{ENV['SLACK_BOT_TOKEN']}")
+    response = HTTP.auth("Bearer #{ENV['SLACK_BOT_OAUTH_TOKEN']}")
       .post("https://slack.com/api/chat.postMessage",
             json: {
               channel: slack_channel_id,
@@ -32,9 +34,10 @@ class SailorsLogSlackNotificationJob < ApplicationJob
 
     response_data = JSON.parse(response.body)
     if response_data["ok"]
-      sailors_log_slack_notification.update(sent: true)
+      slsn.update(sent: true)
     else
       Rails.logger.error("Failed to send Slack notification: #{response_data["error"]}")
+      throw "Failed to send Slack notification: #{response_data["error"]}"
     end
   end
 end

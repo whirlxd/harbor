@@ -1,5 +1,7 @@
 class SailorsLog < ApplicationRecord
   validates :slack_uid, presence: true, uniqueness: true
+  validates :projects_summary, presence: true
+
   after_create :initialize_projects_summary
 
   has_many :notification_preferences,

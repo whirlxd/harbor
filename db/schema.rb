@@ -142,7 +142,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_22_032930) do
 
   create_table "sailors_logs", force: :cascade do |t|
     t.string "slack_uid", null: false
-    t.jsonb "projects_summary", null: false
+    t.jsonb "projects_summary", default: {}, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
