@@ -1,6 +1,17 @@
+class AdminConstraint
+  def self.matches?(request)
+    return false unless request.session[:user_id]
+
+    user = User.find_by(id: request.session[:user_id])
+    user&.admin?
+  end
+end
+
 Rails.application.routes.draw do
-  mount Avo::Engine, at: Avo.configuration.root_path
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  constraints AdminConstraint do
+    mount Avo::Engine, at: Avo.configuration.root_path
+    mount GoodJob::Engine => "good_job"
+  end
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
@@ -28,6 +39,4 @@ Rails.application.routes.draw do
   # Namespace for current user actions
   get "my/settings", to: "users#edit", as: :my_settings
   patch "my/settings", to: "users#update"
-
-  mount GoodJob::Engine => "good_job"
 end
