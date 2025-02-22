@@ -6,7 +6,7 @@ class LeaderboardUpdateJob < ApplicationJob
 
   # Limits concurrency to 1 job per date
   good_job_control_concurrency_with(
-    key: -> { date&.to_s || Date.current.to_s },
+    key: -> { arguments.first || Date.current.to_s },
     total: 1,
     drop: true
   )
