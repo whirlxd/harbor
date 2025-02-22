@@ -3,7 +3,9 @@
     <h1>Today's Leaderboard</h1>
     <p class="date">
       <%= Date.current.strftime("%B %d, %Y") %>
-      <em>Updated <%= time_ago_in_words(@leaderboard.updated_at) %> ago</em>
+      <% unless @leaderboard.nil? %>
+        <em>Updated <%= time_ago_in_words(@leaderboard.updated_at) %> ago</em>
+      <% end %>
     </p>
   </div>
 
