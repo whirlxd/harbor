@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
-  before_action :load_user
-  before_action :require_current_user, only: [ :edit, :update ]
+  before_action :set_user
+  before_action :require_current_user
   before_action :require_admin, unless: :is_own_settings?
 
   def edit
@@ -33,12 +33,14 @@ class UsersController < ApplicationController
     end
   end
 
-  def load_user
+  def set_user
     @user = if params[:id]
       User.find_by!(slack_uid: params[:id])
     else
       current_user
     end
+
+    redirect_to root_path, alert: "You need to log in!" if @user.nil?
   end
 
   def is_own_settings?
