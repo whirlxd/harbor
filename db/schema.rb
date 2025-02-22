@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_22_005401) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_22_032930) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -120,6 +120,31 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_22_005401) do
     t.datetime "updated_at", null: false
     t.datetime "finished_generating_at"
     t.datetime "deleted_at"
+  end
+
+  create_table "sailors_log_notification_preferences", force: :cascade do |t|
+    t.string "slack_uid", null: false
+    t.string "slack_channel_id", null: false
+    t.boolean "enabled", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "sailors_log_slack_notifications", force: :cascade do |t|
+    t.string "slack_uid", null: false
+    t.string "slack_channel_id", null: false
+    t.string "project_name", null: false
+    t.integer "project_duration", null: false
+    t.boolean "sent", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "sailors_logs", force: :cascade do |t|
+    t.string "slack_uid", null: false
+    t.jsonb "projects_summary", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "users", force: :cascade do |t|
