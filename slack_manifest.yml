@@ -8,6 +8,7 @@ oauth_config:
     user:
       - users.profile:read
       - users.profile:write
+      - identify
 settings:
   org_deploy_enabled: false
   socket_mode_enabled: false
