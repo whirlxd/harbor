@@ -102,6 +102,8 @@ class User < ApplicationRecord
 
     user_data = JSON.parse(user_response.body.to_s)
 
+    puts "user_data: #{user_data}"
+
     return nil unless user_data["ok"]
 
     user = find_or_initialize_by(slack_uid: user_data["user"]["id"])
