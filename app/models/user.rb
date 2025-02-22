@@ -32,14 +32,41 @@ class User < ApplicationRecord
     return unless uses_slack_status?
 
     current_project = heartbeats.order(time: :desc).first&.project
-    current_project_duration = Heartbeat.duration_simple(heartbeats.today.where(project: current_project))
+    current_project_heartbeats = heartbeats.today.where(project: current_project)
+    current_project_duration = Heartbeat.duration_seconds(current_project_heartbeats)
+    current_project_duration_formatted = Heartbeat.duration_simple(current_project_heartbeats)
+
+    status_emoji =
+      case current_project_duration
+      when 0...30.minutes
+        %w[thinking cat-on-the-laptop loading-tumbleweed rac-yap]
+      when 30.minutes...1.hour
+        %w[working-parrot meow_code]
+      when 1.hour...2.hours
+        %w[working-parrot meow-code]
+      when 2.hours...3.hours
+        %w[working-parrot cat-typing bangbang]
+      when 3.hours...5.hours
+        %w[cat-typing meow-code laptop-fire bangbang]
+      when 5.hours...8.hours
+        %w[cat-typing laptop-fire hole-mantelpiece_clock keyboard-fire bangbang bangbang]
+      when 8.hours...15.hours
+        %w[laptop-fire bangbang bangbang rac_freaking rac_freakinghole-mantelpiece_clock]
+      when 15.hours...20.hours
+        %w[bangbang bangbang rac_freaking hole-mantelpiece_clock]
+      else
+        %w[areyousure time-to-stop]
+      end.sample
+
+    status_emoji = ":#{status_emoji}:"
+    status_text = "#{current_project_duration_formatted} spent on #{current_project} today"
 
     # Update the user's status
     HTTP.auth("Bearer #{slack_access_token}")
       .post("https://slack.com/api/users.profile.set", form: {
         profile: {
-          status_text: "#{current_project_duration} spent on #{current_project} today",
-          status_emoji: ":thinking_face:"
+          status_text:,
+          status_emoji:
         }
       })
   end
