@@ -31,6 +31,20 @@ class User < ApplicationRecord
   def update_slack_status
     return unless uses_slack_status?
 
+    # check if the user already has a custom status set– if it doesn't look like
+    # our format, don't clobber it
+
+    current_status_response = HTTP.auth("Bearer #{slack_access_token}")
+      .get("https://slack.com/api/users.profile.get")
+
+    current_status = JSON.parse(current_status_response.body.to_s)
+
+    custom_status_regex = /spent on \w+ today$/
+    status_present = current_status.dig("profile", "status_text").present?
+    status_custom = !current_status.dig("profile", "status_text").match?(custom_status_regex)
+
+    return if status_present && status_custom
+
     current_project = heartbeats.order(time: :desc).first&.project
     current_project_heartbeats = heartbeats.today.where(project: current_project)
     current_project_duration = Heartbeat.duration_seconds(current_project_heartbeats)
@@ -66,7 +80,8 @@ class User < ApplicationRecord
       .post("https://slack.com/api/users.profile.set", form: {
         profile: {
           status_text:,
-          status_emoji:
+          status_emoji:,
+          status_expiration: Date.today.to_time.to_i + (1.hour.to_i * 1000)
         }
       })
   end
@@ -92,7 +107,6 @@ class User < ApplicationRecord
     })
 
     data = JSON.parse(response.body.to_s)
-    puts "data: #{data}"
 
     return nil unless data["ok"]
 
@@ -101,9 +115,6 @@ class User < ApplicationRecord
       .get("https://slack.com/api/users.info?user=#{data['authed_user']['id']}")
 
     user_data = JSON.parse(user_response.body.to_s)
-
-    # pretty-print the user_data
-    puts "user_data: #{JSON.pretty_generate(user_data)}"
 
     return nil unless user_data["ok"]
 
