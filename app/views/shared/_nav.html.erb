@@ -38,5 +38,10 @@
         Avo
       <% end %>
     <% end %>
+    <% admin_tool(nil, "li") do %>
+      <%= link_to good_job_path, class: "nav-item #{current_page?(good_job_path) ? 'active' : ''}" do %>
+        GoodJob
+      <% end %>
+    <% end %>
   </ul>
 </aside> 
