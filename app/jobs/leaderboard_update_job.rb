@@ -22,7 +22,7 @@ class LeaderboardUpdateJob < ApplicationJob
     ActiveRecord::Base.transaction do
       valid_user_ids.each_slice(BATCH_SIZE) do |batch_user_ids|
         # Ensure all IDs are strings and contain no special characters
-        safe_user_ids = sanitize_sql_array(batch_user_ids).join("','")
+        safe_user_ids = ActiveRecord::Base.sanitize_sql_array(batch_user_ids)
         user_durations = Heartbeat.connection.select_all(<<-SQL).to_a
           WITH time_diffs AS (
             SELECT#{' '}
