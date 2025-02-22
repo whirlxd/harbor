@@ -22,7 +22,7 @@ class LeaderboardUpdateJob < ApplicationJob
     ActiveRecord::Base.transaction do
       valid_user_ids.each_slice(BATCH_SIZE) do |batch_user_ids|
         # Ensure all IDs are strings and contain no special characters
-        safe_user_ids = ActiveRecord::Base.sanitize_sql_array(batch_user_ids)
+        safe_user_ids = ActiveRecord::Base.sanitize_sql_array("'" + batch_user_ids.join("','") + "'")
         user_durations = Heartbeat.connection.select_all(<<-SQL).to_a
           WITH time_diffs AS (
             SELECT#{' '}
@@ -36,7 +36,7 @@ class LeaderboardUpdateJob < ApplicationJob
               END as diff_seconds
             FROM heartbeats
             WHERE DATE(time) = '#{parsed_date}'
-              AND user_id IN ('#{safe_user_ids}')
+              AND user_id IN (#{safe_user_ids})
           )
           SELECT#{' '}
             user_id,
