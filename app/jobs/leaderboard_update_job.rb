@@ -12,7 +12,8 @@ class LeaderboardUpdateJob < ApplicationJob
   )
 
   def perform(date = Date.current)
-    leaderboard = Leaderboard.create!(start_date: date)
+    parsed_date = date.is_a?(Date) ? date : Date.parse(date.to_s)
+    leaderboard = Leaderboard.create!(start_date: parsed_date)
 
     # Get list of valid user IDs from our database
     valid_user_ids = User.pluck(:slack_uid)
@@ -20,6 +21,8 @@ class LeaderboardUpdateJob < ApplicationJob
 
     ActiveRecord::Base.transaction do
       valid_user_ids.each_slice(BATCH_SIZE) do |batch_user_ids|
+        # Ensure all IDs are strings and contain no special characters
+        safe_user_ids = sanitize_sql_array(batch_user_ids).join("','")
         user_durations = Heartbeat.connection.select_all(<<-SQL).to_a
           WITH time_diffs AS (
             SELECT#{' '}
@@ -32,8 +35,8 @@ class LeaderboardUpdateJob < ApplicationJob
                 )
               END as diff_seconds
             FROM heartbeats
-            WHERE DATE(time) = '#{date}'
-              AND user_id IN ('#{batch_user_ids.join("','")}')
+            WHERE DATE(time) = '#{parsed_date}'
+              AND user_id IN ('#{safe_user_ids}')
           )
           SELECT#{' '}
             user_id,
@@ -61,9 +64,11 @@ class LeaderboardUpdateJob < ApplicationJob
     leaderboard.save!
 
     # Delete previous leaderboard entries from today
-    Leaderboard.where.not(id: leaderboard.id).where(start_date: date).where(deleted_at: nil).update_all(deleted_at: Time.current)
+    Leaderboard.where.not(id: leaderboard.id).where(start_date: parsed_date).where(deleted_at: nil).update_all(deleted_at: Time.current)
   rescue => e
     Rails.logger.error "Failed to update current leaderboard: #{e.message}"
     raise
+  rescue Date::Error
+    raise ArgumentError, "Invalid date format provided"
   end
 end
