@@ -76,7 +76,7 @@ class User < ApplicationRecord
       client_id: ENV["SLACK_CLIENT_ID"],
       redirect_uri: redirect_uri,
       state: SecureRandom.hex(24),
-      user_scope: "users.profile:read,users.profile:write,users:read"
+      user_scope: "users.profile:read,users.profile:write,users:read,users:read.email"
     }
 
     URI.parse("https://slack.com/oauth/v2/authorize?#{params.to_query}")
@@ -98,18 +98,19 @@ class User < ApplicationRecord
 
     # Get user info
     user_response = HTTP.auth("Bearer #{data['authed_user']['access_token']}")
-      .get("https://slack.com/api/users.identity")
+      .get("https://slack.com/api/users.info?user=#{data['authed_user']['id']}")
 
     user_data = JSON.parse(user_response.body.to_s)
 
-    puts "user_data: #{user_data}"
+    # pretty-print the user_data
+    puts "user_data: #{JSON.pretty_generate(user_data)}"
 
     return nil unless user_data["ok"]
 
-    user = find_or_initialize_by(slack_uid: user_data["user"]["id"])
-    user.email = user_data["user"]["email"]
-    user.username = user_data["user"]["name"]
-    user.avatar_url = user_data["user"]["image_192"] || user_data["user"]["image_72"]
+    user = find_or_initialize_by(slack_uid: data.dig("authed_user", "id"))
+    user.email = user_data.dig("user", "profile", "email")
+    user.username = user_data.dig("user", "name")
+    user.avatar_url = user_data.dig("user", "profile", "image_192") || user_data.dig("user", "profile", "image_72")
     # Store the OAuth data
     user.slack_access_token = data["authed_user"]["access_token"]
     user.slack_scopes = data["authed_user"]["scope"]&.split(/,\s*/)

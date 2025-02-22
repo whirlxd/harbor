@@ -9,6 +9,7 @@ oauth_config:
       - users.profile:read
       - users.profile:write
       - users:read
+      - users:read.email
 settings:
   org_deploy_enabled: false
   socket_mode_enabled: false
