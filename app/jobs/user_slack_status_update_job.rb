@@ -3,7 +3,7 @@ class UserSlackStatusUpdateJob < ApplicationJob
   BATCH_SIZE = 25
 
   def perform
-    User.where(update_slack_status: true).find_each(batch_size: BATCH_SIZE) do |user|
+    User.where(uses_slack_status: true).find_each(batch_size: BATCH_SIZE) do |user|
       begin
         user.update_slack_status
       rescue => e

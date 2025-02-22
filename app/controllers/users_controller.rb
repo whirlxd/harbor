@@ -43,6 +43,6 @@ class UsersController < ApplicationController
   end
 
   def user_params
-    params.require(:user).permit(:update_slack_status)
+    params.require(:user).permit(:uses_slack_status)
   end
 end
