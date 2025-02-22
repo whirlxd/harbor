@@ -9,6 +9,9 @@ class UsersController < ApplicationController
 
   def update
     if @user.update(user_params)
+      if @user.uses_slack_status?
+        @user.update_slack_status
+      end
       redirect_to is_own_settings? ? my_settings_path : user_settings_path(@user),
         notice: "Settings updated successfully"
     else
