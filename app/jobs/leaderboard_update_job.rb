@@ -1,7 +1,15 @@
 class LeaderboardUpdateJob < ApplicationJob
   queue_as :default
-  limits_concurrency to: 1, key: :date, duration: 5.minutes
   BATCH_SIZE = 100
+
+  include GoodJob::ActiveJobExtensions::Concurrency
+
+  # Limits concurrency to 1 job per date
+  good_job_control_concurrency_with(
+    key: -> { date&.to_s || Date.current.to_s },
+    total: 1,
+    drop: true
+  )
 
   def perform(date = nil, leaderboard = nil)
     if !leaderboard
