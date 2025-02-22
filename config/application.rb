@@ -27,8 +27,10 @@ module Harbor
     ActiveSupport::Notifications.subscribe("cache_read.active_support") do |*args|
       event = ActiveSupport::Notifications::Event.new(*args)
       if event.payload[:hit]
+        Thread.current[:cache_hits] ||= 0
         Thread.current[:cache_hits] += 1
       else
+        Thread.current[:cache_misses] ||= 0
         Thread.current[:cache_misses] += 1
       end
     end
