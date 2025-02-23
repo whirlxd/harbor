@@ -7,13 +7,13 @@ class SailorsLogLeaderboard < ApplicationRecord
 
   def generate_message
     stats = SailorsLogLeaderboard.generate_leaderboard_stats(slack_channel_id)
-    message = "*:boat: Sailor's Log - Today*"
+    msg = "*:boat: Sailor's Log - Today*"
     medals = [ "first_place_medal", "second_place_medal", "third_place_medal" ]
 
     stats.each_with_index do |entry, index|
       medal = medals[index] || "white_small_square"
-      message += "\n:#{medal}: `<@#{entry[:user_id]}>`: #{short_time_simple entry[:duration]} → "
-      message += entry[:projects].map do |project|
+      msg += "\n:#{medal}: `<@#{entry[:user_id]}>`: #{short_time_simple entry[:duration]} → "
+      msg += entry[:projects].map do |project|
         language = project[:language_emoji] ? "#{project[:language_emoji]} #{project[:language]}" : project[:language]
 
         project_entry = []
@@ -25,7 +25,7 @@ class SailorsLogLeaderboard < ApplicationRecord
     end
 
     # Update the message attribute and save
-    update_column(:message, message)
+    update_column(:message, msg)
   end
 
   def self.generate_leaderboard_stats(channel)

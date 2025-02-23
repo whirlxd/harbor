@@ -1,11 +1,7 @@
 class SailorsLogSlackNotification < ApplicationRecord
-  after_create :notify_user
-
-  private
-
-  def notify_user
+  def notify_user!
     return if sent?
 
-    SailorsLogNotifyJob.perform_later(self.id)
+    SailorsLogNotifyJob.perform_now(self.id)
   end
 end

@@ -1,8 +1,14 @@
-class SailorsLogLeaderboardJob < ApplicationJob
+class SlackCommand::SailorsLogLeaderboardJob < ApplicationJob
   queue_as :default
   include ApplicationHelper
 
-  def perform(channel_id, slack_uid, response_url)
+  def perform(slack_uid, channel_id, response_url)
+    # Send loading message first
+    response = HTTP.post(response_url, json: {
+      response_type: "ephemeral",
+      text: ":beachball: #{FlavorText.loading_messages.sample}"
+    })
+
     puts "Performing leaderboard job for channel #{channel_id} and user #{slack_uid}"
     # either find a leaderboard for this channel from the last 1 minute or create a new one
     leaderboard = SailorsLogLeaderboard.where(slack_channel_id: channel_id, deleted_at: nil)
@@ -16,11 +22,21 @@ class SailorsLogLeaderboardJob < ApplicationJob
       slack_uid: slack_uid
     )
 
-    # Update with final message
+    # Send final message
     response = HTTP.post(response_url, json: {
       response_type: "in_channel",
       replace_original: true,
       text: leaderboard.message
+    })
+
+    puts "Response: #{response.body}"
+
+  rescue => e
+    puts "Error: #{e.message}"
+    puts "Backtrace: #{e.backtrace.join("\n")}"
+    response = HTTP.post(response_url, json: {
+      response_type: "ephemeral",
+      text: "Error: #{e.message}"
     })
 
     puts "Response: #{response.body}"

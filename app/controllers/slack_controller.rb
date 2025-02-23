@@ -25,29 +25,25 @@ class SlackController < ApplicationController
     }
 
     case params[:text].downcase.strip
-    when "on"
-      SailorsLogSetNotificationPrefJob.perform_later(params[:user_id], params[:channel_id], true, params[:response_url], params[:user_name])
-    when "off"
-      SailorsLogSetNotificationPrefJob.perform_later(params[:user_id], params[:channel_id], false, params[:response_url], params[:user_name])
-    when "leaderboard"
-      # Send loading message first
-      response = HTTP.post(params[:response_url], json: {
-        response_type: "ephemeral",
-        text: ":beachball: #{FlavorText.loading_messages.sample}",
-        trigger_id: params[:trigger_id]
-      })
-
-      # Process in background
-      SailorsLogLeaderboardJob.perform_later(
-        params[:channel_id],
+    when "on" || "off"
+      SlackCommand::SailorsLogOnOffJob.perform_later(
         params[:user_id],
+        params[:channel_id],
+        params[:user_name],
+        params[:response_url],
+        params[:text].downcase.strip == "on",
+      )
+    when "leaderboard"
+      # Process in background
+      SlackCommand::SailorsLogLeaderboardJob.perform_later(
+        params[:user_id],
+        params[:channel_id],
         params[:response_url],
       )
     else
-      HTTP.post(params[:response_url], json: {
-        response_type: "ephemeral",
-        text: "Available commands: `/sailorslog on`, `/sailorslog off`, `/sailorslog leaderboard`"
-      })
+      SlackCommand::SailorsLogHelpJob.perform_later(
+        params[:response_url],
+      )
     end
   end
 
