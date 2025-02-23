@@ -8,8 +8,10 @@
   <% if current_user %>
     <%= render "shared/user_mention", user: current_user %>
     <% if current_user.active_project %>
-      <p>Currently working on: <%= current_user.active_project %></p>
-      <p>Duration: <%= current_user.active_project_duration %></p>
+      <p>
+        Working on: <%= current_user.active_project %>
+        (<%= short_time_simple current_user.active_project_duration %> in total)
+      </p>
     <% end %>
     <%= link_to "Logout", signout_path, data: { turbo_method: :delete } %>
   <% else %>

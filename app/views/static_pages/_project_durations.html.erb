@@ -1,0 +1,12 @@
+<%= turbo_frame_tag "project_durations" do %>
+  <div class="project-durations">
+    <ul>
+      <% project_durations.each do |project| %>
+        <li>
+          <strong><%= project[:project] || "Unknown" %></strong>
+          <%= short_time_detailed project[:duration] %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+<% end %> 

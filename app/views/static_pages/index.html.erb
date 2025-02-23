@@ -1,18 +1,14 @@
 <div class="container">
   <h1>Welcome to Harbor</h1>
-  <p>Your application is ready!</p>
   <% if current_user %>
-    You've logged 
-    <%= current_user.heartbeats.today.duration_formatted %> today across
+    You've logged
+    <%= short_time_detailed current_user.heartbeats.today.duration_seconds %> today across
     <%= pluralize(current_user.heartbeats.today.count, 'heartbeat') %>
 
-    <ul>
-      <% @project_durations.each do |project| %>
-        <li>
-          <strong><%= project[:project] || "Unknown" %></strong>
-          <%= project[:duration] %>
-        </li>
-      <% end %>
-    </ul>
+    <%= turbo_frame_tag "project_durations", src: project_durations_static_pages_path do %>
+      <div class="loading">
+        Loading project durations...
+      </div>
+    <% end %>
   <% end %>
 </div> 

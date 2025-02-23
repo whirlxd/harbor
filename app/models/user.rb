@@ -143,6 +143,6 @@ class User < ApplicationRecord
   def active_project_duration
     return nil unless active_project
 
-    Heartbeat.duration_formatted(heartbeats.where(project: active_project))
+    heartbeats.where(project: active_project).duration_seconds
   end
 end

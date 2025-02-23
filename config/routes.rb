@@ -39,4 +39,10 @@ Rails.application.routes.draw do
   # Namespace for current user actions
   get "my/settings", to: "users#edit", as: :my_settings
   patch "my/settings", to: "users#update"
+
+  resources :static_pages, only: [ :index ] do
+    collection do
+      get :project_durations
+    end
+  end
 end

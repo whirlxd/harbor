@@ -19,5 +19,16 @@
 
 .admin-tool {
   border-radius: 5px;
-  border: 1px solid var(--uchu-orange);
+  border: 1px dashed var(--uchu-orange);
+  background-color: var(--uchu-light-yellow);
+}
+
+.loading {
+  padding: 1rem;
+  color: #666;
+  font-style: italic;
+}
+
+.project-durations {
+  margin-top: 1rem;
 }
