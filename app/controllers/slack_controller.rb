@@ -1,4 +1,4 @@
-class SailorsLogController < ApplicationController
+class SlackController < ApplicationController
   skip_before_action :verify_authenticity_token
   before_action :verify_slack_request
 
@@ -8,24 +8,28 @@ class SailorsLogController < ApplicationController
 
   # Handle slack commands
   def create
+    # Acknowledge receipt
+    render json: {
+      response_type: "ephemeral",
+      blocks: [
+        {
+          type: "context",
+          elements: [
+            {
+              type: "mrkdwn",
+              text: "#{params[:command]} #{params[:text]}"
+            }
+          ]
+        }
+      ]
+    }
+
     case params[:text].downcase.strip
     when "on"
-      puts "Turning on notifications for #{params[:user_id]} in #{params[:channel_id]}"
-      SailorsLogSetNotificationPrefJob.perform_later(params[:user_id], params[:channel_id], true)
-      render json: {
-        response_type: "in_channel",
-        text: "@#{params[:user_name]} ran `/sailorslog on` to turn on High Seas notifications in this channel. Every time they code an hour on a project, a short message celebrating will be posted to this channel. They will also show on `/sailorslog leaderboard`."
-      }
+      SailorsLogSetNotificationPrefJob.perform_later(params[:user_id], params[:channel_id], true, params[:response_url], params[:user_name])
     when "off"
-      SailorsLogSetNotificationPrefJob.perform_later(params[:user_id], params[:channel_id], false)
-      render json: {
-        response_type: "ephemeral",
-        text: ":white_check_mark: Coding notifications have been turned off in this channel."
-      }
+      SailorsLogSetNotificationPrefJob.perform_later(params[:user_id], params[:channel_id], false, params[:response_url], params[:user_name])
     when "leaderboard"
-      # Acknowledge receipt
-      head :ok
-
       # Send loading message first
       response = HTTP.post(params[:response_url], json: {
         response_type: "ephemeral",
@@ -33,18 +37,17 @@ class SailorsLogController < ApplicationController
         trigger_id: params[:trigger_id]
       })
 
-      puts "Response: #{response.body}"
-
       # Process in background
       SailorsLogLeaderboardJob.perform_later(
         params[:channel_id],
+        params[:user_id],
         params[:response_url],
       )
     else
-      render json: {
+      HTTP.post(params[:response_url], json: {
         response_type: "ephemeral",
         text: "Available commands: `/sailorslog on`, `/sailorslog off`, `/sailorslog leaderboard`"
-      }
+      })
     end
   end
 

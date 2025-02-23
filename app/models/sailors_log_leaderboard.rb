@@ -1,2 +1,117 @@
 class SailorsLogLeaderboard < ApplicationRecord
+  include ApplicationHelper  # Add this to get access to short_time_simple
+  validates :slack_channel_id, :slack_uid, presence: true
+  after_create :generate_message
+
+  private
+
+  def generate_message
+    stats = SailorsLogLeaderboard.generate_leaderboard_stats(slack_channel_id)
+    message = "*:boat: Sailor's Log - Today*"
+    medals = [ "first_place_medal", "second_place_medal", "third_place_medal" ]
+
+    stats.each_with_index do |entry, index|
+      medal = medals[index] || "white_small_square"
+      message += "\n:#{medal}: `<@#{entry[:user_id]}>`: #{short_time_simple entry[:duration]} → "
+      message += entry[:projects].map do |project|
+        language = project[:language_emoji] ? "#{project[:language_emoji]} #{project[:language]}" : project[:language]
+
+        project_entry = []
+        project_entry << "#{project[:name]}"
+        project_entry << "[#{language}]" unless language.nil?
+        project_entry << "#{short_time_simple project[:duration]}"
+        project_entry.join(" ")
+      end.join(" + ")
+    end
+
+    # Update the message attribute and save
+    update_column(:message, message)
+  end
+
+  def self.generate_leaderboard_stats(channel)
+    # Get all users with enabled preferences in the channel
+    users_in_channel = SailorsLogNotificationPreference.where(enabled: true, slack_channel_id: channel)
+                                                   .distinct
+                                                   .pluck(:slack_uid)
+
+    # Get all durations for users in channel
+    user_durations = Heartbeat.where(user_id: users_in_channel)
+                             .today
+                             .group(:user_id)
+                             .duration_seconds
+
+    # Sort and take top 10 users
+    top_user_ids = user_durations.sort_by { |_, duration| -duration }.first(10).map(&:first)
+
+    # Now get detailed project info only for top 10 users
+    top_user_ids.map do |user_id|
+      user_heartbeats = Heartbeat.where(user_id: user_id).today
+
+      # Get most common language per project using ActiveRecord
+      most_common_languages = user_heartbeats
+        .group(:project, :language)
+        .count
+        .group_by { |k, _| k[0] }  # Group by project
+        .transform_values { |langs| langs.max_by { |_, count| count }&.first&.last } # Get most common language
+
+      # Get all project durations in one query
+      project_durations = user_heartbeats
+        .group(:project)
+        .duration_seconds
+
+      projects = project_durations.map do |project, duration|
+        print "project: #{project}, duration: #{duration}, language: #{most_common_languages[project]}"
+        {
+          name: project,
+          duration: duration,
+          language: most_common_languages[project],
+          language_emoji: self.language_emoji(most_common_languages[project])
+        }
+      end
+
+      projects = projects.filter { |project| project[:duration] > 1.minute }.sort_by { |project| -project[:duration] }
+
+      {
+        user_id: user_id,
+        duration: user_durations[user_id],
+        projects: projects
+      }
+    end
+  end
+
+  def self.language_emoji(language)
+    language = language.downcase
+    case language
+    when "ruby"
+      ":#{language}:"
+    when "javascript"
+      ":js:"
+    when "typescript"
+      ":ts:"
+    when "html"
+      ":#{language}:"
+    when "java"
+      [ ":java:", ":java_duke:" ].sample
+    when "unity"
+      [ ":unity:", ":unity_new:" ].sample
+    when "c++"
+      ":#{language}:"
+    when "c"
+      [ ":c:", ":c_1:" ].sample
+    when "rust"
+      [ ":ferris:", ":crab:", ":ferrisowo:" ].sample
+    when "python"
+      [ ":snake:", ":python:", ":pf:", ":tw_snake:" ].sample
+    when "nix"
+      [ ":nix:", ":parrot-nix:" ].sample
+    when "go"
+      [ ":golang:", ":gopher:", ":gothonk:" ].sample
+    when "kotlin"
+      ":#{language}:"
+    when "astro"
+      ":#{language}:"
+    else
+      nil
+    end
+  end
 end

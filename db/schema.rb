@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_23_072034) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_23_085114) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -123,8 +123,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_23_072034) do
   end
 
   create_table "sailors_log_leaderboards", force: :cascade do |t|
+    t.string "slack_channel_id"
+    t.string "slack_uid"
+    t.text "message"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
   end
 
   create_table "sailors_log_notification_preferences", force: :cascade do |t|
