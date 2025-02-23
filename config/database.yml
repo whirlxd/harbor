@@ -45,9 +45,13 @@ production:
     pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
     url: <%= ENV['DATABASE_URL'] %>
   wakatime:
+    adapter: postgresql
+    encoding: unicode
     url: <%= ENV['WAKATIME_DATABASE_URL'] %>
     replica: true
   sailors_log:
+    adapter: postgresql
+    encoding: unicode
     url: <%= ENV['SAILORS_LOG_DATABASE_URL'] %>
     replica: true
   cache:
