@@ -11,8 +11,6 @@ class SailorsLogPollForChangesJob < ApplicationJob
       # get all projects for the user
       projects = Heartbeat.today.where(user_id: log.slack_uid).distinct.pluck(:project)
 
-      new_notification = []
-
       projects.each do |project|
         new_project_time = Heartbeat.where(user_id: log.slack_uid, project: project).duration_seconds
         if new_project_time > (log.projects_summary[project] || 0) + 1.hour
