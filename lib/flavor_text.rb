@@ -17,17 +17,27 @@ class FlavorText
       "rolling down data hills",
       "frolicking through fields of numbers",
       "skiing the data slopes",
+      "dropping in and sending it",
       "zooming through the cyber-pipes",
       "grabbing the stats",
       "switching the dependent and independent variables",
       "flipping a coin to choose which axis to use",
       "warming up the powerhouse of the cell",
       "calculating significant figures...",
+      "calculating insignificant figures...",
       "p-hacking the n value",
       "computing P = NP",
       "realizing P ≠ NP",
       "so, uh... come here often?",
       "*powertool noises*",
+      "*frantic typing noises*",
+      "*keyboard clacking noises*",
+      "*crunching number noises*",
+      "*beep* *beep* *beep*",
+      "carrying the one",
+      "team-carrying the one",
+      "carrying the zero",
+      "ganking the one before it gets carried",
       "spinning violently around the y-axis",
       "serializing first-time coders experiences",
       "tokenizing personal experiences",
@@ -38,7 +48,9 @@ class FlavorText
       "spinning the rgbs",
       "Installing dependencies",
       "shoveling the overflowed pixels",
-      ".split() === :large_blue_circle::large_green_circle::large_yellow_circle::large_orange_circle::red_circle::large_purple_circle: "
+      ".split() === :large_blue_circle::large_green_circle::large_yellow_circle::large_orange_circle::red_circle::large_purple_circle:",
+      "Are ya' winning, son?",
+      "Dropkicking the cache into the sun"
     ]
   end
 end
