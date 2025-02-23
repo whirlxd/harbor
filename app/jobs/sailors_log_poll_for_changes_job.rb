@@ -2,34 +2,44 @@ class SailorsLogPollForChangesJob < ApplicationJob
   queue_as :default
 
   def perform
-    # Get all users with enabled preferences
-    slack_ids = SailorsLogNotificationPreference.where(enabled: true).distinct.pluck(:slack_uid)
+    puts "performing SailorsLogPollForChangesJob"
+    # get all users who've coded in the last minute
+    users_who_coded = Heartbeat.where("created_at > ?", 1.minutes.ago).distinct.pluck(:user_id)
 
-    # for each user, check if their logs have changed
-    logs = SailorsLog.where(slack_uid: slack_ids).includes(:notification_preferences)
+    puts "users_who_coded: #{users_who_coded}"
+
+    # Get all of those with enabled preferences
+    enabled_users = SailorsLogNotificationPreference.where(enabled: true, slack_uid: users_who_coded).distinct.pluck(:slack_uid)
+
+    puts "enabled_users: #{enabled_users}"
+
+    logs = SailorsLog.where(slack_uid: enabled_users)
+
+    puts "logs: #{logs}"
+
     logs.each do |log|
-      # get all projects for the user with time spent in the last 24 hours
-      projects = Heartbeat.today.where(user_id: log.slack_uid).distinct.pluck(:project)
-
-      new_project_times = Heartbeat.where(user_id: log.slack_uid, project: projects).group(:project).duration_seconds
-
-      projects.each do |project|
-        new_project_time = new_project_times[project]
-        if new_project_time > (log.projects_summary[project] || 0) + 1.hour
+      # get all projects for the user with duration
+      new_project_times = Heartbeat.where(user_id: log.slack_uid).group(:project).duration_seconds
+      new_project_times.each do |project, new_project_duration|
+        if new_project_duration > (log.projects_summary[project] || 0) + 1.hour
           # create a new SailorsLogSlackNotification
           log.notification_preferences.each do |preference|
             log.notifications << SailorsLogSlackNotification.new(
               slack_uid: log.slack_uid,
               slack_channel_id: preference.slack_channel_id,
               project_name: project,
-              project_duration: new_project_time
+              project_duration: new_project_duration
             )
           end
-          log.projects_summary[project] = new_project_time
+          log.projects_summary[project] = new_project_duration
         end
       end
-      ActiveRecord::Base.transaction do
-        log.save! if log.changed?
+      log.save! if log.changed?
+
+      GoodJob::Bulk.enqueue do
+        log.notifications.where(sent: false).each do |notification|
+          notification.notify_user!
+        end
       end
     end
   end

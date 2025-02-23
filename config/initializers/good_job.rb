@@ -13,7 +13,7 @@ Rails.application.configure do
       class: "LeaderboardUpdateJob"
     },
     sailors_log_poll: {
-      cron: "*/15 * * * *",
+      cron: "* * * * *",
       class: "SailorsLogPollForChangesJob"
     }
   }
