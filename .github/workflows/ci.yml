@@ -56,6 +56,18 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:16-alpine
+        ports:
+          - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db
+
     # services:
     #  redis:
     #    image: redis
@@ -79,7 +91,13 @@ jobs:
         env:
           RAILS_ENV: test
           # REDIS_URL: redis://localhost:6379/0
-        run: bin/rails db:test:prepare test test:system
+          TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/test_db
+          PGHOST: localhost
+          PGUSER: postgres
+          PGPASSWORD: postgres
+        run: |
+          bin/rails db:migrate RAILS_ENV=test
+          bin/rails test test:system
 
       - name: Keep screenshots from failed system tests
         uses: actions/upload-artifact@v4

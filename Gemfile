@@ -35,8 +35,8 @@ gem "solid_cable"
 
 gem "good_job"
 
-# Job scheduler
-gem "whenever", require: false
+# Slack client
+gem "slack-ruby-client"
 
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false

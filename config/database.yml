@@ -5,18 +5,21 @@
 #   gem "sqlite3"
 #
 default: &default
-  adapter: sqlite3
+  adapter: postgresql
+  encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   timeout: 5000
 
 development:
   primary:
     <<: *default
-    database: storage/development.sqlite3
+    pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+    url: <%= ENV['DATABASE_URL'] %>
   wakatime:
-    adapter: postgresql
-    encoding: unicode
     url: <%= ENV['WAKATIME_DATABASE_URL'] %>
+    replica: true
+  sailors_log:
+    url: <%= ENV['SAILORS_LOG_DATABASE_URL'] %>
     replica: true
 
 # Warning: The database defined as "test" will be erased and
@@ -25,10 +28,11 @@ development:
 test:
   primary:
     <<: *default
-    database: storage/test.sqlite3
+    database: test_db
+    username: postgres
+    password: postgres
+    # url: <%= ENV['TEST_DATABASE_URL'] %>
   wakatime:
-    adapter: postgresql
-    encoding: unicode
     url: <%= ENV['WAKATIME_DATABASE_URL'] %>
     replica: true
 
@@ -37,14 +41,13 @@ test:
 # is mounted as a persistent Docker volume in config/deploy.yml.
 production:
   primary:
-    adapter: postgresql
-    encoding: unicode
     pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
     url: <%= ENV['DATABASE_URL'] %>
   wakatime:
-    adapter: postgresql
-    encoding: unicode
     url: <%= ENV['WAKATIME_DATABASE_URL'] %>
+    replica: true
+  sailors_log:
+    url: <%= ENV['SAILORS_LOG_DATABASE_URL'] %>
     replica: true
   cache:
     <<: *default

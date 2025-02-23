@@ -11,6 +11,10 @@ Rails.application.configure do
     leaderboard_update: {
       cron: "*/5 * * * *",
       class: "LeaderboardUpdateJob"
+    },
+    sailors_log_poll: {
+      cron: "*/15 * * * *",
+      class: "SailorsLogPollForChangesJob"
     }
   }
 end
