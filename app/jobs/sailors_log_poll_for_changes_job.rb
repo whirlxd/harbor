@@ -8,11 +8,13 @@ class SailorsLogPollForChangesJob < ApplicationJob
     # for each user, check if their logs have changed
     logs = SailorsLog.where(slack_uid: slack_ids).includes(:notification_preferences)
     logs.each do |log|
-      # get all projects for the user
+      # get all projects for the user with time spent in the last 24 hours
       projects = Heartbeat.today.where(user_id: log.slack_uid).distinct.pluck(:project)
 
+      new_project_times = Heartbeat.where(user_id: log.slack_uid, project: projects).group(:project).duration_seconds
+
       projects.each do |project|
-        new_project_time = Heartbeat.where(user_id: log.slack_uid, project: project).duration_seconds
+        new_project_time = new_project_times[project]
         if new_project_time > (log.projects_summary[project] || 0) + 1.hour
           # create a new SailorsLogSlackNotification
           log.notification_preferences.each do |preference|
