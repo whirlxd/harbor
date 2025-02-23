@@ -21,9 +21,13 @@ Rails.application.routes.draw do
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
-  # Defines the root path route ("/")
-  # root "posts#index"
   root "static_pages#index"
+
+  resources :static_pages, only: [ :index ] do
+    collection do
+      get :project_durations
+    end
+  end
 
   get "/auth/slack", to: "sessions#new", as: :slack_auth
   get "/auth/slack/callback", to: "sessions#create"
@@ -39,4 +43,6 @@ Rails.application.routes.draw do
   # Namespace for current user actions
   get "my/settings", to: "users#edit", as: :my_settings
   patch "my/settings", to: "users#update"
+
+  post "/slack/commands", to: "sailors_log#create"
 end
