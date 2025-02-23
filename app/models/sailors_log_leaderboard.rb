@@ -1,0 +1,2 @@
+class SailorsLogLeaderboard < ApplicationRecord
+end

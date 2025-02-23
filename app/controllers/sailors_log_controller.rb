@@ -2,6 +2,10 @@ class SailorsLogController < ApplicationController
   skip_before_action :verify_authenticity_token
   before_action :verify_slack_request
 
+  # allow usage of short_time_simple
+  include ApplicationHelper
+  helper_method :short_time_simple
+
   # Handle slack commands
   def create
     case params[:text].downcase.strip
@@ -19,26 +23,23 @@ class SailorsLogController < ApplicationController
         text: ":white_check_mark: Coding notifications have been turned off in this channel."
       }
     when "leaderboard"
-      leaderboard = SailorsLog.generate_leaderboard(params[:channel_id])
-      message = "*:boat: Sailor's Log - Today*"
-      medals = [ "first_place_medal", "second_place_medal", "third_place_medal" ]
-      # ex.
-      # :first_place_medal: @Irtaza: 2h 6m → Farmworks [C#]: 125m
-      # :second_place_medal: @Cigan: 1h 33m → Gitracker-1 [JAVA]: 49m + Dupe [JAVA]: 41m + Lovac-Integration [JAVA]: 2m
-      leaderboard.each_with_index do |entry, index|
-        medal = medals[index] || "white_small_square"
-        message += "\n:#{medal}: `<@#{entry[:user_id]}>`: #{entry[:duration]} → "
-        message += entry[:projects].map do |project|
-          language = project[:language_emoji] ? "#{project[:language_emoji]} #{project[:language]}" : project[:language]
-          "#{project[:name]} [#{language}]"
-        end.join(" + ")
-      end
+      # Acknowledge receipt
+      head :ok
 
-      puts message
-      render json: {
-        response_type: "in_channel",
-        text: message
-      }
+      # Send loading message first
+      response = HTTP.post(params[:response_url], json: {
+        response_type: "ephemeral",
+        text: ":beachball: #{FlavorText.loading_messages.sample}",
+        trigger_id: params[:trigger_id]
+      })
+
+      puts "Response: #{response.body}"
+
+      # Process in background
+      SailorsLogLeaderboardJob.perform_later(
+        params[:channel_id],
+        params[:response_url],
+      )
     else
       render json: {
         response_type: "ephemeral",

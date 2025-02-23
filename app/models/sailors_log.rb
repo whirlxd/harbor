@@ -46,6 +46,7 @@ class SailorsLog < ApplicationRecord
         .duration_seconds
 
       projects = project_durations.map do |project, duration|
+        print "project: #{project}, duration: #{duration}, language: #{most_common_languages[project]}"
         {
           name: project,
           duration: duration,
@@ -53,6 +54,8 @@ class SailorsLog < ApplicationRecord
           language_emoji: self.language_emoji(most_common_languages[project])
         }
       end
+
+      projects = projects.filter { |project| project[:duration] > 1.minute }.sort_by { |project| -project[:duration] }
 
       {
         user_id: user_id,
@@ -63,21 +66,22 @@ class SailorsLog < ApplicationRecord
   end
 
   def self.language_emoji(language)
-    case language.downcase
+    language = language.downcase
+    case language
     when "ruby"
-      ":ruby:"
+      ":#{language}:"
     when "javascript"
       ":js:"
     when "typescript"
       ":ts:"
     when "html"
-      ":html:"
+      ":#{language}:"
     when "java"
       [ ":java:", ":java_duke:" ].sample
     when "unity"
       [ ":unity:", ":unity_new:" ].sample
     when "c++"
-      ":c++:"
+      ":#{language}:"
     when "c"
       [ ":c:", ":c_1:" ].sample
     when "rust"
@@ -89,7 +93,9 @@ class SailorsLog < ApplicationRecord
     when "go"
       [ ":golang:", ":gopher:", ":gothonk:" ].sample
     when "kotlin"
-      ":kotlin:"
+      ":#{language}:"
+    when "astro"
+      ":#{language}:"
     else
       nil
     end

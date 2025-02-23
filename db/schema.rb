@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_22_082500) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_23_072034) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -120,6 +120,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_22_082500) do
     t.datetime "updated_at", null: false
     t.datetime "finished_generating_at"
     t.datetime "deleted_at"
+  end
+
+  create_table "sailors_log_leaderboards", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "sailors_log_notification_preferences", force: :cascade do |t|
