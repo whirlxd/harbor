@@ -6,7 +6,8 @@ class FlavorText
       "look familiar?",
       "i'm seeing double!!",
       "you again?",
-      "your twin?!"
+      "your twin?!",
+      "despite everything, it's still you"
     ]
   end
 
