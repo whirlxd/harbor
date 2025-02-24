@@ -15,6 +15,10 @@
 
 :root {
   --muted-color: var(--uchu-gray);
+  --black: rgb(42, 42, 42);
+  --smoke: rgb(242, 242, 242);
+  color: var(--black);
+  background-color: var(--smoke);
 }
 
 :root.development {

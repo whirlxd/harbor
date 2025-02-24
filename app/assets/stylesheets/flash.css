@@ -6,20 +6,20 @@
 }
 
 .notice {
-  background-color: #e3f2fd;
-  color: #0d47a1;
+  background-color: var(--uchu-light-blue);
+  color: var(--uchu-dark-blue);
   border: 1px solid #bbdefb;
 }
 
 .alert {
-  background-color: #ffebee;
-  color: #c62828;
+  background-color: var(--uchu-light-red);
+  color: var(--uchu-dark-red);
   border: 1px solid #ffcdd2;
 }
 
 .success {
-  background-color: #e8f5e9;
-  color: #2e7d32;
+  background-color: var(--uchu-light-green);
+  color: var(--uchu-dark-green);
   border: 1px solid #c8e6c9;
 }
 
@@ -28,7 +28,7 @@ footer {
   bottom: 0;
   width: 100%;
   padding: 10px;
-  background-color: rgba(245, 245, 245, 0.8);
+  background-color: var(--smoke);
   text-align: center;
   font-size: 12px;
   color: var(--uchu-gray);
@@ -36,6 +36,5 @@ footer {
 }
 
 footer:hover {
-  background-color: #f5f5f5;
   color: var(--uchu-dark-gray);
 }
