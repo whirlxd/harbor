@@ -23,7 +23,7 @@ class SailorsLogNotifyJob < ApplicationJob
 
     hours = project_duration / 3600
 
-    message = ":boat: <@#{SlackUsername.find_by_uid(slack_uid)}> just coded 1 more hour on *#{project_name}* (total: #{hours}hrs). _#{kudos_message}_"
+    message = ":boat: `@#{SlackUsername.find_by_uid(slack_uid)}` just coded 1 more hour on *#{project_name}* (total: #{hours}hrs). _#{kudos_message}_"
 
     response = HTTP.auth("Bearer #{ENV['SAILORS_LOG_SLACK_BOT_OAUTH_TOKEN']}")
       .post("https://slack.com/api/chat.postMessage",
