@@ -24,6 +24,8 @@ class SailorsLogLeaderboard < ApplicationRecord
       end.join(" + ")
     end
 
+    msg = "No coding activity found for today. :3kskull:" if stats.empty?
+
     # Update the message attribute and save
     update_column(:message, msg)
   end
