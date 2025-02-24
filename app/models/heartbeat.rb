@@ -20,23 +20,21 @@ class Heartbeat < WakatimeRecord
       # when grouped, return hash of group key => duration
       group_column = scope.group_values.first
 
-      quoted_group_column = connection.quote_column_name(group_column)
-
       capped_diffs = scope
-        .select("#{quoted_group_column}, CASE
-          WHEN LAG(time) OVER (PARTITION BY #{quoted_group_column} ORDER BY time) IS NULL THEN 0
-          ELSE LEAST(EXTRACT(EPOCH FROM (time - LAG(time) OVER (PARTITION BY #{quoted_group_column} ORDER BY time))), #{TIMEOUT_DURATION.to_i})
+        .select("#{group_column}, CASE
+          WHEN LAG(time) OVER (PARTITION BY #{group_column} ORDER BY time) IS NULL THEN 0
+          ELSE LEAST(EXTRACT(EPOCH FROM (time - LAG(time) OVER (PARTITION BY #{group_column} ORDER BY time))), #{TIMEOUT_DURATION.to_i})
         END as diff")
         .where.not(time: nil)
         .order(time: :asc)
         .unscope(:group)
 
       connection.select_all(
-        "SELECT #{quoted_group_column}, COALESCE(SUM(diff), 0)::integer as duration
+        "SELECT #{group_column}, COALESCE(SUM(diff), 0)::integer as duration
          FROM (#{capped_diffs.to_sql}) AS diffs
-         GROUP BY #{quoted_group_column}"
+         GROUP BY #{group_column}"
       ).each_with_object({}) do |row, hash|
-        hash[row[quoted_group_column]] = row["duration"].to_i
+        hash[row[group_column.to_s]] = row["duration"].to_i
       end
     else
       # when not grouped, return a single value
