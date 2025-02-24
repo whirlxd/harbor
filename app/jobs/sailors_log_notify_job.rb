@@ -25,7 +25,7 @@ class SailorsLogNotifyJob < ApplicationJob
 
     message = ":boat: <@#{slack_uid}> just coded 1 more hour on *#{project_name}* (total: #{hours}hrs). _#{kudos_message}_"
 
-    response = HTTP.auth("Bearer #{ENV['SLACK_BOT_OAUTH_TOKEN']}")
+    response = HTTP.auth("Bearer #{ENV['SAILORS_LOG_SLACK_BOT_OAUTH_TOKEN']}")
       .post("https://slack.com/api/chat.postMessage",
             json: {
               channel: slack_channel_id,

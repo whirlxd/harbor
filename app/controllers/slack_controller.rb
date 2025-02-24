@@ -56,7 +56,7 @@ class SlackController < ApplicationController
     # Skip verification in development
     return true if Rails.env.development?
 
-    slack_signing_secret = ENV["SLACK_SIGNING_SECRET"]
+    slack_signing_secret = ENV["SAILORS_LOG_SLACK_SIGNING_SECRET"]
     sig_basestring = "v0:#{timestamp}:#{request.raw_post}"
     my_signature = "v0=" + OpenSSL::HMAC.hexdigest("SHA256", slack_signing_secret, sig_basestring)
 
