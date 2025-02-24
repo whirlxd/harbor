@@ -2,6 +2,14 @@ class SlackCommand::SailorsLogOnOffJob < ApplicationJob
   queue_as :default
 
   def perform(slack_uid, slack_channel_id, user_name, response_url, enabled)
+    if !check_channel_exists(slack_channel_id) && enabled
+      HTTP.post(response_url, json: {
+        response_type: "ephemeral",
+        text: ":warning: This command only works in channels with the sailorslog app installed. You can invite it to this channel & try again."
+      })
+      return
+    end
+
     # set preference for the user
     slnp = SailorsLogNotificationPreference.find_or_initialize_by(slack_uid: slack_uid, slack_channel_id: slack_channel_id)
     slnp.enabled = enabled
@@ -21,5 +29,17 @@ class SlackCommand::SailorsLogOnOffJob < ApplicationJob
         text: ":white_check_mark: Coding notifications have been turned off in this channel."
       })
     end
+  end
+
+  private
+
+  def check_channel_exists(slack_channel_id)
+    response = HTTP.auth("Bearer #{ENV['SAILORS_LOG_SLACK_BOT_OAUTH_TOKEN']}")
+      .post("https://slack.com/api/conversations.info",
+            json: {
+              channel: slack_channel_id
+            })
+
+    JSON.parse(response.body)["ok"]
   end
 end
