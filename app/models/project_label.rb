@@ -1,4 +1,4 @@
-class Project < WakatimeRecord
+class ProjectLabel < WakatimeRecord
   self.table_name = "project_labels"
 
   has_many :heartbeats,

@@ -11,10 +11,10 @@ class User < ApplicationRecord
     primary_key: :slack_uid,
     class_name: "Heartbeat"
 
-  has_many :projects,
+  has_many :project_labels,
     foreign_key: :user_id,
     primary_key: :slack_uid,
-    class_name: "Project"
+    class_name: "ProjectLabel"
 
   def admin?
     is_admin
