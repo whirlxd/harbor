@@ -12,13 +12,12 @@ class StaticPagesController < ApplicationController
 
     @project_durations = Rails.cache.fetch("user_#{current_user.id}_project_durations", expires_in: 1.minute) do
       project_times = current_user.heartbeats.group(:project).duration_seconds
-      project_names = current_user.project_names
-      projects = current_user.project_labels
+      project_labels = current_user.project_labels
 
-      project_names.map do |project|
+      project_times.map do |project, duration|
         {
-          project: projects.find { |p| p.project_key == project }&.label || project || "Unknown",
-          duration: project_times[project]
+          project: project_labels.find { |p| p.project_key == project }&.label || project || "Unknown",
+          duration: duration
         }
       end.filter { |p| p[:duration].positive? }.sort_by { |p| p[:duration] }.reverse
     end
