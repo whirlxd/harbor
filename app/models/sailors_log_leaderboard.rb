@@ -12,7 +12,7 @@ class SailorsLogLeaderboard < ApplicationRecord
 
     stats.each_with_index do |entry, index|
       medal = medals[index] || "white_small_square"
-      msg += "\n:#{medal}: `<@#{entry[:user_id]}>`: #{short_time_simple entry[:duration]} → "
+      msg += "\n:#{medal}: `<@#{SlackUsername.find_by_uid(entry[:user_id])}>`: #{short_time_simple entry[:duration]} → "
       msg += entry[:projects].map do |project|
         language = project[:language_emoji] ? "#{project[:language_emoji]} #{project[:language]}" : project[:language]
 
