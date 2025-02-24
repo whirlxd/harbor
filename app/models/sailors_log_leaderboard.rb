@@ -83,7 +83,7 @@ class SailorsLogLeaderboard < ApplicationRecord
     language = language.downcase
     case language
     when "ruby"
-      ":#{language}:"
+      [ ":#{language}:" || ":-ruby:" ].sample
     when "javascript"
       ":js:"
     when "typescript"
@@ -98,6 +98,10 @@ class SailorsLogLeaderboard < ApplicationRecord
       ":#{language}:"
     when "c"
       [ ":c:", ":c_1:" ].sample
+    when "c#"
+      ":eyeglasses:"
+    when "onshape"
+      ":#{language}:"
     when "rust"
       [ ":ferris:", ":crab:", ":ferrisowo:" ].sample
     when "python"
