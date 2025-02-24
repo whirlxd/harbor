@@ -7,5 +7,8 @@ class Avo::Resources::SailorsLogLeaderboard < Avo::BaseResource
 
   def fields
     field :id, as: :id
+    field :slack_channel_id, as: :text
+    field :slack_uid, as: :text
+    field :message, as: :textarea, placeholder: "Generating..."
   end
 end

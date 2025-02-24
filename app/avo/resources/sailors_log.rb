@@ -8,5 +8,6 @@ class Avo::Resources::SailorsLog < Avo::BaseResource
   def fields
     field :id, as: :id
     field :slack_uid, as: :text
+    field :projects_summary, as: :textarea
   end
 end
