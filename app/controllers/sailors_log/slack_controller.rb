@@ -1,4 +1,4 @@
-class SlackController < ApplicationController
+class SailorsLog::SlackController < ApplicationController
   skip_before_action :verify_authenticity_token
   before_action :verify_slack_request
 
@@ -25,7 +25,7 @@ class SlackController < ApplicationController
     }
 
     case params[:text].downcase.strip
-    when "on" || "off"
+    when "on", "off"
       SlackCommand::SailorsLogOnOffJob.perform_later(
         params[:user_id],
         params[:channel_id],
