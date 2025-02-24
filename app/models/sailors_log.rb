@@ -2,7 +2,7 @@ class SailorsLog < ApplicationRecord
   validates :slack_uid, presence: true, uniqueness: true
   validates :projects_summary, presence: true
 
-  before_create :initialize_projects_summary
+  before_validation :initialize_projects_summary
 
   has_many :notification_preferences,
            class_name: "SailorsLogNotificationPreference",
@@ -18,8 +18,6 @@ class SailorsLog < ApplicationRecord
 
   def initialize_projects_summary
     return unless projects_summary.blank?
-    Heartbeat.where(user_id: slack_uid).distinct.pluck(:project).each do |project|
-      self.projects_summary[project] = Heartbeat.where(user_id: slack_uid, project: project).duration_seconds
-    end
+    self.projects_summary = Heartbeat.where(user_id: slack_uid).group(:project).duration_seconds
   end
 end
