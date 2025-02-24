@@ -1,0 +1,26 @@
+# from https://app.slack.com/app-settings/T0266FRGM/A08351N4KM1/app-manifest
+display_information:
+  name: Sailor's Log
+  description: Log your coding hours
+  background_color: "#426ff5"
+features:
+  bot_user:
+    display_name: Sailor's Log
+    always_online: false
+  slash_commands:
+    - command: /sailorslog
+      url: https://lc0cg48so0gc04so8og4gs4w.a.selfhosted.hackclub.com/sailors_log/slack/commands
+      description: Celebrate your coding hours
+      usage_hint: "[on|off|leaderboard]"
+      should_escape: true
+oauth_config:
+  scopes:
+    bot:
+      - chat:write
+      - chat:write.public
+      - commands
+      - users:read
+settings:
+  org_deploy_enabled: false
+  socket_mode_enabled: false
+  token_rotation_enabled: false
