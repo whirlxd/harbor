@@ -41,7 +41,7 @@ class SailorsLogNotifyJob < ApplicationJob
         # disable any preferences for this channel
         SailorsLogNotificationPreference.where(slack_channel_id: slack_channel_id).update_all(enabled: false)
       end
-      throw "Failed to send Slack notification: #{response_data["error"]}"
+      throw "Failed to send Slack notification: #{response_data["error"]} in #{slack_channel_id}"
     end
   end
 end
