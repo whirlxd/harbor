@@ -21,6 +21,7 @@ class SailorsLogPollForChangesJob < ApplicationJob
       # get all projects for the user with duration
       new_project_times = Heartbeat.where(user_id: log.slack_uid).group(:project).duration_seconds
       new_project_times.each do |project, new_project_duration|
+        next if project.blank?
         if new_project_duration > (log.projects_summary[project] || 0) + 1.hour
           # create a new SailorsLogSlackNotification
           log.notification_preferences.each do |preference|
