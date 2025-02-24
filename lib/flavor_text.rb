@@ -1,4 +1,15 @@
 class FlavorText
+  def self.same_user
+    [
+      "it u!",
+      "hey there",
+      "look familiar?",
+      "i'm seeing double!!",
+      "you again?",
+      "your twin?!"
+    ]
+  end
+
   def self.loading_messages
     [
       "Generating leaderboard...",
