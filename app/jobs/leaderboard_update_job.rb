@@ -21,36 +21,16 @@ class LeaderboardUpdateJob < ApplicationJob
 
     ActiveRecord::Base.transaction do
       valid_user_ids.each_slice(BATCH_SIZE) do |batch_user_ids|
-        # Ensure all IDs are strings and contain no special characters
-        safe_user_ids = ActiveRecord::Base.sanitize_sql_array("'" + batch_user_ids.join("','") + "'")
-        user_durations = Heartbeat.connection.select_all(<<-SQL).to_a
-          WITH time_diffs AS (
-            SELECT#{' '}
-              user_id,
-              CASE
-                WHEN LAG(time) OVER (PARTITION BY user_id ORDER BY time) IS NULL THEN 0
-                ELSE LEAST(
-                  EXTRACT(EPOCH FROM (time - LAG(time) OVER (PARTITION BY user_id ORDER BY time))),
-                  #{Heartbeat::TIMEOUT_DURATION.to_i}
-                )
-              END as diff_seconds
-            FROM heartbeats
-            WHERE DATE(time) = '#{parsed_date}'
-              AND user_id IN (#{safe_user_ids})
-          )
-          SELECT#{' '}
-            user_id,
-            SUM(diff_seconds)::integer as total_seconds
-          FROM time_diffs
-          GROUP BY user_id
-          HAVING SUM(diff_seconds) > 0
-        SQL
+        entries_data = Heartbeat.where(user_id: batch_user_ids)
+                                .where(time: parsed_date.all_day)
+                                .group(:user_id)
+                                .duration_seconds
 
-        entries_data = user_durations.map do |row|
+        entries_data = entries_data.map do |user_id, total_seconds|
           {
             leaderboard_id: leaderboard.id,
-            user_id: row["user_id"],
-            total_seconds: row["total_seconds"]
+            user_id: user_id,
+            total_seconds: total_seconds
           }
         end
 
