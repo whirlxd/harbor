@@ -1,4 +1,4 @@
-<aside>
+<aside class="nav">
   <% flash.each do |name, msg| %>
     <div class="flash-message <%= name %>">
       <%= msg %>
@@ -7,16 +7,19 @@
 
   <% if current_user %>
     <%= render "shared/user_mention", user: current_user %>
+    <%= link_to "Logout", signout_path, data: { turbo_method: :delete } %>
     <% if current_user.active_project %>
       <p>
         Working on: <%= current_user.active_project %>
         (<%= short_time_simple current_user.active_project_duration %> in total)
       </p>
     <% end %>
-    <%= link_to "Logout", signout_path, data: { turbo_method: :delete } %>
   <% else %>
     <%= link_to "Login", slack_auth_path %>
   <% end %>
+
+  <hr />
+
   <ul>
     <li>
       <%= link_to root_path, class: "nav-item #{current_page?(root_path) ? 'active' : ''}" do %>

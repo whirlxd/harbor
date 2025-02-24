@@ -12,9 +12,20 @@
 @import "https://uchu.style/color.css";
 
 /* colors */
+
 :root {
-  --primary-color: var(--uchu-red);
   --muted-color: var(--uchu-gray);
+}
+
+:root.development {
+  --primary-color: var(--uchu-green);
+}
+:root.production {
+  --primary-color: var(--uchu-dark-orange);
+}
+
+.title {
+  color: var(--primary-color);
 }
 
 .admin-tool {

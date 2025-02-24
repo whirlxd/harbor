@@ -2,7 +2,16 @@
   color: var(--primary-color);
 }
 
-aside {
+.nav > ul {
+  list-style: none;
+  padding: 0;
+}
+
+a.nav-item {
+  text-decoration: none;
+}
+
+aside.nav {
   position: fixed;
   left: 0;
   top: 0;
