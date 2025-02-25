@@ -4,8 +4,6 @@ class SailorsLogTeletypeJob < ApplicationJob
   def perform(message)
     HTTP.auth("Bearer #{ENV['TELETYPE_API_KEY']}")
       .post("https://printer.schmitworks.dev/api/raw",
-            body: {
-              text: message
-            })
+            body: message)
   end
 end
