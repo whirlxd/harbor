@@ -40,7 +40,6 @@ class SailorsLogPollForChangesJob < ApplicationJob
       GoodJob::Bulk.enqueue do
         log.notifications.where(sent: false).each do |notification|
           notification.notify_user!
-          SailorsLogTeletypeJob.perform_later(notification.message)
         end
       end
     end

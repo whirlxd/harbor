@@ -35,6 +35,7 @@ class SailorsLogNotifyJob < ApplicationJob
     response_data = JSON.parse(response.body)
     if response_data["ok"]
       slsn.update(sent: true)
+      SailorsLogTeletypeJob.perform_later(message)
     else
       Rails.logger.error("Failed to send Slack notification: #{response_data["error"]}")
       if response_data["error"] == "channel_not_found"
