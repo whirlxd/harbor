@@ -34,7 +34,8 @@ class StaticPagesController < ApplicationController
       .duration_seconds
       .transform_keys(&:to_date)
 
-    @length_of_busiest_day = @daily_durations.values.max
+    # Consider 8 hours as a "full" day of coding
+    @length_of_busiest_day = 8.hours.to_i  # 28800 seconds
 
     render partial: "activity_graph", locals: {
       daily_durations: @daily_durations,
