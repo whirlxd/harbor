@@ -11,7 +11,10 @@ Rails.application.routes.draw do
   constraints AdminConstraint do
     mount Avo::Engine, at: Avo.configuration.root_path
     mount GoodJob::Engine => "good_job"
+
+    get "/impersonate/:id", to: "sessions#impersonate", as: :impersonate_user
   end
+  get "/stop_impersonating", to: "sessions#stop_impersonating", as: :stop_impersonating
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.

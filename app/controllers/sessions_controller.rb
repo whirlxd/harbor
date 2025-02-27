@@ -27,6 +27,24 @@ class SessionsController < ApplicationController
     end
   end
 
+  def impersonate
+    unless current_user.admin?
+      redirect_to root_path, alert: "You are not authorized to impersonate users"
+      return
+    end
+
+    session[:impersonater_user_id] ||= current_user.id
+    user = User.find(params[:id])
+    session[:user_id] = user.id
+    redirect_to root_path, notice: "Impersonating #{user.username}"
+  end
+
+  def stop_impersonating
+    session[:user_id] = session[:impersonater_user_id]
+    session[:impersonater_user_id] = nil
+    redirect_to root_path, notice: "Stopped impersonating"
+  end
+
   def destroy
     session[:user_id] = nil
     redirect_to root_path, notice: "Signed out!"
