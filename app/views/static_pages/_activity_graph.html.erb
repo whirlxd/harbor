@@ -1,0 +1,15 @@
+<%= turbo_frame_tag "activity_graph" do %>
+  <%= cache ["project_durations", current_user.id], expires_in: 5.hours do %>
+    <div class="activity-graph">
+      <% (365.days.ago.to_date..Time.current.to_date).to_a.each do |date| %>
+        <a class="day"
+          href="#"
+          data-date="<%= date %>"
+          data-duration="<%= distance_of_time_in_words(daily_durations[date] || 0) %>"
+          title="you hacked for <%= distance_of_time_in_words(daily_durations[date] || 0) %> on <%= date %>"
+          style="background-color: rgba(24, 242, 12, <%= 1.0 * (daily_durations[date] || 0) / length_of_busiest_day %>);">
+        </a>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>

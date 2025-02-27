@@ -1,29 +1,6 @@
 {
   "ignored_warnings": [
     {
-      "warning_type": "SQL Injection",
-      "warning_code": 0,
-      "fingerprint": "4da7791a2386d12246ee3ef1bea6f5d7c21718137b3ecc787812e59fb88e4711",
-      "check_name": "SQL",
-      "message": "Possible SQL injection",
-      "file": "app/jobs/leaderboard_update_job.rb",
-      "line": 38,
-      "link": "https://brakemanscanner.org/docs/warning_types/sql_injection/",
-      "code": "Heartbeat.connection.select_all(\"          WITH time_diffs AS (\\n            SELECT \\n              user_id,\\n              CASE\\n                WHEN LAG(time) OVER (PARTITION BY user_id ORDER BY time) IS NULL THEN 0\\n                ELSE LEAST(\\n                  EXTRACT(EPOCH FROM (time - LAG(time) OVER (PARTITION BY user_id ORDER BY time))),\\n                  #{Heartbeat::TIMEOUT_DURATION.to_i}\\n                )\\n              END as diff_seconds\\n            FROM heartbeats\\n            WHERE DATE(time) = '#{(date or Date.parse(date.to_s))}'\\n              AND user_id IN (#{ActiveRecord::Base.sanitize_sql_array(((\"'\" + batch_user_ids.join(\"','\")) + \"'\"))})\\n          )\\n          SELECT \\n            user_id,\\n            SUM(diff_seconds)::integer as total_seconds\\n          FROM time_diffs\\n          GROUP BY user_id\\n          HAVING SUM(diff_seconds) > 0\\n\")",
-      "render_path": null,
-      "location": {
-        "type": "method",
-        "class": "LeaderboardUpdateJob",
-        "method": "perform"
-      },
-      "user_input": "date",
-      "confidence": "Medium",
-      "cwe_id": [
-        89
-      ],
-      "note": ""
-    },
-    {
       "warning_type": "Redirect",
       "warning_code": 18,
       "fingerprint": "989f4b9ec4b83864c1b3bdc60a58d1bf2caacc3e5cfb1bd40cd88dbd52097743",

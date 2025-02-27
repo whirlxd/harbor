@@ -24,4 +24,21 @@ class StaticPagesController < ApplicationController
 
     render partial: "project_durations", locals: { project_durations: @project_durations }
   end
+
+  def activity_graph
+    return unless current_user
+
+    @daily_durations = Heartbeat
+      .where(user_id: current_user.slack_uid, time: 365.days.ago..)
+      .group(Arel.sql("DATE_TRUNC('day', time)"))
+      .duration_seconds
+      .transform_keys(&:to_date)
+
+    @length_of_busiest_day = @daily_durations.values.max
+
+    render partial: "activity_graph", locals: {
+      daily_durations: @daily_durations,
+      length_of_busiest_day: @length_of_busiest_day
+    }
+  end
 end

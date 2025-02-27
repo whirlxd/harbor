@@ -17,24 +17,26 @@ class Heartbeat < WakatimeRecord
 
   def self.duration_seconds(scope = all)
     if scope.group_values.any?
-      # when grouped, return hash of group key => duration
       group_column = scope.group_values.first
 
+      # Don't quote if it's a SQL function (contains parentheses)
+      group_expr = group_column.to_s.include?("(") ? group_column : connection.quote_column_name(group_column)
+
       capped_diffs = scope
-        .select("#{group_column}, CASE
-          WHEN LAG(time) OVER (PARTITION BY #{group_column} ORDER BY time) IS NULL THEN 0
-          ELSE LEAST(EXTRACT(EPOCH FROM (time - LAG(time) OVER (PARTITION BY #{group_column} ORDER BY time))), #{TIMEOUT_DURATION.to_i})
+        .select("#{group_expr} as grouped_time, CASE
+          WHEN LAG(time) OVER (PARTITION BY #{group_expr} ORDER BY time) IS NULL THEN 0
+          ELSE LEAST(EXTRACT(EPOCH FROM (time - LAG(time) OVER (PARTITION BY #{group_expr} ORDER BY time))), #{TIMEOUT_DURATION.to_i})
         END as diff")
         .where.not(time: nil)
         .order(time: :asc)
         .unscope(:group)
 
       connection.select_all(
-        "SELECT #{group_column}, COALESCE(SUM(diff), 0)::integer as duration
+        "SELECT grouped_time, COALESCE(SUM(diff), 0)::integer as duration
          FROM (#{capped_diffs.to_sql}) AS diffs
-         GROUP BY #{group_column}"
+         GROUP BY grouped_time"
       ).each_with_object({}) do |row, hash|
-        hash[row[group_column.to_s]] = row["duration"].to_i
+        hash[row["grouped_time"]] = row["duration"].to_i
       end
     else
       # when not grouped, return a single value
@@ -76,5 +78,13 @@ class Heartbeat < WakatimeRecord
     else
       "0 min"
     end
+  end
+
+  def self.daily_durations(start_date: 365.days.ago, end_date: Time.current)
+    select(Arel.sql("DATE_TRUNC('day', time) as day_group"))
+      .where(time: start_date..end_date)
+      .group("day_group")
+      .duration_seconds
+      .map { |date, duration| [ date.to_date, duration ] }
   end
 end

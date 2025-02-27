@@ -26,6 +26,7 @@ Rails.application.routes.draw do
   resources :static_pages, only: [ :index ] do
     collection do
       get :project_durations
+      get :activity_graph
     end
   end
 
