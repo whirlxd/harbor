@@ -50,6 +50,9 @@ class User < ApplicationRecord
     current_project_duration = Heartbeat.duration_seconds(current_project_heartbeats)
     current_project_duration_formatted = Heartbeat.duration_simple(current_project_heartbeats)
 
+    # for 0 duration, don't set a status
+    return if current_project_duration.zero?
+
     status_emoji =
       case current_project_duration
       when 0...30.minutes
