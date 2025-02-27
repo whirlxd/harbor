@@ -10,6 +10,6 @@
 .day {
   width: 1em;
   height: 1em;
-  border-radius: 2px; /* Slight rounding like GitHub's squares */
+  border-radius: 3px; /* Slight rounding like GitHub's squares */
   border: 1px solid var(--muted-color);
 }
