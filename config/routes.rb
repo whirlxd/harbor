@@ -51,4 +51,8 @@ Rails.application.routes.draw do
   namespace :sailors_log do
     post "/slack/commands", to: "slack#create"
   end
+
+  namespace :timedump do
+    post "/slack/commands", to: "slack#create"
+  end
 end
