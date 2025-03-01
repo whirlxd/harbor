@@ -1,4 +1,4 @@
-class SailorsLog::SlackController < ApplicationController
+class SlackController < ApplicationController
   skip_before_action :verify_authenticity_token
   before_action :verify_slack_request
 
@@ -17,22 +17,26 @@ class SailorsLog::SlackController < ApplicationController
           elements: [
             {
               type: "mrkdwn",
-              text: "#{params[:command]} #{params[:text]}"
+              text: "#{params_hash[:command]} #{params_hash[:text]}"
             }
           ]
         }
       ]
     }
 
-    case params[:command].gsub("/", "").downcase
+    case params_hash[:command].gsub("/", "").downcase
     when "sailorslog"
-      SlackCommand::SailorsLogJob.perform_later(params)
+      SlackCommand::SailorsLogJob.perform_later(params_hash)
     when "timedump"
-      SlackCommand::TimedumpJob.perform_later(params)
+      SlackCommand::TimedumpJob.perform_now(params_hash)
     end
   end
 
   private
+
+  def params_hash
+    params.permit(:command, :text, :response_url, :user_id, :team_id, :team_domain, :channel_id, :channel_name, :user_name, :trigger_word).to_h
+  end
 
   def verify_slack_request
     timestamp = request.headers["X-Slack-Request-Timestamp"]
@@ -41,24 +45,21 @@ class SailorsLog::SlackController < ApplicationController
     # Skip verification in development
     return true if Rails.env.development?
 
+    # if coming from /sailorslog, use sailors_log_signing_secret
+    # if coming from /timedump, use slack_signing_secret
+    signing_secret = params_hash[:command].include?("sailorslog") ? ENV["SAILORS_LOG_SLACK_SIGNING_SECRET"] : ENV["SLACK_SIGNING_SECRET"]
+
     sig_basestring = "v0:#{timestamp}:#{request.raw_post}"
 
     # Try both signing secrets
-    sailors_log_signature = "v0=" + OpenSSL::HMAC.hexdigest(
+    signature = "v0=" + OpenSSL::HMAC.hexdigest(
       "SHA256",
-      ENV["SAILORS_LOG_SLACK_SIGNING_SECRET"],
+      signing_secret,
       sig_basestring
     )
 
-    harbor_signature = "v0=" + OpenSSL::HMAC.hexdigest(
-      "SHA256",
-      ENV["SLACK_SIGNING_SECRET"],
-      sig_basestring
-    )
-
-    # Check if the request matches either signature
-    unless ActiveSupport::SecurityUtils.secure_compare(sailors_log_signature, signature) ||
-           ActiveSupport::SecurityUtils.secure_compare(harbor_signature, signature)
+    # Check if the request matches signature
+    unless ActiveSupport::SecurityUtils.secure_compare(signature, signature)
       head :unauthorized
       nil
     end

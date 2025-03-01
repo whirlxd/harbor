@@ -48,11 +48,7 @@ Rails.application.routes.draw do
   get "my/settings", to: "users#edit", as: :my_settings
   patch "my/settings", to: "users#update"
 
-  namespace :sailors_log do
-    post "/slack/commands", to: "slack#create"
-  end
 
-  namespace :timedump do
-    post "/slack/commands", to: "slack#create"
-  end
+  post "/sailors_log/slack/commands", to: "slack#create"
+  post "/timedump/slack/commands", to: "slack#create"
 end
