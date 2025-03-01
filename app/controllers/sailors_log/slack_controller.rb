@@ -24,26 +24,11 @@ class SailorsLog::SlackController < ApplicationController
       ]
     }
 
-    case params[:text].downcase.strip
-    when "on", "off"
-      SlackCommand::SailorsLogOnOffJob.perform_later(
-        params[:user_id],
-        params[:channel_id],
-        params[:user_name],
-        params[:response_url],
-        params[:text].downcase.strip == "on",
-      )
-    when "leaderboard"
-      # Process in background
-      SlackCommand::SailorsLogLeaderboardJob.perform_later(
-        params[:user_id],
-        params[:channel_id],
-        params[:response_url],
-      )
-    else
-      SlackCommand::SailorsLogHelpJob.perform_later(
-        params[:response_url],
-      )
+    case params[:command]
+    when "/sailorslog"
+      SlackCommand::SailorsLogJob.perform_later(params)
+    when "/timedump"
+      SlackCommand::TimedumpJob.perform_later(params)
     end
   end
 
