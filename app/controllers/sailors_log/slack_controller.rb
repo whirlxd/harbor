@@ -41,11 +41,24 @@ class SailorsLog::SlackController < ApplicationController
     # Skip verification in development
     return true if Rails.env.development?
 
-    slack_signing_secret = ENV["SAILORS_LOG_SLACK_SIGNING_SECRET"]
     sig_basestring = "v0:#{timestamp}:#{request.raw_post}"
-    my_signature = "v0=" + OpenSSL::HMAC.hexdigest("SHA256", slack_signing_secret, sig_basestring)
 
-    unless ActiveSupport::SecurityUtils.secure_compare(my_signature, signature)
+    # Try both signing secrets
+    sailors_log_signature = "v0=" + OpenSSL::HMAC.hexdigest(
+      "SHA256",
+      ENV["SAILORS_LOG_SLACK_SIGNING_SECRET"],
+      sig_basestring
+    )
+
+    harbor_signature = "v0=" + OpenSSL::HMAC.hexdigest(
+      "SHA256",
+      ENV["SLACK_SIGNING_SECRET"],
+      sig_basestring
+    )
+
+    # Check if the request matches either signature
+    unless ActiveSupport::SecurityUtils.secure_compare(sailors_log_signature, signature) ||
+           ActiveSupport::SecurityUtils.secure_compare(harbor_signature, signature)
       head :unauthorized
       nil
     end
