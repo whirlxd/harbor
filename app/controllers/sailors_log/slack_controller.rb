@@ -24,10 +24,10 @@ class SailorsLog::SlackController < ApplicationController
       ]
     }
 
-    case params[:command]
-    when "/sailorslog"
+    case params[:command].gsub("/", "").downcase
+    when "sailorslog"
       SlackCommand::SailorsLogJob.perform_later(params)
-    when "/timedump"
+    when "timedump"
       SlackCommand::TimedumpJob.perform_later(params)
     end
   end
