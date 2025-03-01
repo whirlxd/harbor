@@ -32,7 +32,8 @@
     <footer>
       <div class="container">
         <p>
-          Build <%= Rails.application.config.git_version %> from <%= time_ago_in_words(Rails.application.config.server_start_time) %> ago.
+          Build <%= link_to Rails.application.config.git_version, Rails.application.config.commit_link %>
+          from <%= time_ago_in_words(Rails.application.config.server_start_time) %> ago.
           <%= pluralize(Heartbeat.cached_recent_count, 'heartbeat') %> in the last 24 hours.
           (DB: <%= pluralize(QueryCount::Counter.counter, "query") %>, <%= QueryCount::Counter.counter_cache %> cached)
           (CACHE: <%= cache_stats[:hits] %> hits, <%= cache_stats[:misses] %> misses)
