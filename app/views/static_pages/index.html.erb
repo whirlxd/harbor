@@ -1,5 +1,8 @@
 <div class="container">
-  <h1 class="title">Welcome to Harbor</h1>
+  <h1 class="title">Welcome to the Time Dump</h1>
+  <p class="subtitle">
+    The time dump is a place to track your time and see how you're spending your time.
+  </p>
   <% if current_user %>
     You've logged
     <%= short_time_detailed current_user.heartbeats.today.duration_seconds %> today across
