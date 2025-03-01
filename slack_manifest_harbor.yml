@@ -4,7 +4,7 @@ display_information:
 oauth_config:
   redirect_urls:
     - http://localhost:3000/auth/slack/callback
-    - https://lc0cg48so0gc04so8og4gs4w.a.selfhosted.hackclub.com/auth/slack/callback
+    - https://timedump.hackclub.com/auth/slack/callback
   scopes:
     user:
       - users.profile:read
