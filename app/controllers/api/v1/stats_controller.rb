@@ -21,6 +21,6 @@ class Api::V1::StatsController < ApplicationController
     token = request.headers["Authorization"]&.split(" ")&.last
     token ||= params[:api_key]
 
-    return render plain: "Unauthorized", status: :unauthorized unless token == ENV["STATS_API_KEY"]
+    render plain: "Unauthorized", status: :unauthorized unless token == ENV["STATS_API_KEY"]
   end
 end
