@@ -50,7 +50,7 @@ class User < ApplicationRecord
     current_project_duration = Heartbeat.duration_seconds(current_project_heartbeats)
     current_project_duration_formatted = Heartbeat.duration_simple(current_project_heartbeats)
 
-    # for 0 duration, don't set a status
+    # for 0 duration, don't set a status – this will let status expire when the user has not been cooking today
     return if current_project_duration.zero?
 
     status_emoji =
@@ -84,7 +84,7 @@ class User < ApplicationRecord
         profile: {
           status_text:,
           status_emoji:,
-          status_expiration: Date.today.to_time.to_i + (1.hour.to_i * 1000)
+          status_expiration: (Time.now + 30.minutes).to_i
         }
       })
   end
