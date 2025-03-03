@@ -9,7 +9,7 @@ class CreateApiKeys < ActiveRecord::Migration[8.0]
     end
 
     add_index :api_keys, :token, unique: true
-    add_index :api_keys, [:user_id, :token], unique: true
-    add_index :api_keys, [:user_id, :name], unique: true
+    add_index :api_keys, [ :user_id, :token ], unique: true
+    add_index :api_keys, [ :user_id, :name ], unique: true
   end
 end

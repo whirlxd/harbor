@@ -35,7 +35,7 @@ class OneTime::MigrateUserFromHackatimeJob < ApplicationJob
           lines: heartbeat.lines,
           cursorpos: heartbeat.cursor_position,
           project_root_count: heartbeat.project_root_count,
-          is_write: heartbeat.is_write,
+          is_write: heartbeat.is_write
         } }
       )
     end
@@ -50,9 +50,9 @@ class OneTime::MigrateUserFromHackatimeJob < ApplicationJob
       {
         user_id: @user.id,
         name: "Imported from Hackatime",
-        token: hackatime_user.api_key,
+        token: hackatime_user.api_key
       },
-      unique_by: [:user_id, :token]
+      unique_by: [ :user_id, :token ]
     )
   end
 end

@@ -16,7 +16,7 @@ class HackatimeController < ApplicationController
     # the api_key is sent in the Authorization header as a Bearer token
     api_key = request.headers["Authorization"].split(" ")[1]
     @user = Hackatime::User.find_by(api_key: api_key)
-    return render json: { error: "Unauthorized" }, status: :unauthorized unless @user
+    render json: { error: "Unauthorized" }, status: :unauthorized unless @user
   end
 
   def heartbeat_params
