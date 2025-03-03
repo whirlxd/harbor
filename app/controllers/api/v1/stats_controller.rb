@@ -10,7 +10,13 @@ class Api::V1::StatsController < ApplicationController
 
     query = Heartbeat
     query = query.where(time: start_date..end_date)
-    query = query.where(user_id: params[:user_id]) if params[:user_id].present?
+    if params[:user_id].present? || params[:user_email].present?
+      user_id = params[:user_id] || find_by_email(params[:user_email])
+
+      return render plain: "User not found", status: :not_found unless user_id.present?
+
+      query = query.where(user_id: params[:user_id]) if params[:user_id].present?
+    end
 
     render plain: query.duration_seconds
   end
@@ -22,5 +28,23 @@ class Api::V1::StatsController < ApplicationController
     token ||= params[:api_key]
 
     render plain: "Unauthorized", status: :unauthorized unless token == ENV["STATS_API_KEY"]
+  end
+
+  def find_by_email(email)
+    cache_key = "user_id_by_email/#{email}"
+    slack_id = Rails.cache.fetch(cache_key, expires_in: 1.week) do
+      response = HTTP
+        .auth("Bearer #{ENV["SLACK_USER_OAUTH_TOKEN"]}")
+        .get("https://slack.com/api/users.lookupByEmail", params: { email: email })
+
+      JSON.parse(response.body)["user"]["id"]
+    rescue => e
+      Rails.logger.error("Error finding user by email: #{e}")
+      nil
+    end
+
+    Rails.cache.delete(cache_key) if slack_id.nil?
+
+    slack_id
   end
 end
