@@ -1,0 +1,58 @@
+class OneTime::MigrateUserFromHackatimeJob < ApplicationJob
+  queue_as :default
+
+  def perform(user_id)
+    @user = User.find(user_id)
+    # Import from Hackatime
+    import_api_keys
+    import_heartbeats
+  end
+
+  private
+
+  def import_heartbeats
+    # create Heartbeat records for each Hackatime::Heartbeat in batches of 1000 as upsert
+
+    Hackatime::Heartbeat.where(user_id: @user.slack_uid).find_in_batches do |batch|
+      Heartbeat.insert_all(
+        batch.map { |heartbeat| {
+          user_id: @user.id,
+          time: heartbeat.time,
+          project: heartbeat.project,
+          branch: heartbeat.branch,
+          category: heartbeat.category,
+          dependencies: heartbeat.dependencies,
+          editor: heartbeat.editor,
+          entity: heartbeat.entity,
+          language: heartbeat.language,
+          machine: heartbeat.machine,
+          operating_system: heartbeat.operating_system,
+          type: heartbeat.type,
+          user_agent: heartbeat.user_agent,
+          line_additions: heartbeat.line_additions,
+          line_deletions: heartbeat.line_deletions,
+          lineno: heartbeat.line_number,
+          lines: heartbeat.lines,
+          cursorpos: heartbeat.cursor_position,
+          project_root_count: heartbeat.project_root_count,
+          is_write: heartbeat.is_write,
+        } }
+      )
+    end
+  end
+
+  def import_api_keys
+    puts "Importing API keys"
+    hackatime_user = Hackatime::User.find(@user.slack_uid)
+    return if hackatime_user.nil?
+
+    ApiKey.upsert(
+      {
+        user_id: @user.id,
+        name: "Imported from Hackatime",
+        token: hackatime_user.api_key,
+      },
+      unique_by: [:user_id, :token]
+    )
+  end
+end

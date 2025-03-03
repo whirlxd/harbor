@@ -16,6 +16,8 @@ class User < ApplicationRecord
     primary_key: :slack_uid,
     class_name: "Hackatime::ProjectLabel"
 
+  has_many :api_keys
+
   def admin?
     is_admin
   end

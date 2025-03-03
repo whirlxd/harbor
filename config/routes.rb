@@ -51,4 +51,13 @@ Rails.application.routes.draw do
 
   post "/sailors_log/slack/commands", to: "slack#create"
   post "/timedump/slack/commands", to: "slack#create"
+
+  namespace :api do
+    namespace :wakatime do
+      namespace :v1 do
+        post "/heartbeats", to: "hackatime#push_heartbeats"
+        post "/heartbeats/bulk", to: "hackatime#push_heartbeats_bulk"
+      end
+    end
+  end
 end
