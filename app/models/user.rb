@@ -68,7 +68,7 @@ class User < ApplicationRecord
       when 5.hours...8.hours
         %w[cat-typing laptop-fire hole-mantelpiece_clock keyboard-fire bangbang bangbang]
       when 8.hours...15.hours
-        %w[laptop-fire bangbang bangbang rac_freaking rac_freakinghole-mantelpiece_clock]
+        %w[laptop-fire bangbang bangbang rac_freaking rac_freaking hole-mantelpiece_clock]
       when 15.hours...20.hours
         %w[bangbang bangbang rac_freaking hole-mantelpiece_clock]
       else
