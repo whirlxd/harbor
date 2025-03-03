@@ -48,6 +48,12 @@ Rails.application.routes.draw do
   get "my/settings", to: "users#edit", as: :my_settings
   patch "my/settings", to: "users#update"
 
+  namespace :api do
+    namespace :v1 do
+      get "stats", to: "stats#show"
+    end
+  end
+
 
   post "/sailors_log/slack/commands", to: "slack#create"
   post "/timedump/slack/commands", to: "slack#create"
