@@ -18,7 +18,9 @@ class Api::V1::StatsController < ApplicationController
   private
 
   def ensure_authenticated!
-    bearer_token = request.headers["Authorization"].split(" ").last
-    return render json: { error: "Unauthorized" }, status: :unauthorized unless bearer_token == ENV["STATS_API_KEY"]
+    token = request.headers["Authorization"]&.split(" ")&.last
+    token ||= params[:api_key]
+
+    return render plain: "Unauthorized", status: :unauthorized unless token == ENV["STATS_API_KEY"]
   end
 end
