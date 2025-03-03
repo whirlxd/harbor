@@ -9,12 +9,12 @@ class User < ApplicationRecord
   has_many :heartbeats,
     foreign_key: :user_id,
     primary_key: :slack_uid,
-    class_name: "Heartbeat"
+    class_name: "Hackatime::Heartbeat"
 
   has_many :project_labels,
     foreign_key: :user_id,
     primary_key: :slack_uid,
-    class_name: "ProjectLabel"
+    class_name: "Hackatime::ProjectLabel"
 
   def admin?
     is_admin
@@ -47,8 +47,8 @@ class User < ApplicationRecord
 
     current_project = heartbeats.order(time: :desc).first&.project
     current_project_heartbeats = heartbeats.today.where(project: current_project)
-    current_project_duration = Heartbeat.duration_seconds(current_project_heartbeats)
-    current_project_duration_formatted = Heartbeat.duration_simple(current_project_heartbeats)
+    current_project_duration = Hackatime::Heartbeat.duration_seconds(current_project_heartbeats)
+    current_project_duration_formatted = Hackatime::Heartbeat.duration_simple(current_project_heartbeats)
 
     # for 0 duration, don't set a status
     return if current_project_duration.zero?

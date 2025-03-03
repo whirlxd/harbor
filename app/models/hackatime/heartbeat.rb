@@ -1,4 +1,4 @@
-class Heartbeat < WakatimeRecord
+class Hackatime::Heartbeat < HackatimeRecord
   TIMEOUT_DURATION = 2.minutes
 
   def self.cached_recent_count

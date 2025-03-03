@@ -1,11 +1,11 @@
-class ProjectLabel < WakatimeRecord
+class Hackatime::ProjectLabel < HackatimeRecord
   self.table_name = "project_labels"
 
   has_many :heartbeats,
     ->(project) { where(user_id: project.user_id) },
     foreign_key: :project,
     primary_key: :project_key,
-    class_name: "Heartbeat"
+    class_name: "Hackatime::Heartbeat"
 
   belongs_to :user,
     foreign_key: :user_id,
