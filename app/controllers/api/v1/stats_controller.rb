@@ -8,14 +8,13 @@ class Api::V1::StatsController < ApplicationController
     end_date = Date.parse(params[:end_date]) if params[:end_date].present?
     end_date ||= Date.today
 
-    query = Heartbeat
-    query = query.where(time: start_date..end_date)
+    query = Heartbeat.where(time: start_date..end_date)
     if params[:user_id].present? || params[:user_email].present?
       user_id = params[:user_id] || find_by_email(params[:user_email])
 
       return render plain: "User not found", status: :not_found unless user_id.present?
 
-      query = query.where(user_id: params[:user_id]) if params[:user_id].present?
+      query = query.where(user_id: user_id)
     end
 
     render plain: query.duration_seconds
