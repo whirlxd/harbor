@@ -1,6 +1,5 @@
 class Api::Hackatime::V1::HackatimeController < ApplicationController
   before_action :set_user, except: [ :index ]
-  # before_action :set_json_format
   skip_before_action :verify_authenticity_token
 
   def index
@@ -68,10 +67,6 @@ class Api::Hackatime::V1::HackatimeController < ApplicationController
   end
 
   private
-
-  # def set_json_format
-  #   request.format = :json
-  # end
 
   def set_user
     api_header = request.headers["Authorization"]
