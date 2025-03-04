@@ -8,8 +8,8 @@ class CreateApiKeys < ActiveRecord::Migration[8.0]
       t.timestamps
     end
 
-    add_index :api_keys, :token, unique: true
-    add_index :api_keys, [ :user_id, :token ], unique: true
-    add_index :api_keys, [ :user_id, :name ], unique: true
+    add_index :api_keys, :token, unique: true, if_not_exists: true
+    add_index :api_keys, [ :user_id, :token ], unique: true, if_not_exists: true
+    add_index :api_keys, [ :user_id, :name ], unique: true, if_not_exists: true
   end
 end
