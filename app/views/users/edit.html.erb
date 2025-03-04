@@ -46,6 +46,7 @@
 <div>
   <h2>Config file</h2>
   <%= render "wakatime_config_display" %>
+
   <p style="font-size: 0.8rem; color: var(--muted-color);">
     This file is located in <code>~/.wakatime.cfg</code> on your computer.
     You can configure it with <a href="https://github.com/wakatime/wakatime-cli/blob/develop/USAGE.md#ini-config-file">other settings</a> as well.
@@ -63,4 +64,32 @@
       </div>
       <%= f.submit "Save Settings" %>
   <% end %> 
+</div>
+
+<div>
+  <h2>Migration assistant</h2>
+  <p>This will migrate your heartbeats from waka.hackclub.com to this platform.</p>
+  <%= button_to "Migrate heartbeats", my_settings_migrate_heartbeats_path, method: :post %>
+  <% if @heartbeats_migration_jobs.any? %>
+    <ul>
+      <% @heartbeats_migration_jobs.each do |job| %>
+        <li>
+          <% if job.finished_at && !job.error %>
+            ✅
+          <% elsif job.finished_at && job.error %>
+            ❌
+          <% else %>
+            ⏳
+          <% end %>
+          Job started at <%= job.created_at.strftime("%Y-%m-%d %H:%M:%S") %>
+          <% if job.finished_at %>
+            (and finished after <%= distance_of_time_in_words(job.finished_at - job.created_at) %>)
+          <% end %>
+          <% admin_tool('', 'span') do %>
+            <%= link_to "View job", GoodJob::Engine.routes.url_helpers.job_path(job.id) %>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
 </div>

@@ -7,6 +7,12 @@ class UsersController < ApplicationController
     @can_enable_slack_status = @user.slack_access_token.present? && @user.slack_scopes.include?("users.profile:write")
 
     @enabled_sailors_logs = SailorsLogNotificationPreference.where(slack_uid: @user.slack_uid, enabled: true)
+
+    @heartbeats_migration_jobs = GoodJob::Job.where(
+      "serialized_params->>'arguments' LIKE ?", "%#{@user.id}%"
+    ).where(
+      "job_class = ?", "OneTime::MigrateUserFromHackatimeJob"
+    ).order(created_at: :desc).limit(10).all
   end
 
   def update
@@ -20,6 +26,13 @@ class UsersController < ApplicationController
       flash[:error] = "Failed to update settings"
       render :settings, status: :unprocessable_entity
     end
+  end
+
+  def migrate_heartbeats
+    OneTime::MigrateUserFromHackatimeJob.perform_later(@user.id)
+
+    redirect_to is_own_settings? ? my_settings_path : user_settings_path(@user),
+      notice: "Heartbeats migrated successfully"
   end
 
   private

@@ -47,6 +47,7 @@ Rails.application.routes.draw do
   # Namespace for current user actions
   get "my/settings", to: "users#edit", as: :my_settings
   patch "my/settings", to: "users#update"
+  post "my/settings/migrate_heartbeats", to: "users#migrate_heartbeats", as: :my_settings_migrate_heartbeats
 
   post "/sailors_log/slack/commands", to: "slack#create"
   post "/timedump/slack/commands", to: "slack#create"

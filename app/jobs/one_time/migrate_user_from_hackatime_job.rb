@@ -1,6 +1,12 @@
 class OneTime::MigrateUserFromHackatimeJob < ApplicationJob
   queue_as :default
 
+  # only allow one instance of this job to run at a time
+  good_job_control_concurrency_with(
+    key: -> { "migrate_user_from_hackatime_job_#{user_id}" },
+    total_limit: 1,
+  )
+
   def perform(user_id)
     @user = User.find(user_id)
     # Import from Hackatime
