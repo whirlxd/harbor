@@ -51,3 +51,16 @@
     You can configure it with <a href="https://github.com/wakatime/wakatime-cli/blob/develop/USAGE.md#ini-config-file">other settings</a> as well.
   </p>
 </div>
+
+<div>
+  <h2>Hackatime extension</h2>
+  <%= form_with model: @user,
+    url: @is_own_settings ? my_settings_path : settings_user_path(@user),
+    method: :patch do |f| %>
+      <div>
+        <%= f.label "Simple text" %>
+        <%= f.select :hackatime_extension_text_type, User.hackatime_extension_text_types.keys.map { |type| [type.humanize, type] }, selected: @user.hackatime_extension_text_type %>
+      </div>
+      <%= f.submit "Save Settings" %>
+  <% end %> 
+</div>
