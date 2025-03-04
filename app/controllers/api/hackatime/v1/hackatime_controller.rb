@@ -41,6 +41,7 @@ class Api::Hackatime::V1::HackatimeController < ApplicationController
   def status_bar_today
     hbt = @user.heartbeats.today
 
+    # TODO: This is a temporary response to the status bar.
     render json: {
       "data": {
         "grand_total": {
