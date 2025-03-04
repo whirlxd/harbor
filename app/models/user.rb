@@ -143,7 +143,8 @@ class User < ApplicationRecord
 
     user = find_or_initialize_by(slack_uid: data.dig("authed_user", "id"))
     user.email = user_data.dig("user", "profile", "email")
-    user.username = user_data.dig("user", "name")
+    user.username = user_data.dig("user", "profile", "username")
+    user.username ||= user_data.dig("user", "profile", "display_name_normalized")
     user.avatar_url = user_data.dig("user", "profile", "image_192") || user_data.dig("user", "profile", "image_72")
     # Store the OAuth data
     user.slack_access_token = data["authed_user"]["access_token"]
