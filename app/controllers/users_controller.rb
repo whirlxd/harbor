@@ -5,6 +5,8 @@ class UsersController < ApplicationController
 
   def edit
     @can_enable_slack_status = @user.slack_access_token.present? && @user.slack_scopes.include?("users.profile:write")
+
+    @enabled_sailors_logs = SailorsLogNotificationPreference.where(slack_uid: @user.slack_uid, enabled: true)
   end
 
   def update
