@@ -11,7 +11,7 @@ class Avo::Resources::Heartbeat < Avo::BaseResource
     field :entity, as: :textarea
     field :type, as: :textarea
     field :category, as: :text
-    field :time, as: :date_time
+    field :time, as: :number
     field :project, as: :text
     field :project_root_count, as: :number
     field :branch, as: :text
