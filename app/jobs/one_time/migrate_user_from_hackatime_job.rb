@@ -1,9 +1,11 @@
 class OneTime::MigrateUserFromHackatimeJob < ApplicationJob
   queue_as :default
 
+  include GoodJob::ActiveJobExtensions::Concurrency
+
   # only allow one instance of this job to run at a time
   good_job_control_concurrency_with(
-    key: -> { "migrate_user_from_hackatime_job_#{user_id}" },
+    key: -> { "migrate_user_from_hackatime_job_#{arguments.first}" },
     total_limit: 1,
   )
 
