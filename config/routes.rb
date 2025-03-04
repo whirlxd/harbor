@@ -53,6 +53,9 @@ Rails.application.routes.draw do
 
   # API routes
   namespace :api do
+    namespace :v1 do
+      get "stats", to: "stats#show"
+    end
     namespace :hackatime do
       namespace :v1 do
         get "/", to: "hackatime#index"

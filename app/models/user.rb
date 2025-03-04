@@ -70,7 +70,7 @@ class User < ApplicationRecord
     current_project_duration = Hackatime::Heartbeat.duration_seconds(current_project_heartbeats)
     current_project_duration_formatted = Hackatime::Heartbeat.duration_simple(current_project_heartbeats)
 
-    # for 0 duration, don't set a status
+    # for 0 duration, don't set a status – this will let status expire when the user has not been cooking today
     return if current_project_duration.zero?
 
     status_emoji =
@@ -88,7 +88,7 @@ class User < ApplicationRecord
       when 5.hours...8.hours
         %w[cat-typing laptop-fire hole-mantelpiece_clock keyboard-fire bangbang bangbang]
       when 8.hours...15.hours
-        %w[laptop-fire bangbang bangbang rac_freaking rac_freakinghole-mantelpiece_clock]
+        %w[laptop-fire bangbang bangbang rac_freaking rac_freaking hole-mantelpiece_clock]
       when 15.hours...20.hours
         %w[bangbang bangbang rac_freaking hole-mantelpiece_clock]
       else
@@ -104,7 +104,7 @@ class User < ApplicationRecord
         profile: {
           status_text:,
           status_emoji:,
-          status_expiration: Date.today.to_time.to_i + (1.hour.to_i * 1000)
+          status_expiration: (Time.now + 30.minutes).to_i
         }
       })
   end
