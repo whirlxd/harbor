@@ -41,30 +41,16 @@ class Api::Hackatime::V1::HackatimeController < ApplicationController
   def status_bar_today
     hbt = @user.heartbeats.today
 
-    # TODO: This is a temporary response to the status bar.
-    render json: {
-      "data": {
-        "grand_total": {
-          "decimal": "yolo",
-          "digital": "wahoo",
-          "hours": hbt.duration_seconds / 3600,
-          "minutes": (hbt.duration_seconds % 3600) / 60,
-          "text": @user.format_extension_text(hbt.duration_seconds),
-          "total_seconds": hbt.duration_seconds
-        },
-        "categories": hbt.distinct.pluck(:category),
-        "dependencies": hbt.distinct.pluck(:dependencies),
-        "editors": hbt.distinct.pluck(:editor),
-        "languages": hbt.distinct.pluck(:language),
-        "machines": hbt.distinct.pluck(:machine),
-        "operating_systems": hbt.distinct.pluck(:operating_system),
-        "projects": hbt.distinct.pluck(:project),
-        "range": {
-          "text": "Today",
-          "timezone": "UTC"
+    result = {
+      data: {
+        grand_total: {
+          text: @user.format_extension_text(hbt.duration_seconds),
+          total_seconds: hbt.duration_seconds
         }
       }
     }
+
+    render json: result
   end
 
   private
