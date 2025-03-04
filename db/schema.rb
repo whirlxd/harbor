@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_03_180842) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_04_032720) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -134,7 +134,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_03_180842) do
     t.integer "lines"
     t.integer "cursorpos"
     t.integer "project_root_count"
-    t.datetime "time"
+    t.float "time", null: false
     t.boolean "is_write"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -250,6 +250,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_03_180842) do
     t.boolean "uses_slack_status", default: false, null: false
     t.string "slack_scopes", default: [], array: true
     t.text "slack_access_token"
+    t.integer "hackatime_extension_text_type", default: 0, null: false
     t.index ["slack_uid"], name: "index_users_on_slack_uid", unique: true
   end
 

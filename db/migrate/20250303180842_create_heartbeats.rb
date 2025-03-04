@@ -22,7 +22,7 @@ class CreateHeartbeats < ActiveRecord::Migration[8.0]
       t.integer :cursorpos
       t.integer :project_root_count
 
-      t.datetime :time
+      t.float :time, null: false
 
       t.boolean :is_write
 

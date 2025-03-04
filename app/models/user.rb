@@ -18,6 +18,24 @@ class User < ApplicationRecord
 
   has_many :api_keys
 
+  enum :hackatime_extension_text_type, {
+    simple_text: 0,
+    clock_emoji: 1,
+    compliment_text: 2
+  }
+
+  def format_extension_text(duration)
+    case hackatime_extension_text_type
+    when :simple_text
+      return "Start coding to track your time" if duration.zero?
+      ::ApplicationController.helpers.short_time_simple(duration)
+    when :clock_emoji
+      ::ApplicationController.helpers.time_in_emoji(duration)
+    when :compliment_text
+      "You're doing great!"
+    end
+  end
+
   def admin?
     is_admin
   end
