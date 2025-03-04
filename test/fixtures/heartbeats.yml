@@ -1,0 +1,37 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  entity: MyText
+  type: MyText
+  category: MyString
+  time: 2025-03-03 18:08:42
+  project: MyString
+  project_root_count: 1
+  branch: MyString
+  language: MyString
+  dependencies: MyString
+  lines: 1
+  line_additions: 1
+  line_deletions: 1
+  lineno: 1
+  cursorpos: 1
+  is_write: false
+
+two:
+  user: two
+  entity: MyText
+  type: MyText
+  category: MyString
+  time: 2025-03-03 18:08:42
+  project: MyString
+  project_root_count: 1
+  branch: MyString
+  language: MyString
+  dependencies: MyString
+  lines: 1
+  line_additions: 1
+  line_deletions: 1
+  lineno: 1
+  cursorpos: 1
+  is_write: false

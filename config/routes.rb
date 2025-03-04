@@ -48,13 +48,21 @@ Rails.application.routes.draw do
   get "my/settings", to: "users#edit", as: :my_settings
   patch "my/settings", to: "users#update"
 
+  post "/sailors_log/slack/commands", to: "slack#create"
+  post "/timedump/slack/commands", to: "slack#create"
+
+  # API routes
   namespace :api do
     namespace :v1 do
       get "stats", to: "stats#show"
     end
+    namespace :hackatime do
+      namespace :v1 do
+        get "/", to: "hackatime#index"
+        get "/users/:id/statusbar/today", to: "hackatime#status_bar_today"
+        post "/users/:id/heartbeats", to: "hackatime#push_heartbeats"
+        post "/users/:id/heartbeats.bulk", to: "hackatime#push_heartbeats_bulk"
+      end
+    end
   end
-
-
-  post "/sailors_log/slack/commands", to: "slack#create"
-  post "/timedump/slack/commands", to: "slack#create"
 end

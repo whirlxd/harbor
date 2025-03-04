@@ -9,12 +9,32 @@ class User < ApplicationRecord
   has_many :heartbeats,
     foreign_key: :user_id,
     primary_key: :slack_uid,
-    class_name: "Heartbeat"
+    class_name: "Hackatime::Heartbeat"
 
   has_many :project_labels,
     foreign_key: :user_id,
     primary_key: :slack_uid,
-    class_name: "ProjectLabel"
+    class_name: "Hackatime::ProjectLabel"
+
+  has_many :api_keys
+
+  enum :hackatime_extension_text_type, {
+    simple_text: 0,
+    clock_emoji: 1,
+    compliment_text: 2
+  }
+
+  def format_extension_text(duration)
+    case hackatime_extension_text_type
+    when "simple_text"
+      return "Start coding to track your time" if duration.zero?
+      ::ApplicationController.helpers.short_time_simple(duration)
+    when "clock_emoji"
+      ::ApplicationController.helpers.time_in_emoji(duration)
+    when "compliment_text"
+      "You're doing great!"
+    end
+  end
 
   def admin?
     is_admin
@@ -47,8 +67,8 @@ class User < ApplicationRecord
 
     current_project = heartbeats.order(time: :desc).first&.project
     current_project_heartbeats = heartbeats.today.where(project: current_project)
-    current_project_duration = Heartbeat.duration_seconds(current_project_heartbeats)
-    current_project_duration_formatted = Heartbeat.duration_simple(current_project_heartbeats)
+    current_project_duration = Hackatime::Heartbeat.duration_seconds(current_project_heartbeats)
+    current_project_duration_formatted = Hackatime::Heartbeat.duration_simple(current_project_heartbeats)
 
     # for 0 duration, don't set a status – this will let status expire when the user has not been cooking today
     return if current_project_duration.zero?

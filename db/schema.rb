@@ -10,9 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_23_085114) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_04_032720) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "api_keys", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.text "name", null: false
+    t.text "token", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["token"], name: "index_api_keys_on_token", unique: true
+    t.index ["user_id", "name"], name: "index_api_keys_on_user_id_and_name", unique: true
+    t.index ["user_id", "token"], name: "index_api_keys_on_user_id_and_token", unique: true
+    t.index ["user_id"], name: "index_api_keys_on_user_id"
+  end
 
   create_table "good_job_batches", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -103,6 +115,33 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_23_085114) do
     t.index ["scheduled_at"], name: "index_good_jobs_on_scheduled_at", where: "(finished_at IS NULL)"
   end
 
+  create_table "heartbeats", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "branch"
+    t.string "category"
+    t.string "dependencies", default: [], array: true
+    t.string "editor"
+    t.string "entity"
+    t.string "language"
+    t.string "machine"
+    t.string "operating_system"
+    t.string "project"
+    t.string "type"
+    t.string "user_agent"
+    t.integer "line_additions"
+    t.integer "line_deletions"
+    t.integer "lineno"
+    t.integer "lines"
+    t.integer "cursorpos"
+    t.integer "project_root_count"
+    t.float "time", null: false
+    t.boolean "is_write"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "branch", "category", "dependencies", "editor", "entity", "language", "machine", "operating_system", "project", "type", "user_agent", "line_additions", "line_deletions", "lineno", "lines", "cursorpos", "project_root_count", "time", "is_write"], name: "idx_on_user_id_branch_category_dependencies_editor__bfe8fefe9a", unique: true
+    t.index ["user_id"], name: "index_heartbeats_on_user_id"
+  end
+
   create_table "leaderboard_entries", force: :cascade do |t|
     t.bigint "leaderboard_id", null: false
     t.string "user_id", null: false
@@ -120,6 +159,19 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_23_085114) do
     t.datetime "updated_at", null: false
     t.datetime "finished_generating_at"
     t.datetime "deleted_at"
+  end
+
+  create_table "project_checks", force: :cascade do |t|
+    t.integer "check_type"
+    t.integer "status"
+    t.datetime "started_at"
+    t.datetime "ended_at"
+    t.text "output_message"
+    t.jsonb "metadata"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["check_type", "created_at"], name: "index_project_checks_on_check_type_and_created_at"
+    t.index ["status"], name: "index_project_checks_on_status"
   end
 
   create_table "sailors_log_leaderboards", force: :cascade do |t|
@@ -157,6 +209,36 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_23_085114) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "ship_chains", force: :cascade do |t|
+    t.text "code_url"
+    t.text "demo_url"
+    t.text "readme_url"
+    t.text "description"
+    t.integer "ysws_type"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["code_url"], name: "index_ship_chains_on_code_url"
+    t.index ["demo_url"], name: "index_ship_chains_on_demo_url"
+    t.index ["user_id"], name: "index_ship_chains_on_user_id"
+  end
+
+  create_table "ship_update_descriptions", force: :cascade do |t|
+    t.string "what_changed"
+    t.bigint "ship_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ship_id"], name: "index_ship_update_descriptions_on_ship_id"
+  end
+
+  create_table "ships", force: :cascade do |t|
+    t.bigint "ship_chain_id", null: false
+    t.integer "duration"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ship_chain_id"], name: "index_ships_on_ship_chain_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "slack_uid", null: false
     t.string "email", null: false
@@ -168,6 +250,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_23_085114) do
     t.boolean "uses_slack_status", default: false, null: false
     t.string "slack_scopes", default: [], array: true
     t.text "slack_access_token"
+    t.integer "hackatime_extension_text_type", default: 0, null: false
     t.index ["slack_uid"], name: "index_users_on_slack_uid", unique: true
   end
 
@@ -182,5 +265,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_23_085114) do
     t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id"
   end
 
+  add_foreign_key "api_keys", "users"
+  add_foreign_key "heartbeats", "users"
   add_foreign_key "leaderboard_entries", "leaderboards"
+  add_foreign_key "ship_chains", "users"
+  add_foreign_key "ship_update_descriptions", "ships"
+  add_foreign_key "ships", "ship_chains"
 end

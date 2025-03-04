@@ -1,0 +1,11 @@
+<code>
+  <pre>
+# put this in your ~/.wakatime.cfg file
+
+[settings]
+api_url = https://<%= request.host_with_port %>/api/hackatime/v1
+api_key = <%= @user.api_keys.last.token %>
+
+# any other wakatime configs you want to add: https://github.com/wakatime/wakatime-cli/blob/develop/USAGE.md#ini-config-file
+  </pre>
+</code>

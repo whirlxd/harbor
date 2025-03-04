@@ -37,17 +37,17 @@ class SailorsLogLeaderboard < ApplicationRecord
                                                    .pluck(:slack_uid)
 
     # Get all durations for users in channel
-    user_durations = Heartbeat.where(user_id: users_in_channel)
-                             .today
-                             .group(:user_id)
-                             .duration_seconds
+    user_durations = Hackatime::Heartbeat.where(user_id: users_in_channel)
+                                         .today
+                                         .group(:user_id)
+                                         .duration_seconds
 
     # Sort and take top 10 users
     top_user_ids = user_durations.sort_by { |_, duration| -duration }.first(10).map(&:first)
 
     # Now get detailed project info only for top 10 users
     top_user_ids.map do |user_id|
-      user_heartbeats = Heartbeat.where(user_id: user_id).today
+      user_heartbeats = Hackatime::Heartbeat.where(user_id: user_id).today
 
       # Get most common language per project using ActiveRecord
       most_common_languages = user_heartbeats

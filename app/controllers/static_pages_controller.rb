@@ -28,7 +28,7 @@ class StaticPagesController < ApplicationController
   def activity_graph
     return unless current_user
 
-    @daily_durations = Heartbeat
+    @daily_durations = Hackatime::Heartbeat
       .where(user_id: current_user.slack_uid, time: 365.days.ago..)
       .group(Arel.sql("DATE_TRUNC('day', time)"))
       .duration_seconds

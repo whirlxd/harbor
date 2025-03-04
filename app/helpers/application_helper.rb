@@ -21,6 +21,9 @@ module ApplicationHelper
   end
 
   def short_time_detailed(time)
+    # ie. 5h 10m 10s
+    # ie. 10m 10s
+    # ie. 10m
     hours = time.to_i / 3600
     minutes = (time.to_i % 3600) / 60
     seconds = time.to_i % 60
@@ -30,5 +33,25 @@ module ApplicationHelper
     time_parts << "#{minutes}m" if minutes.positive?
     time_parts << "#{seconds}s" if seconds.positive?
     time_parts.join(" ")
+  end
+
+  def time_in_emoji(duration)
+    # ie. 15.hours => "🕒"
+    half_hours = duration.to_i / 1800
+    clocks = [
+        "🕛", "🕧",
+        "🕐", "🕜",
+        "🕑", "🕝",
+        "🕒", "🕞",
+        "🕓", "🕟",
+        "🕔", "🕠",
+        "🕕", "🕡",
+        "🕖", "🕢",
+        "🕗", "🕣",
+        "🕘", "🕤",
+        "🕙", "🕥",
+        "🕚", "🕦"
+    ]
+    clocks[half_hours % clocks.length]
   end
 end

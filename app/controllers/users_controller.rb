@@ -5,6 +5,8 @@ class UsersController < ApplicationController
 
   def edit
     @can_enable_slack_status = @user.slack_access_token.present? && @user.slack_scopes.include?("users.profile:write")
+
+    @enabled_sailors_logs = SailorsLogNotificationPreference.where(slack_uid: @user.slack_uid, enabled: true)
   end
 
   def update
@@ -15,6 +17,7 @@ class UsersController < ApplicationController
       redirect_to is_own_settings? ? my_settings_path : user_settings_path(@user),
         notice: "Settings updated successfully"
     else
+      flash[:error] = "Failed to update settings"
       render :settings, status: :unprocessable_entity
     end
   end
@@ -48,6 +51,6 @@ class UsersController < ApplicationController
   end
 
   def user_params
-    params.require(:user).permit(:uses_slack_status)
+    params.require(:user).permit(:uses_slack_status, :hackatime_extension_text_type)
   end
 end
