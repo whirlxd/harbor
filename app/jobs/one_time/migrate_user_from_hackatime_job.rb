@@ -22,7 +22,7 @@ class OneTime::MigrateUserFromHackatimeJob < ApplicationJob
     # create Heartbeat records for each Hackatime::Heartbeat in batches of 1000 as upsert
 
     Hackatime::Heartbeat.where(user_id: @user.slack_uid).find_in_batches do |batch|
-      Heartbeat.insert_all(
+      Heartbeat.create(
         batch.map { |heartbeat| {
           user_id: @user.id,
           time: heartbeat.time,
