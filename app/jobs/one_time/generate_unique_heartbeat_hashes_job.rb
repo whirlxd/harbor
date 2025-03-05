@@ -7,32 +7,43 @@ class OneTime::GenerateUniqueHeartbeatHashesJob < ApplicationJob
     total_limit: 1,
   )
 
-  def perform
-    ActiveRecord::Base.transaction do
-      Heartbeat.in_batches(of: 5000) do |batch|
-        updated_heartbeats = []
-        batch.each do |heartbeat|
-          next if heartbeat.user_id.blank?
-
-          updated_heartbeats << {
-            id: heartbeat.id,
-            fields_hash: Heartbeat.generate_fields_hash(heartbeat.attributes),
-            **heartbeat.attributes.except("id", "created_at", "updated_at")
-          }
+  def perform(scope = Heartbeat.where(fields_hash: nil))
+    scope_count = scope.count
+    puts "Starting to generate unique heartbeat hashes for #{scope_count} heartbeats"
+    index = 0
+    scope.in_batches(of: 1000) do |batch|
+      # Process records in smaller chunks to avoid statement size limits
+      batch.each_slice(250) do |chunk|
+        updates = chunk.map do |heartbeat|
+          index += 1
+          puts "Processing heartbeat #{heartbeat.id} (#{index} of #{batch.size})"
+          field_hash = Heartbeat.generate_fields_hash(heartbeat.attributes)
+          puts "Field hash: #{field_hash}"
+          [ heartbeat.id, field_hash ]
         end
 
-        puts updated_heartbeats
-        Heartbeat.upsert_all(updated_heartbeats, unique_by: [ :id ])
+        # Update creates n queries even when passed an array of records to update, so
+        # we're using a SQL CASE statement to update the records in a single query.
+        # Prior work: https://gist.github.com/zoltan-nz/6390986
+        case_statement = updates.map { |id, hash| "WHEN id = #{id} THEN '#{hash}'" }.join(" ")
+        Heartbeat.where(id: updates.map(&:first))
+                 .update_all("fields_hash = CASE #{case_statement} END")
       end
     end
 
     # Delete all heartbeats without a user_id
     Heartbeat.where(user_id: nil).delete_all
 
-    # Delete duplicates in a single query, keeping the oldest record for each fields_hash
+    distinct_ids = Heartbeat.select("DISTINCT ON (fields_hash) id")
+                           .order("fields_hash, created_at")
+                           .pluck("id")
+    total_heartbeats = Heartbeat.count
+    total_distinct_heartbeats = distinct_ids.count
+
+    puts "Found #{total_distinct_heartbeats} distinct heartbeat(s) out of #{total_heartbeats} total"
+
     deleted_count = Heartbeat.where.not(
-      id: Heartbeat.select("DISTINCT ON (fields_hash) id")
-                   .order("fields_hash, created_at")
+      id: distinct_ids
     ).delete_all
 
     puts "Deleted #{deleted_count} duplicate heartbeat(s)"
