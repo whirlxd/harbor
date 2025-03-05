@@ -3,10 +3,9 @@ class OneTime::GenerateUniqueHeartbeatHashesJob < ApplicationJob
 
   def perform
     ActiveRecord::Base.transaction do
-      Heartbeat.where(fields_hash: nil).in_batches(of: 10) do |batch|
+      Heartbeat.in_batches(of: 5000) do |batch|
         updated_heartbeats = []
         batch.each do |heartbeat|
-          next if heartbeat.fields_hash.present?
           next if heartbeat.user_id.blank?
 
           updated_heartbeats << {
