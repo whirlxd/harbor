@@ -1,6 +1,12 @@
 class OneTime::GenerateUniqueHeartbeatHashesJob < ApplicationJob
   queue_as :default
 
+  # only allow one instance of this job to run at a time
+  good_job_control_concurrency_with(
+    key: -> { "generate_unique_heartbeat_hashes_job" },
+    total_limit: 1,
+  )
+
   def perform
     ActiveRecord::Base.transaction do
       Heartbeat.in_batches(of: 5000) do |batch|
