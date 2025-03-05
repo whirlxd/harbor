@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_04_032720) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_05_061242) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -138,7 +138,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_04_032720) do
     t.boolean "is_write"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id", "branch", "category", "dependencies", "editor", "entity", "language", "machine", "operating_system", "project", "type", "user_agent", "line_additions", "line_deletions", "lineno", "lines", "cursorpos", "project_root_count", "time", "is_write"], name: "idx_on_user_id_branch_category_dependencies_editor__bfe8fefe9a", unique: true
+    t.text "fields_hash", null: false
+    t.index ["fields_hash"], name: "index_heartbeats_on_fields_hash", unique: true
     t.index ["user_id"], name: "index_heartbeats_on_user_id"
   end
 
