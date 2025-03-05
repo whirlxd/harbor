@@ -3,18 +3,26 @@ class OneTime::GenerateUniqueHeartbeatHashesJob < ApplicationJob
 
   def perform
     ActiveRecord::Base.transaction do
-      Heartbeat.where(fields_hash: nil).in_batches(of: 5000) do |batch|
+      Heartbeat.where(fields_hash: nil).in_batches(of: 10) do |batch|
         updated_heartbeats = []
         batch.each do |heartbeat|
+          next if heartbeat.fields_hash.present?
+          next if heartbeat.user_id.blank?
+
           updated_heartbeats << {
             id: heartbeat.id,
-            fields_hash: Heartbeat.generate_fields_hash(heartbeat.attributes)
+            fields_hash: Heartbeat.generate_fields_hash(heartbeat.attributes),
+            **heartbeat.attributes.except("id", "created_at", "updated_at")
           }
         end
 
+        puts updated_heartbeats
         Heartbeat.upsert_all(updated_heartbeats, unique_by: [ :id ])
       end
     end
+
+    # Delete all heartbeats without a user_id
+    Heartbeat.where(user_id: nil).delete_all
 
     # Delete duplicates in a single query, keeping the oldest record for each fields_hash
     deleted_count = Heartbeat.where.not(
