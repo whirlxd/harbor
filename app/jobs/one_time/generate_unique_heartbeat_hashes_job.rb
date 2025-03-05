@@ -9,11 +9,12 @@ class OneTime::GenerateUniqueHeartbeatHashesJob < ApplicationJob
       end
     end
 
-    # delete duplicates
-    Heartbeat.group(:fields_hash).having("count(*) > 1").count.each do |fields_hash, count|
-      puts "Duplicate fields_hash: #{fields_hash} (count: #{count})"
-      Heartbeat.where(fields_hash: fields_hash).order(:created_at).offset(1).delete_all
-      puts "Deleted #{count - 1} heartbeat(s)"
-    end
+    # Delete duplicates in a single query, keeping the oldest record for each fields_hash
+    deleted_count = Heartbeat.where.not(
+      id: Heartbeat.select("DISTINCT ON (fields_hash) id")
+                   .order("fields_hash, created_at")
+    ).delete_all
+
+    puts "Deleted #{deleted_count} duplicate heartbeat(s)"
   end
 end
