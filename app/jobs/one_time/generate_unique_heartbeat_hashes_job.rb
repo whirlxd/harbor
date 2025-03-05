@@ -1,6 +1,8 @@
 class OneTime::GenerateUniqueHeartbeatHashesJob < ApplicationJob
   queue_as :default
 
+  include GoodJob::ActiveJobExtensions::Concurrency
+
   # only allow one instance of this job to run at a time
   good_job_control_concurrency_with(
     key: -> { "generate_unique_heartbeat_hashes_job" },
