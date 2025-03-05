@@ -1,6 +1,11 @@
 class Heartbeat < ApplicationRecord
   before_save :set_fields_hash!
 
+  enum :source_type, {
+    direct_entry: 0,
+    wakapi_import: 1
+  }
+
   # This is to prevent Rails from trying to use STI even though we have a "type" column
   self.inheritance_column = nil
 
