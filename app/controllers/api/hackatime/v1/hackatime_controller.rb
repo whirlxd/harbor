@@ -9,7 +9,7 @@ class Api::Hackatime::V1::HackatimeController < ApplicationController
   def push_heartbeats
     puts "Raw params: #{params.inspect}"
     puts "Creating heartbeat with params: #{heartbeat_params}"
-    attrs = heartbeat_params.merge({ user: @user })
+    attrs = heartbeat_params.merge({ user: @user, source_type: :direct_entry })
     puts "Merged attrs: #{attrs}"
     new_heartbeat = Heartbeat.new(attrs)
 
@@ -25,7 +25,7 @@ class Api::Hackatime::V1::HackatimeController < ApplicationController
 
     ActiveRecord::Base.transaction do
       new_heartbeats = heartbeat_bulk_params.map do |heartbeat|
-        attrs = heartbeat.merge({ user_id: @user.id })
+        attrs = heartbeat.merge({ user_id: @user.id, source_type: :direct_entry })
         Heartbeat.create(attrs)
       end
     end
