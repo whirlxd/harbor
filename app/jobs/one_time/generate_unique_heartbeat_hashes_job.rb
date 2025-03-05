@@ -3,12 +3,9 @@ class OneTime::GenerateUniqueHeartbeatHashesJob < ApplicationJob
 
   def perform
     ActiveRecord::Base.transaction do
-      # batch update the fields_hash
-      Heartbeat.where(fields_hash: nil).find_in_batches(of: 5000) do |batch|
-        updates = batch.map do |heartbeat|
-          [ heartbeat.id, heartbeat.send(:set_fields_hash) ]
-        end.to_h
-        Heartbeat.where(id: updates.keys).update_all(fields_hash: updates)
+      Heartbeat.where(fields_hash: nil).find_each do |heartbeat|
+        heartbeat.send(:set_fields_hash!)
+        heartbeat.save!
       end
     end
 
