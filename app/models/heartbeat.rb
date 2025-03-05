@@ -9,7 +9,11 @@ class Heartbeat < ApplicationRecord
   validates :time, presence: true
 
   def self.generate_fields_hash(attributes)
-    Digest::MD5.hexdigest(attributes.except("id", "created_at", "updated_at").to_json)
+    Digest::MD5.hexdigest(attributes.except(*self.unindexed_attributes).to_json)
+  end
+
+  def self.unindexed_attributes
+    %w[id created_at updated_at source_type fields_hash]
   end
 
   private
