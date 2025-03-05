@@ -3,7 +3,7 @@ class OneTime::GenerateUniqueHeartbeatHashesJob < ApplicationJob
 
   def perform
     ActiveRecord::Base.transaction do
-      Heartbeat.where(fields_hash: nil).find_each do |heartbeat|
+      Heartbeat.where(fields_hash: nil).find_each(batch_size: 5000) do |heartbeat|
         heartbeat.send(:set_fields_hash!)
         heartbeat.save!
       end
