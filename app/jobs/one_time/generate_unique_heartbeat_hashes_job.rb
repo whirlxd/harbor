@@ -3,9 +3,16 @@ class OneTime::GenerateUniqueHeartbeatHashesJob < ApplicationJob
 
   def perform
     ActiveRecord::Base.transaction do
-      Heartbeat.where(fields_hash: nil).find_each(batch_size: 5000) do |heartbeat|
-        heartbeat.send(:set_fields_hash!)
-        heartbeat.save!
+      Heartbeat.where(fields_hash: nil).in_batches(of: 5000) do |batch|
+        updated_heartbeats = []
+        batch.each do |heartbeat|
+          updated_heartbeats << {
+            id: heartbeat.id,
+            fields_hash: Heartbeat.generate_fields_hash(heartbeat.attributes)
+          }
+        end
+
+        Heartbeat.upsert_all(updated_heartbeats, unique_by: [ :id ])
       end
     end
 

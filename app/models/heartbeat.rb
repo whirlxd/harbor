@@ -8,12 +8,16 @@ class Heartbeat < ApplicationRecord
 
   validates :time, presence: true
 
+  def self.generate_fields_hash(attributes)
+    Digest::MD5.hexdigest(attributes.except("id", "created_at", "updated_at").to_json)
+  end
+
   private
 
   def set_fields_hash!
     # only if the field exists in activerecord
     if self.class.column_names.include?("fields_hash")
-      self.fields_hash = Digest::MD5.hexdigest(self.attributes.except("id", "created_at", "updated_at").to_json)
+      self.fields_hash = self.class.generate_fields_hash(self.attributes)
     end
   end
 end
