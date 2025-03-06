@@ -28,11 +28,9 @@ class StaticPagesController < ApplicationController
   def activity_graph
     return unless current_user
 
-    @daily_durations = Hackatime::Heartbeat
-      .where(user_id: current_user.slack_uid, time: 365.days.ago..)
-      .group(Arel.sql("DATE_TRUNC('day', time)"))
-      .duration_seconds
-      .transform_keys(&:to_date)
+    @daily_durations = Rails.cache.fetch("user_#{current_user.id}_daily_durations", expires_in: 1.minute) do
+      current_user.heartbeats.daily_durations.to_h
+    end
 
     # Consider 8 hours as a "full" day of coding
     @length_of_busiest_day = 8.hours.to_i  # 28800 seconds

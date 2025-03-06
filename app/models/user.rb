@@ -6,7 +6,9 @@ class User < ApplicationRecord
   validates :slack_uid, presence: true, uniqueness: true
   validates :username, presence: true
 
-  has_many :heartbeats,
+  has_many :heartbeats
+
+  has_many :hackatime_heartbeats,
     foreign_key: :user_id,
     primary_key: :slack_uid,
     class_name: "Hackatime::Heartbeat"
@@ -67,8 +69,8 @@ class User < ApplicationRecord
 
     current_project = heartbeats.order(time: :desc).first&.project
     current_project_heartbeats = heartbeats.today.where(project: current_project)
-    current_project_duration = Hackatime::Heartbeat.duration_seconds(current_project_heartbeats)
-    current_project_duration_formatted = Hackatime::Heartbeat.duration_simple(current_project_heartbeats)
+    current_project_duration = Heartbeat.duration_seconds(current_project_heartbeats)
+    current_project_duration_formatted = Heartbeat.duration_simple(current_project_heartbeats)
 
     # for 0 duration, don't set a status – this will let status expire when the user has not been cooking today
     return if current_project_duration.zero?

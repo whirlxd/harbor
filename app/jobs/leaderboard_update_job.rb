@@ -21,7 +21,7 @@ class LeaderboardUpdateJob < ApplicationJob
 
     ActiveRecord::Base.transaction do
       valid_user_ids.each_slice(BATCH_SIZE) do |batch_user_ids|
-        entries_data = Hackatime::Heartbeat.where(user_id: batch_user_ids)
+        entries_data = Hackatime.where(user_id: batch_user_ids)
                                            .where(time: parsed_date.all_day)
                                            .group(:user_id)
                                            .duration_seconds

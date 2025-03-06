@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_05_195904) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_06_033109) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -139,7 +139,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_05_195904) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.text "fields_hash"
-    t.integer "source_type", default: 0, null: false
+    t.integer "source_type", null: false
     t.index ["fields_hash"], name: "index_heartbeats_on_fields_hash", unique: true
     t.index ["user_id"], name: "index_heartbeats_on_user_id"
   end
@@ -161,19 +161,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_05_195904) do
     t.datetime "updated_at", null: false
     t.datetime "finished_generating_at"
     t.datetime "deleted_at"
-  end
-
-  create_table "project_checks", force: :cascade do |t|
-    t.integer "check_type"
-    t.integer "status"
-    t.datetime "started_at"
-    t.datetime "ended_at"
-    t.text "output_message"
-    t.jsonb "metadata"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["check_type", "created_at"], name: "index_project_checks_on_check_type_and_created_at"
-    t.index ["status"], name: "index_project_checks_on_status"
   end
 
   create_table "sailors_log_leaderboards", force: :cascade do |t|
@@ -211,36 +198,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_05_195904) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "ship_chains", force: :cascade do |t|
-    t.text "code_url"
-    t.text "demo_url"
-    t.text "readme_url"
-    t.text "description"
-    t.integer "ysws_type"
-    t.bigint "user_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["code_url"], name: "index_ship_chains_on_code_url"
-    t.index ["demo_url"], name: "index_ship_chains_on_demo_url"
-    t.index ["user_id"], name: "index_ship_chains_on_user_id"
-  end
-
-  create_table "ship_update_descriptions", force: :cascade do |t|
-    t.string "what_changed"
-    t.bigint "ship_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["ship_id"], name: "index_ship_update_descriptions_on_ship_id"
-  end
-
-  create_table "ships", force: :cascade do |t|
-    t.bigint "ship_chain_id", null: false
-    t.integer "duration"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["ship_chain_id"], name: "index_ships_on_ship_chain_id"
-  end
-
   create_table "users", force: :cascade do |t|
     t.string "slack_uid", null: false
     t.string "email", null: false
@@ -270,7 +227,4 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_05_195904) do
   add_foreign_key "api_keys", "users"
   add_foreign_key "heartbeats", "users"
   add_foreign_key "leaderboard_entries", "leaderboards"
-  add_foreign_key "ship_chains", "users"
-  add_foreign_key "ship_update_descriptions", "ships"
-  add_foreign_key "ships", "ship_chains"
 end

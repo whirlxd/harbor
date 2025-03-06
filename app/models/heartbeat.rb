@@ -1,6 +1,12 @@
 class Heartbeat < ApplicationRecord
   before_save :set_fields_hash!
 
+  include Heartbeatable
+
+  heartbeat_timeout_duration 2.minutes
+
+  scope :today, -> { where(time: Time.current.beginning_of_day..Time.current.end_of_day) }
+
   enum :source_type, {
     direct_entry: 0,
     wakapi_import: 1
