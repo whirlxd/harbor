@@ -50,8 +50,8 @@ class UsersController < ApplicationController
   end
 
   def set_user
-    @user = if params[:id]
-      User.find_by!(slack_uid: params[:id])
+    @user = if params["id"].present?
+      User.find_by!(slack_uid: params["id"])
     else
       current_user
     end
@@ -60,7 +60,7 @@ class UsersController < ApplicationController
   end
 
   def is_own_settings?
-    @is_own_settings ||= !params[:id].present?
+    @is_own_settings ||= !params["id"].present?
   end
 
   def user_params
