@@ -3,8 +3,6 @@ class Heartbeat < ApplicationRecord
 
   include Heartbeatable
 
-  heartbeat_timeout_duration 2.minutes
-
   scope :today, -> { where(time: Time.current.beginning_of_day..Time.current.end_of_day) }
 
   enum :source_type, {

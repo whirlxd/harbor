@@ -1,8 +1,6 @@
 class Hackatime::Heartbeat < HackatimeRecord
   include Heartbeatable
 
-  heartbeat_timeout_duration 2.minutes
-
   def self.cached_recent_count
     Rails.cache.fetch("heartbeats_recent_count", expires_in: 5.minutes) do
       recent.size
