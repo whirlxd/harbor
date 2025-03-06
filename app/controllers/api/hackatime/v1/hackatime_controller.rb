@@ -7,35 +7,11 @@ class Api::Hackatime::V1::HackatimeController < ApplicationController
   end
 
   def push_heartbeats
-    puts "Raw params: #{params.inspect}"
-    puts "Creating heartbeat with params: #{heartbeat_params}"
-    attrs = heartbeat_params.merge({ user: @user, source_type: :direct_entry })
-    puts "Merged attrs: #{attrs}"
-    new_heartbeat = Heartbeat.new(attrs)
-
-    if new_heartbeat.save!
-      render json: { responses: [ { heartbeat: new_heartbeat.attributes, status: 201 } ] }, status: :created
-    else
-      render json: { error: "Failed to create heartbeat: #{new_heartbeat.errors.full_messages}" }, status: :unprocessable_entity
-    end
+    render json: { responses: handle_heartbeat([ heartbeat_params ]) }
   end
 
   def push_heartbeats_bulk
-    new_heartbeats = []
-
-    ActiveRecord::Base.transaction do
-      new_heartbeats = heartbeat_bulk_params.map do |heartbeat|
-        attrs = heartbeat.merge({ user_id: @user.id, source_type: :direct_entry })
-        Heartbeat.create(attrs)
-      end
-    end
-
-    responses = []
-    new_heartbeats.each do |heartbeat|
-      responses << [ heartbeat.attributes, heartbeat.persisted? ? 201 : 422 ]
-    end
-
-    render json: { responses: responses }, status: :success
+    render json: { responses: handle_heartbeat(heartbeat_bulk_params[:heartbeats]) }
   end
 
   def status_bar_today
@@ -54,6 +30,21 @@ class Api::Hackatime::V1::HackatimeController < ApplicationController
   end
 
   private
+
+  def handle_heartbeat(heartbeat_array)
+    results = []
+    heartbeat_array.map(&:to_h).each do |heartbeat|
+      attrs = heartbeat.merge({ user_id: @user.id, source_type: :direct_entry })
+      new_heartbeat = Heartbeat.create!(attrs)
+      results << { heartbeat: new_heartbeat, status: 201 }
+    rescue PG::UniqueViolation
+      results << { heartbeat: new_heartbeat.attributes, status: 201 }
+    rescue => e
+      Rails.logger.error("Error creating heartbeat: #{e.message}")
+      results << { heartbeat: new_heartbeat.attributes, status: 422 }
+    end
+    results
+  end
 
   def set_user
     api_header = request.headers["Authorization"]
