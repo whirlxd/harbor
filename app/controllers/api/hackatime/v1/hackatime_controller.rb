@@ -7,11 +7,30 @@ class Api::Hackatime::V1::HackatimeController < ApplicationController
   end
 
   def push_heartbeats
-    render json: { responses: handle_heartbeat([ heartbeat_params ]) }
+    # example response:
+    # status: 202
+    # {
+    #   ...heartbeat_data
+    # }
+
+    heartbeat_array = [ heartbeat_params ]
+    new_heartbeat = handle_heartbeat(heartbeat_array)&.first&.first
+    render json: new_heartbeat, status: :accepted
   end
 
   def push_heartbeats_bulk
-    render json: { responses: handle_heartbeat(heartbeat_bulk_params[:heartbeats]) }
+    # example response:
+    # status: 201
+    # {
+    #   "responses": [
+    #     [{...heartbeat_data}, 201],
+    #     [{...heartbeat_data}, 201],
+    #     [{...heartbeat_data}, 201]
+    #   ]
+    # }
+
+    heartbeat_array = heartbeat_bulk_params[:heartbeats].map(&:to_h)
+    render json: { responses: handle_heartbeat(heartbeat_array) }, status: :created
   end
 
   def status_bar_today
@@ -33,11 +52,11 @@ class Api::Hackatime::V1::HackatimeController < ApplicationController
 
   def handle_heartbeat(heartbeat_array)
     results = []
-    heartbeat_array.map(&:to_h).each do |heartbeat|
+    heartbeat_array.each do |heartbeat|
       attrs = heartbeat.merge({ user_id: @user.id, source_type: :direct_entry })
       new_heartbeat = Heartbeat.create!(attrs)
       results << [ new_heartbeat, 201 ]
-    rescue PG::UniqueViolation
+    rescue ActiveRecord::RecordNotUnique
       results << [ new_heartbeat.attributes, 201 ]
     rescue => e
       Rails.logger.error("Error creating heartbeat: #{e.message}")
@@ -90,11 +109,15 @@ class Api::Hackatime::V1::HackatimeController < ApplicationController
 
   # allow either heartbeat or heartbeats
   def heartbeat_bulk_params
-    params.require(:hackatime).permit(
-      heartbeats: [
-        *heartbeat_keys
-      ]
-    )
+    if params[:_json].present?
+      { heartbeats: params.permit(_json: [ *heartbeat_keys ])[:_json] }
+    else
+      params.require(:hackatime).permit(
+        heartbeats: [
+          *heartbeat_keys
+        ]
+      )
+    end
   end
 
   def heartbeat_params
