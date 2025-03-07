@@ -34,7 +34,7 @@ class User < ApplicationRecord
     when "clock_emoji"
       ::ApplicationController.helpers.time_in_emoji(duration)
     when "compliment_text"
-      "You're doing great!"
+      FlavorText.compliment.sample
     end
   end
 

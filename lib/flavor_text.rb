@@ -114,4 +114,18 @@ class FlavorText
       "Loading better loading messages..."
     ]
   end
+
+  def self.compliment
+    [
+      "You're doing great!",
+      "You're a star!",
+      "Keep it up!",
+      "No stopping you!"
+
+    ]
+  end
+
+  def self.rare_compliment
+    [ "Don't let your dreams be memes!" ]
+  end
 end
