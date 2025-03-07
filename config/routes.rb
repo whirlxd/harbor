@@ -7,12 +7,6 @@ class AdminConstraint
   end
 end
 
-class DevelopmentConstraint
-  def self.matches?(request)
-    Rails.env.development?
-  end
-end
-
 Rails.application.routes.draw do
   constraints AdminConstraint do
     mount Avo::Engine, at: Avo.configuration.root_path
@@ -22,9 +16,8 @@ Rails.application.routes.draw do
   end
   get "/stop_impersonating", to: "sessions#stop_impersonating", as: :stop_impersonating
 
-  constraints DevelopmentConstraint do
-    # Preview emails in the browser [https://github.com/ryanb/letter_opener]
-    mount LetterOpenerWeb::Engine, at: "/letter_opener", as: :letter_opener
+  if Rails.env.development?
+    mount LetterOpenerWeb::Engine, at: "/letter_opener"
   end
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
