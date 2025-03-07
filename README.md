@@ -1,24 +1,23 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## Local development
 
-Things you may want to cover:
+```sh
+# Set it up...
+git clone https://github.com/hackclub/harbor && cd harbor
 
-* Ruby version
+# Set your config
+cp .env.example .env
 
-* System dependencies
+# THIS IS THE PART WHERE YOU EDIT YOUR CONFIG
+vim .env
 
-* Configuration
+# need your local db to be encrypted for some reason? Sure! Replace all the
+# secrets with the output of this:
+bin/rails runner "puts SecureRandom.base64"
+# not guaranteed to be secure for production, but fine for local development
 
-* Database creation
 
-* Database initialization
+# Build the project
 
-* How to run the test suite
 
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
