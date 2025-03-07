@@ -4,7 +4,7 @@ class SailorsLogPollForChangesJob < ApplicationJob
   def perform
     puts "performing SailorsLogPollForChangesJob"
     # get all users who've coded in the last minute
-    users_who_coded = Hackatime.where("created_at > ?", 1.minutes.ago)
+    users_who_coded = Heartbeat.where("created_at > ?", 1.minutes.ago)
                                           .where(time: 1.minutes.ago..)
                                           .distinct.pluck(:user_id)
 
@@ -21,7 +21,7 @@ class SailorsLogPollForChangesJob < ApplicationJob
 
     logs.each do |log|
       # get all projects for the user with duration
-      new_project_times = Hackatime.where(user_id: log.slack_uid)
+      new_project_times = Heartbeat.where(user_id: log.slack_uid)
                                               .group(:project)
                                               .duration_seconds
 
