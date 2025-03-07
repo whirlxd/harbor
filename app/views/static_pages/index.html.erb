@@ -31,6 +31,15 @@
         </div>
         <%= submit_tag "Send sign-in link", class: "auth-button email" %>
       <% end %>
+      <% if params[:sign_in_email] %>
+        <div class="auth-success">
+          Check your email for a sign-in link!
+        </div>
+        <% dev_tool do %>
+          Because you're on localhost, <%= link_to "click here to view the email", letter_opener_path %>
+        <% end %>
+      <% end %>
+
     </div>
   <% end %>
 </div> 

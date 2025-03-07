@@ -33,7 +33,7 @@ class SessionsController < ApplicationController
     if email_address
       token = email_address.user.create_email_signin_token
       AuthMailer.sign_in_email(email_address, token).deliver_later
-      redirect_to root_path, notice: "Check your email for a sign-in link!"
+      redirect_to root_path(sign_in_email: true), notice: "Check your email for a sign-in link!"
     else
       redirect_to root_path, alert: "Email not found. Please sign in with Slack first."
     end

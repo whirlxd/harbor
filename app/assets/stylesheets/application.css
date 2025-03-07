@@ -39,6 +39,12 @@
   background-color: var(--uchu-light-yellow);
 }
 
+.dev-tool {
+  border-radius: 5px;
+  border: 1px dashed var(--uchu-green);
+  background-color: var(--uchu-light-green);
+}
+
 .loading {
   padding: 1rem;
   color: #666;
