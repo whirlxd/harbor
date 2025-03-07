@@ -36,12 +36,12 @@ class Api::Hackatime::V1::HackatimeController < ApplicationController
     heartbeat_array.map(&:to_h).each do |heartbeat|
       attrs = heartbeat.merge({ user_id: @user.id, source_type: :direct_entry })
       new_heartbeat = Heartbeat.create!(attrs)
-      results << { heartbeat: new_heartbeat, status: 201 }
+      results << [ new_heartbeat, 201 ]
     rescue PG::UniqueViolation
-      results << { heartbeat: new_heartbeat.attributes, status: 201 }
+      results << [ new_heartbeat.attributes, 201 ]
     rescue => e
       Rails.logger.error("Error creating heartbeat: #{e.message}")
-      results << { heartbeat: new_heartbeat.attributes, status: 422 }
+      results << [ new_heartbeat.attributes, 422 ]
     end
     results
   end
