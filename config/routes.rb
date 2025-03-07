@@ -62,7 +62,6 @@ Rails.application.routes.draw do
         get "/", to: "hackatime#index"
         get "/users/:id/statusbar/today", to: "hackatime#status_bar_today"
         post "/users/:id/heartbeats", to: "hackatime#push_heartbeats"
-        post "/users/:id/heartbeats.bulk", to: "hackatime#push_heartbeats_bulk"
       end
     end
   end

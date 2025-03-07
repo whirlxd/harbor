@@ -7,30 +7,31 @@ class Api::Hackatime::V1::HackatimeController < ApplicationController
   end
 
   def push_heartbeats
-    # example response:
-    # status: 202
-    # {
-    #   ...heartbeat_data
-    # }
-
-    heartbeat_array = [ heartbeat_params ]
-    new_heartbeat = handle_heartbeat(heartbeat_array)&.first&.first
-    render json: new_heartbeat, status: :accepted
-  end
-
-  def push_heartbeats_bulk
-    # example response:
-    # status: 201
-    # {
-    #   "responses": [
-    #     [{...heartbeat_data}, 201],
-    #     [{...heartbeat_data}, 201],
-    #     [{...heartbeat_data}, 201]
-    #   ]
-    # }
-
-    heartbeat_array = heartbeat_bulk_params[:heartbeats].map(&:to_h)
-    render json: { responses: handle_heartbeat(heartbeat_array) }, status: :created
+    # Handle both single and bulk heartbeats based on format
+    if params["format"] == "bulk"
+      # POST /api/hackatime/v1/users/:id/heartbeats.bulk
+      # example response:
+      # status: 201
+      # {
+      #   "responses": [
+      #     [{...heartbeat_data}, 201],
+      #     [{...heartbeat_data}, 201],
+      #     [{...heartbeat_data}, 201]
+      #   ]
+      # }
+      heartbeat_array = heartbeat_bulk_params[:heartbeats].map(&:to_h)
+      render json: { responses: handle_heartbeat(heartbeat_array) }, status: :created
+    else
+      # POST /api/hackatime/v1/users/:id/heartbeats
+      # example response:
+      # status: 202
+      # {
+      #   ...heartbeat_data
+      # }
+      heartbeat_array = [ heartbeat_params ]
+      new_heartbeat = handle_heartbeat(heartbeat_array)&.first&.first
+      render json: new_heartbeat, status: :accepted
+    end
   end
 
   def status_bar_today
@@ -54,13 +55,11 @@ class Api::Hackatime::V1::HackatimeController < ApplicationController
     results = []
     heartbeat_array.each do |heartbeat|
       attrs = heartbeat.merge({ user_id: @user.id, source_type: :direct_entry })
-      new_heartbeat = Heartbeat.create!(attrs)
-      results << [ new_heartbeat, 201 ]
-    rescue ActiveRecord::RecordNotUnique
+      new_heartbeat = Heartbeat.find_or_create_by(attrs)
       results << [ new_heartbeat.attributes, 201 ]
     rescue => e
-      Rails.logger.error("Error creating heartbeat: #{e.message}")
-      results << [ new_heartbeat.attributes, 422 ]
+      Rails.logger.error("Error creating heartbeat: #{e.class.name} #{e.message}")
+      results << [ { error: e.message, type: e.class.name }, 422 ]
     end
     results
   end
