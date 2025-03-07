@@ -19,5 +19,18 @@
         Loading project durations...
       </div>
     <% end %>
+  <% else %>
+    <div class="auth-options">
+      <%= link_to "Sign in with Slack", slack_auth_path, class: "auth-button slack" %>
+      
+      <div class="auth-divider">or</div>
+      
+      <%= form_tag email_auth_path, class: "email-auth-form" do %>
+        <div class="field">
+          <%= email_field_tag :email, nil, placeholder: "Enter your email", required: true %>
+        </div>
+        <%= submit_tag "Send sign-in link", class: "auth-button email" %>
+      <% end %>
+    </div>
   <% end %>
 </div> 

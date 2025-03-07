@@ -2,11 +2,12 @@ class User < ApplicationRecord
   has_paper_trail
   encrypts :slack_access_token
 
-  validates :email, presence: true, uniqueness: true
   validates :slack_uid, presence: true, uniqueness: true
   validates :username, presence: true
 
   has_many :heartbeats
+  has_many :email_addresses
+  has_many :sign_in_tokens
 
   has_many :hackatime_heartbeats,
     foreign_key: :user_id,
@@ -170,5 +171,13 @@ class User < ApplicationRecord
     return nil unless active_project
 
     heartbeats.where(project: active_project).duration_seconds
+  end
+
+  def create_email_signin_token
+    sign_in_tokens.create!(auth_type: :email)
+  end
+
+  def find_valid_token(token)
+    sign_in_tokens.valid.find_by(token: token)
   end
 end

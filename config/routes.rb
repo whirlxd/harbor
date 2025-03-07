@@ -44,8 +44,11 @@ Rails.application.routes.draw do
     end
   end
 
+  # Auth routes
   get "/auth/slack", to: "sessions#new", as: :slack_auth
   get "/auth/slack/callback", to: "sessions#create"
+  post "/auth/email", to: "sessions#email", as: :email_auth
+  get "/auth/token/:token", to: "sessions#token", as: :auth_token
   delete "signout", to: "sessions#destroy", as: "signout"
 
   resources :leaderboards, only: [ :index ]

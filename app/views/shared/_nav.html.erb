@@ -38,6 +38,13 @@
         <% end %>
       </li>
     <% end %>
+    <% if Rails.env.development? %>
+      <li>
+        <%= link_to letter_opener_path, class: "nav-item #{current_page?(letter_opener_path) ? 'active' : ''}" do %>
+          Letter Opener
+        <% end %>
+      </li>
+    <% end %>
     <% admin_tool(nil, "li") do %>
       <%= link_to avo_path, class: "nav-item #{current_page?(avo_path) ? 'active' : ''}" do %>
         Avo
