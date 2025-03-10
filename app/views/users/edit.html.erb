@@ -47,6 +47,15 @@
 
 <div>
   <h2>Config file</h2>
+
+  <p>
+    <% if current_user.most_recent_direct_entry_heartbeat %>
+      Your last heartbeat was <%= time_ago_in_words current_user.most_recent_direct_entry_heartbeat.created_at %> ago.
+    <% else %>
+      You haven't sent any heartbeats yet directly to this platform.
+    <% end %>
+  </p>
+
   <%= render "wakatime_config_display" %>
 
   <p>
