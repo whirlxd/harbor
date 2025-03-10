@@ -3,14 +3,22 @@ class Api::V1::StatsController < ApplicationController
 
   def show
     # take either user_id with a start date & end date
-    start_date = Date.parse(params[:start_date]) if params[:start_date].present?
+    start_date = Date.parse(params[:start_date]).beginning_of_day if params[:start_date].present?
     start_date ||= 10.years.ago
-    end_date = Date.parse(params[:end_date]) if params[:end_date].present?
-    end_date ||= Date.today
+    end_date = Date.parse(params[:end_date]).end_of_day if params[:end_date].present?
+    end_date ||= Date.today.end_of_day
 
     query = Heartbeat.where(time: start_date..end_date)
-    if params[:user_id].present? || params[:user_email].present?
-      user_id = params[:user_id] || find_by_email(params[:user_email])
+    if params[:user_id].present?
+      user_id = params[:user_id]
+
+      return render plain: "User not found", status: :not_found unless user_id.present?
+
+      query = query.where(user_id: user_id)
+    end
+
+    if params[:user_email].present?
+      user_id = EmailAddress.find_by(email: params[:user_email])&.user_id || find_by_email(params[:user_email])
 
       return render plain: "User not found", status: :not_found unless user_id.present?
 
