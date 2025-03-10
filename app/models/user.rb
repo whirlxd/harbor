@@ -167,8 +167,9 @@ class User < ApplicationRecord
 
   def avatar_url
     return self.slack_avatar_url if self.slack_avatar_url.present?
-    return "https://initials.me/#{self.username}=50" if self.username.present?
-    "https://initials.me/#{self.email_addresses.first.email[0..1]}=50" if self.email_addresses.any?
+    initials = self.email_addresses&.first&.email[0..1]&.upcase
+    hashed_initials = Digest::SHA256.hexdigest(initials)[0..5]
+    "https://i2.wp.com/ui-avatars.com/api/#{initials}/48/#{hashed_initials}/fff?ssl=1" if initials.present?
   end
 
   def project_names
