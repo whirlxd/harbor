@@ -40,7 +40,6 @@ class SessionsController < ApplicationController
       # New user - create account and send sign in link
       user = User.create!(
         username: email.split("@").first,
-        slack_uid: SecureRandom.uuid # Generate a unique ID for email users
       )
 
       email_address = user.email_addresses.create!(email: email)
