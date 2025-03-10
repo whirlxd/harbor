@@ -147,7 +147,7 @@ class User < ApplicationRecord
     user = find_or_initialize_by(slack_uid: data.dig("authed_user", "id"))
     user.username = user_data.dig("user", "profile", "username")
     user.username ||= user_data.dig("user", "profile", "display_name_normalized")
-    user.avatar_url = user_data.dig("user", "profile", "image_192") || user_data.dig("user", "profile", "image_72")
+    user.slack_avatar_url = user_data.dig("user", "profile", "image_192") || user_data.dig("user", "profile", "image_72")
     # Store the OAuth data
     user.slack_access_token = data["authed_user"]["access_token"]
     user.slack_scopes = data["authed_user"]["scope"]&.split(/,\s*/)
@@ -163,6 +163,12 @@ class User < ApplicationRecord
   rescue => e
     Rails.logger.error "Error creating user from Slack data: #{e.message}"
     nil
+  end
+
+  def avatar_url
+    return self.slack_avatar_url if self.slack_avatar_url.present?
+    return "https://initials.me/#{self.username}=50" if self.username.present?
+    "https://initials.me/#{self.email_addresses.first.email[0..1]}=50" if self.email_addresses.any?
   end
 
   def project_names
