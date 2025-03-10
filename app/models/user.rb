@@ -2,7 +2,7 @@ class User < ApplicationRecord
   has_paper_trail
   encrypts :slack_access_token
 
-  validates :slack_uid, presence: true, uniqueness: true
+  validates :slack_uid, uniqueness: true, allow_nil: true
   validates :username, presence: true
 
   has_many :heartbeats
@@ -177,6 +177,10 @@ class User < ApplicationRecord
     return nil unless active_project
 
     heartbeats.where(project: active_project).duration_seconds
+  end
+
+  def most_recent_direct_entry_heartbeat
+    heartbeats.where(source_type: :direct_entry).order(time: :desc).first
   end
 
   def create_email_signin_token

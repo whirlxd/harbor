@@ -28,14 +28,26 @@ class SessionsController < ApplicationController
   end
 
   def email
-    email_address = EmailAddress.find_by(email: params[:email].downcase)
+    email = params[:email].downcase
+    email_address = EmailAddress.find_by(email: email)
 
     if email_address
+      # Existing user - send sign in link
       token = email_address.user.create_email_signin_token
       AuthMailer.sign_in_email(email_address, token).deliver_later
       redirect_to root_path(sign_in_email: true), notice: "Check your email for a sign-in link!"
     else
-      redirect_to root_path, alert: "Email not found. Please sign in with Slack first."
+      # New user - create account and send sign in link
+      user = User.create!(
+        username: email.split("@").first,
+        slack_uid: SecureRandom.uuid # Generate a unique ID for email users
+      )
+
+      email_address = user.email_addresses.create!(email: email)
+      token = user.create_email_signin_token
+      AuthMailer.sign_in_email(email_address, token).deliver_later
+
+      redirect_to root_path(sign_in_email: true), notice: "Welcome! Check your email for a sign-in link!"
     end
   end
 
