@@ -107,7 +107,7 @@ class User < ApplicationRecord
         profile: {
           status_text:,
           status_emoji:,
-          status_expiration: (Time.now + 30.minutes).to_i
+          status_expiration: (Time.now + 10.minutes).to_i
         }
       })
   end

@@ -5,7 +5,7 @@ Rails.application.configure do
 
   config.good_job.cron = {
     update_slack_status: {
-      cron: "*/15 * * * *",
+      cron: "*/5 * * * *",
       class: "UserSlackStatusUpdateJob"
     },
     leaderboard_update: {
