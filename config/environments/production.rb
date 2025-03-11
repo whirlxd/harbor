@@ -58,10 +58,11 @@ Rails.application.configure do
   config.action_mailer.perform_deliveries = true
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
-    user_name: ENV.fetch("SMTP_USER_NAME"),
-    password: ENV.fetch("SMTP_PASSWORD"),
-    address: ENV.fetch("SMTP_ADDRESS"),
-    port: ENV.fetch("SMTP_PORT"),
+    # provide fallbacks during build time
+    user_name: ENV.fetch("SMTP_USER_NAME") || "SMTP_USER_NAME",
+    password: ENV.fetch("SMTP_PASSWORD") || "SMTP_PASSWORD",
+    address: ENV.fetch("SMTP_ADDRESS") || "SMTP_ADDRESS",
+    port: ENV.fetch("SMTP_PORT") || 587,
     authentication: :plain,
     enable_starttls_auto: true
   }
