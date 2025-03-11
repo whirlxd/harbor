@@ -12,7 +12,7 @@ class LeaderboardsController < ApplicationController
 
       @untracked_entries = Hackatime::Heartbeat.today
         .where.not(user_id: @leaderboard.entries.select(:slack_uid))
-        .select('DISTINCT user_id')
+        .select("DISTINCT user_id")
         .count
     end
   end
