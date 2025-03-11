@@ -9,7 +9,7 @@ class UsersController < ApplicationController
     @enabled_sailors_logs = SailorsLogNotificationPreference.where(
       slack_uid: @user.slack_uid,
       enabled: true,
-    ).where.not(channel_id: "C0835AZP9GB")
+    ).where.not(slack_channel_id: "C0835AZP9GB")
 
     @heartbeats_migration_jobs = GoodJob::Job.where(
       "serialized_params->>'arguments' LIKE ?", "%#{@user.id}%"
