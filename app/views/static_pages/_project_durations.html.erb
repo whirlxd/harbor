@@ -1,5 +1,8 @@
 <%= turbo_frame_tag "project_durations" do %>
   <%= cache ["project_durations", current_user.id], expires_in: 5.minute do %>
+    <%
+      max_project_duration = project_durations.map { |p| p[:duration] }.max || 1
+    %>
     <div class="project-durations-grid">
       <% project_durations.each do |project| %>
         <div class="project-duration-card">
@@ -10,8 +13,8 @@
           <div class="project-progress-bar">
             <div 
               class="progress" 
-              style="width: <%= [project[:duration] / (8.hours.to_f) * 100, 100].min %>%; 
-                     background-color: var(--primary-color);"
+              style="width: <%= [project[:duration].to_f / max_project_duration.to_f * 100, 100].min %>%; 
+                    background-color: var(--primary-color);"
             ></div>
           </div>
         </div>
