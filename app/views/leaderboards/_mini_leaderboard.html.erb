@@ -9,10 +9,14 @@
       mini_leaderboard_entries = top_entries + competition_entries
       show_top_entries = false
     else
-      # Show top 3 entries
+      # Show top 3 entries (either user is in top 3 or not on leaderboard)
       mini_leaderboard_entries = entries.first(3)
       show_top_entries = true
     end
+  else
+    # Not logged in, show top 3
+    mini_leaderboard_entries = entries.first(3)
+    show_top_entries = true
   end
 %>
 
