@@ -10,6 +10,33 @@ class StaticPagesController < ApplicationController
       @project_names = current_user.project_names
       @projects = current_user.project_labels
       @current_project = current_user.active_project
+
+      # Get languages and editors in a single query using window functions
+      results = current_user.heartbeats.today
+        .select(
+          :language,
+          :editor,
+          "COUNT(*) OVER (PARTITION BY language) as language_count",
+          "COUNT(*) OVER (PARTITION BY editor) as editor_count"
+        )
+        .distinct
+        .to_a
+
+      # Process results to get sorted languages and editors
+      language_counts = results
+        .map { |r| [ r.language, r.language_count ] }
+        .reject { |lang, _| lang.nil? || lang.empty? }
+        .uniq
+        .sort_by { |_, count| -count }
+
+      editor_counts = results
+        .map { |r| [ r.editor, r.editor_count ] }
+        .reject { |ed, _| ed.nil? || ed.empty? }
+        .uniq
+        .sort_by { |_, count| -count }
+
+      @todays_languages = language_counts.map(&:first)
+      @todays_editors = editor_counts.map(&:first)
     end
 
     @active_users_count = Rails.cache.fetch("active_users_last_hour", expires_in: 1.minute) do

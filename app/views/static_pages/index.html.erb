@@ -3,13 +3,30 @@
   <p class="flavor">
     <%= FlavorText.motto.sample %>
   </p>
-  <p class="subtitle">
-    Hackatime is an open source tool for tracking your coding time.<% if @active_users_count.positive? %> <%= pluralize(@active_users_count, 'hack clubber') %> have logged time coding in the last hour.<% end %>
-  </p>
+  <% unless current_user %>
+    <p class="subtitle">
+      Hackatime is an open source tool for tracking your coding time.<% if @active_users_count.positive? %> <%= pluralize(@active_users_count, 'hack clubber') %> have logged time coding in the last hour.<% end %>
+    </p>
+  <% end %>
   <% if current_user %>
     You've logged
-    <%= short_time_detailed current_user.heartbeats.today.duration_seconds %> today across
-    <%= pluralize(current_user.heartbeats.today.count, 'heartbeat') %>
+    <%= short_time_detailed current_user.heartbeats.today.duration_seconds %>
+    <% if @todays_languages.any? || @todays_editors.any? %>
+      across
+      <% if @todays_languages.any? %>
+        <% if @todays_languages.length >= 4 %>
+          <%= @todays_languages[0..1].join(", ") %> <span title="<%= @todays_languages[2..].join(", ") %>">(& <%= pluralize(@todays_languages.length - 2, 'other language') %>)</span>
+        <% else %>
+          <%= @todays_languages.to_sentence %>
+        <% end %>
+      <% end %>
+      <% if @todays_languages.any? && @todays_editors.any? %>
+        using
+      <% end %>
+      <% if @todays_editors.any? %>
+        <%= @todays_editors.to_sentence %>
+      <% end %>
+    <% end %>
 
     <%= turbo_frame_tag "activity_graph", src: activity_graph_static_pages_path do %>
       <div class="loading">
