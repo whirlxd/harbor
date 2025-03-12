@@ -159,7 +159,12 @@ class FlavorText
       "take your time!",
       "have your time and eat it too!",
       "give it some time!",
-      "it's time to tiempo!"
+      "it's time to tiempo!",
+      "take your time... or we will!",
+      "have your time and eat it too!",
+      "give it some time!",
+      "take a time, leave a time!",
+      "the only thing that can't be bought!"
     ]
   end
 end
