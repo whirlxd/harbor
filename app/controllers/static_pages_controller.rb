@@ -7,6 +7,8 @@ class StaticPagesController < ApplicationController
         redirect_to FlavorText.random_time_video.sample, allow_other_host: allowed_hosts
       end
 
+      @show_wakatime_setup_notice = current_user.heartbeats.empty?
+
       @project_names = current_user.project_names
       @projects = current_user.project_labels
       @current_project = current_user.active_project

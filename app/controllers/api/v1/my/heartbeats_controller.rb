@@ -6,11 +6,10 @@ class Api::V1::My::HeartbeatsController < ApplicationController
       .order(time: :desc)
       .first
 
-    if heartbeat
-      render json: heartbeat
-    else
-      render json: { error: "No heartbeats found" }, status: :not_found
-    end
+    render json: {
+      has_heartbeat: heartbeat.present?,
+      heartbeat: heartbeat
+    }
   end
 
   def index
