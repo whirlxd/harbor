@@ -15,6 +15,10 @@ Rails.application.configure do
     sailors_log_poll: {
       cron: "* * * * *",
       class: "SailorsLogPollForChangesJob"
+    },
+    update_slack_channel_cache: {
+      cron: "0 11 * * *",
+      class: "SlackCommand::UpdateSlackChannelCacheJob"
     }
   }
 end

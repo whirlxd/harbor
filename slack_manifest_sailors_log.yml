@@ -20,6 +20,10 @@ oauth_config:
       - chat:write.public
       - commands
       - users:read
+      - channels:read
+      - groups:read
+      - mpim:read
+      - im:read
 settings:
   org_deploy_enabled: false
   socket_mode_enabled: false
