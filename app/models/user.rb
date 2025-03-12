@@ -28,6 +28,14 @@ class User < ApplicationRecord
     compliment_text: 2
   }
 
+  def data_migration_jobs
+    GoodJob::Job.where(
+      "serialized_params->>'arguments' LIKE ?", "%#{id}%"
+    ).where(
+      "job_class = ?", "OneTime::MigrateUserFromHackatimeJob"
+    ).order(created_at: :desc).limit(10).all
+  end
+
   def format_extension_text(duration)
     case hackatime_extension_text_type
     when "simple_text"
