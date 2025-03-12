@@ -11,7 +11,7 @@ class LeaderboardsController < ApplicationController
                              .order(total_seconds: :desc)
 
       @untracked_entries = Hackatime::Heartbeat.today
-                                               .where.not(user_id: @leaderboard.entries.select(:slack_uid))
+                                               .where.not(user_id: @entries.pluck(:slack_uid))
                                                .distinct.pluck(:user_id)
                                                .size
     end
