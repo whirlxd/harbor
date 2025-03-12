@@ -35,25 +35,17 @@ class SessionsController < ApplicationController
 
   def email
     email = params[:email].downcase
-    email_address = EmailAddress.find_by(email: email)
 
-    if email_address
-      # Existing user - send sign in link
-      token = email_address.user.create_email_signin_token
-      AuthMailer.sign_in_email(email_address, token).deliver_later
-      redirect_to root_path(sign_in_email: true), notice: "Check your email for a sign-in link!"
-    else
-      # New user - create account and send sign in link
-      user = User.create!(
-        username: email.split("@").first,
-      )
-
-      email_address = user.email_addresses.create!(email: email)
-      token = user.create_email_signin_token
-      AuthMailer.sign_in_email(email_address, token).deliver_later
-
-      redirect_to root_path(sign_in_email: true), notice: "Welcome! Check your email for a sign-in link!"
+    # Use a transaction to ensure both user and email are created atomically
+    email_address = ActiveRecord::Base.transaction do
+      EmailAddress.find_by(email: email) || begin
+        user = User.create!
+        user.email_addresses.create!(email: email)
+      end
     end
+
+    LoopsMailer.sign_in_email(email_address).deliver_later
+    redirect_to root_path(sign_in_email: true)
   end
 
   def token

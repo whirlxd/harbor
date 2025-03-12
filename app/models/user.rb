@@ -3,7 +3,6 @@ class User < ApplicationRecord
   encrypts :slack_access_token
 
   validates :slack_uid, uniqueness: true, allow_nil: true
-  validates :username, presence: true
 
   has_many :heartbeats
   has_many :email_addresses
