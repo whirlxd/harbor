@@ -28,6 +28,10 @@
       <% end %>
     <% end %>
 
+    <% if @leaderboard %>
+      <%= render "leaderboards/mini_leaderboard", leaderboard: @leaderboard, current_user: current_user %>
+    <% end %>
+
     <%= turbo_frame_tag "activity_graph", src: activity_graph_static_pages_path do %>
       <div class="loading">
         Loading activity graph...

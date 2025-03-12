@@ -37,6 +37,9 @@ class StaticPagesController < ApplicationController
 
       @todays_languages = language_counts.map(&:first)
       @todays_editors = editor_counts.map(&:first)
+
+      # Get today's leaderboard
+      @leaderboard = Leaderboard.find_by(start_date: Date.current, deleted_at: nil)
     end
 
     @active_users_count = Rails.cache.fetch("active_users_last_hour", expires_in: 1.minute) do
