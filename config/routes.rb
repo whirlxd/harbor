@@ -63,11 +63,16 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       get "stats", to: "stats#show"
-      get "heartbeats/check", to: "heartbeats#check"
+
+      namespace :my do
+        get "heartbeats/most_recent", to: "heartbeats#most_recent"
+        get "heartbeats", to: "heartbeats#index"
+      end
     end
+
     namespace :hackatime do
       namespace :v1 do
-        get "/", to: "hackatime#index"
+        get "/", to: "hackatime#index" # many clients seem to link this as the user's dashboard
         get "/users/:id/statusbar/today", to: "hackatime#status_bar_today"
         post "/users/:id/heartbeats", to: "hackatime#push_heartbeats"
       end

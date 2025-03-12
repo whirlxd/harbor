@@ -1,16 +1,31 @@
-class Api::V1::HeartbeatsController < ApplicationController
+class Api::V1::My::HeartbeatsController < ApplicationController
   before_action :ensure_authenticated!
 
-  def check
-    # Check for heartbeats in the last 5 minutes
-    recent_heartbeats = current_user.heartbeats
-      .where("time > ?", 5.minutes.ago.to_f)
-      .count
+  def most_recent
+    heartbeat = current_user.heartbeats
+      .order(time: :desc)
+      .first
+
+    if heartbeat
+      render json: heartbeat
+    else
+      render json: { error: "No heartbeats found" }, status: :not_found
+    end
+  end
+
+  def index
+    start_time = params[:start_time].present? ? Time.parse(params[:start_time]) : Time.current.beginning_of_day
+    end_time = params[:end_time].present? ? Time.parse(params[:end_time]) : Time.current.end_of_day
+
+    heartbeats = current_user.heartbeats
+      .where("time >= ? AND time <= ?", start_time.to_f, end_time.to_f)
+      .order(time: :asc)
 
     render json: {
-      received_heartbeats: recent_heartbeats > 0,
-      count: recent_heartbeats,
-      checked_at: Time.current
+      start_time: start_time,
+      end_time: end_time,
+      total_seconds: heartbeats.duration_seconds,
+      heartbeats: heartbeats
     }
   end
 
