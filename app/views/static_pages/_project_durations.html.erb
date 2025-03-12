@@ -1,14 +1,21 @@
 <%= turbo_frame_tag "project_durations" do %>
   <%= cache ["project_durations", current_user.id], expires_in: 5.minute do %>
-    <div class="project-durations">
-      <ul>
-        <% project_durations.each do |project| %>
-          <li>
+    <div class="project-durations-grid">
+      <% project_durations.each do |project| %>
+        <div class="project-duration-card">
+          <div class="project-header">
             <strong><%= project[:project] || "Unknown" %></strong>
-            <%= short_time_detailed project[:duration] %>
-          </li>
-        <% end %>
-      </ul>
+            <span class="project-time"><%= short_time_detailed project[:duration] %></span>
+          </div>
+          <div class="project-progress-bar">
+            <div 
+              class="progress" 
+              style="width: <%= [project[:duration] / (8.hours.to_f) * 100, 100].min %>%; 
+                     background-color: var(--primary-color);"
+            ></div>
+          </div>
+        </div>
+      <% end %>
     </div>
   <% end %>
 <% end %> 
