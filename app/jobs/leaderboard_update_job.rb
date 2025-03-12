@@ -26,6 +26,8 @@ class LeaderboardUpdateJob < ApplicationJob
                                            .group(:user_id)
                                            .duration_seconds
 
+        entries_data = entries_data.filter { |_, total_seconds| total_seconds > 60 }
+
         entries_data = entries_data.map do |user_id, total_seconds|
           {
             leaderboard_id: leaderboard.id,
