@@ -7,12 +7,11 @@ class LeaderboardsController < ApplicationController
       flash.now[:notice] = "Leaderboard is being updated..."
     else
       @entries = @leaderboard.entries
-        .includes(:user)
-        .order(total_seconds: :desc)
+                             .includes(:user)
+                             .order(total_seconds: :desc)
 
-      all_slack_uids = User.pluck(:slack_uid) - @entries.pluck(:slack_uid)
       @untracked_entries = Hackatime::Heartbeat.today
-                                               .where(user_id: all_slack_uids)
+                                               .where.not(user_id: @leaderboard.entries.select(:slack_uid))
                                                .distinct.pluck(:user_id)
                                                .size
     end
