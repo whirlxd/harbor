@@ -31,7 +31,7 @@
     <ul>
       <% @enabled_sailors_logs.each do |sl| %>
         <li>
-          <%= sl.slack_channel_id %>
+          <%= render "shared/slack_channel_mention", channel_id: sl.slack_channel_id %>
         </li>
       <% end %>
     </ul>
