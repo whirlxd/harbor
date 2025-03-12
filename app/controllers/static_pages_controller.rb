@@ -11,6 +11,14 @@ class StaticPagesController < ApplicationController
       @projects = current_user.project_labels
       @current_project = current_user.active_project
     end
+
+    @active_users_count = Rails.cache.fetch("active_users_last_hour", expires_in: 1.minute) do
+      # time column is stored as a float timestamp, so convert it to float for comparison
+      Heartbeat.where("time > ?", 1.hour.ago.to_f)
+              .select(:user_id)
+              .distinct
+              .count
+    end
   end
 
   def project_durations

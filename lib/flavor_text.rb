@@ -145,4 +145,13 @@ class FlavorText
       "https://www.youtube.com/watch?v=wH4QsKQPYKQ&t=30s"
     ]
   end
+
+  def self.motto
+    [
+      "Track your time before it tracks you!",
+      "It's the thought that counts",
+      "git #{%w[good gud].sample}",
+      "time flies when you git good!"
+    ]
+  end
 end

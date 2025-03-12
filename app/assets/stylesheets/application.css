@@ -30,7 +30,18 @@
 }
 
 .title {
+  font-weight: bolder;
+  margin-bottom: 0.2rem;
+}
+
+.primary-color {
   color: var(--primary-color);
+}
+
+.flavor {
+  font-weight: thin;
+  font-style: italic;
+  color: var(--muted-color);
 }
 
 .admin-tool {

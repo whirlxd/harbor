@@ -1,7 +1,10 @@
 <div class="container">
-  <h1 class="title">Welcome to the Time Dump</h1>
+  <h1 class="title">Welcome to <span class="primary-color">Hackatime</span></h1>
+  <p class="flavor">
+    <%= FlavorText.motto.sample %>
+  </p>
   <p class="subtitle">
-    The time dump is a place to track your time and see how you're spending your time.
+    Hackatime is an open source tool for tracking your coding time.<% if @active_users_count.positive? %> <%= pluralize(@active_users_count, 'hack clubber') %> have logged time coding in the last hour.<% end %>
   </p>
   <% if current_user %>
     You've logged
