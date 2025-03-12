@@ -11,11 +11,7 @@ class UsersController < ApplicationController
       enabled: true,
     ).where.not(slack_channel_id: "C0835AZP9GB")
 
-    @heartbeats_migration_jobs = GoodJob::Job.where(
-      "serialized_params->>'arguments' LIKE ?", "%#{@user.id}%"
-    ).where(
-      "job_class = ?", "OneTime::MigrateUserFromHackatimeJob"
-    ).order(created_at: :desc).limit(10).all
+    @heartbeats_migration_jobs = @user.data_migration_jobs
   end
 
   def update

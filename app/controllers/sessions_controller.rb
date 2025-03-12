@@ -20,6 +20,12 @@ class SessionsController < ApplicationController
 
     if @user&.persisted?
       session[:user_id] = @user.id
+
+      if @user.data_migration_jobs.empty?
+        # if they don't have a data migration job, add one to the queue
+        OneTime::MigrateUserFromHackatimeJob.perform_later(@user.id)
+      end
+
       redirect_to root_path, notice: "Successfully signed in with Slack!"
     else
       Rails.logger.error "Failed to create/update user from Slack data"
