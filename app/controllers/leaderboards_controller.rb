@@ -10,10 +10,14 @@ class LeaderboardsController < ApplicationController
                              .includes(:user)
                              .order(total_seconds: :desc)
 
-      @untracked_entries = Hackatime::Heartbeat.today
-                                               .where.not(user_id: @entries.pluck(:slack_uid))
-                                               .distinct.pluck(:user_id)
-                                               .size
+      tracked_user_ids = @leaderboard.entries.distinct.pluck(:slack_uid)
+
+      today = Time.current
+      @untracked_entries = Hackatime::Heartbeat
+          .where(time: today.beginning_of_day..today.end_of_day)
+          .distinct
+          .pluck(:user_id)
+          .count { |user_id| !tracked_user_ids.include?(user_id) }
     end
   end
 end
