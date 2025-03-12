@@ -37,6 +37,7 @@ class StaticPagesController < ApplicationController
 
       @todays_languages = language_counts.map(&:first)
       @todays_editors = editor_counts.map(&:first)
+      @show_logged_time_sentence = @todays_languages.any? || @todays_editors.any?
 
       # Get today's leaderboard
       @leaderboard = Leaderboard.find_by(start_date: Date.current, deleted_at: nil)
