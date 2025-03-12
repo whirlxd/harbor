@@ -63,6 +63,7 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       get "stats", to: "stats#show"
+      get "heartbeats/check", to: "heartbeats#check"
     end
     namespace :hackatime do
       namespace :v1 do
