@@ -151,7 +151,9 @@ class FlavorText
       "track your time before it tracks you!",
       "it's the thought that counts",
       "git #{%w[good gud].sample}",
-      "time flies when you git good!"
+      "time flies when you git good!",
+      "take your time!",
+      "have your time and eat it too!"
     ]
   end
 end
