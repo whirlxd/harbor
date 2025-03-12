@@ -12,12 +12,15 @@ class LeaderboardsController < ApplicationController
 
       tracked_user_ids = @leaderboard.entries.distinct.pluck(:slack_uid)
 
-      today = Time.current
-      @untracked_entries = Hackatime::Heartbeat
-          .where(time: today.beginning_of_day..today.end_of_day)
-          .distinct
-          .pluck(:user_id)
-          .count { |user_id| !tracked_user_ids.include?(user_id) }
+      @user_on_leaderboard = current_user && tracked_user_ids.include?(current_user.slack_uid)
+      unless @user_on_leaderboard
+        today = Time.current
+        @untracked_entries = Hackatime::Heartbeat
+            .where(time: today.beginning_of_day..today.end_of_day)
+            .distinct
+            .pluck(:user_id)
+            .count { |user_id| !tracked_user_ids.include?(user_id) }
+      end
     end
   end
 end
