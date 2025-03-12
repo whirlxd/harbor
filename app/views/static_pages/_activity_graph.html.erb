@@ -8,7 +8,8 @@
           <% # if there is no duration, set lightness to 100% %>
           <% lightness = (duration < 1.minute) ? 100 : 100 - (70.0 * duration / length_of_busiest_day) %>
           <a class="day"
-            href="#"
+            href="?date=<%= date %>"
+            data-turbo-frame="_top"
             data-date="<%= date %>"
             data-duration="<%= distance_of_time_in_words(duration) %>"
             title="you hacked for <%= distance_of_time_in_words(duration) %> on <%= date %>"

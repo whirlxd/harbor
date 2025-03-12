@@ -1,6 +1,12 @@
 class StaticPagesController < ApplicationController
   def index
     if current_user
+      unless params[:date].blank?
+        # implement this later– for now just redirect to a random video
+        allowed_hosts = FlavorText.random_time_video.map { |v| URI.parse(v).host }
+        redirect_to FlavorText.random_time_video.sample, allow_other_host: allowed_hosts
+      end
+
       @project_names = current_user.project_names
       @projects = current_user.project_labels
       @current_project = current_user.active_project
