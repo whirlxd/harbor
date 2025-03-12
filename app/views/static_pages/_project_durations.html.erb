@@ -8,6 +8,9 @@
         <div class="project-duration-card">
           <div class="project-header">
             <strong><%= project[:project] || "Unknown" %></strong>
+            <% if project[:repo_url].present? %>
+              <%= link_to "🔗", project[:repo_url], target: "_blank" %>
+            <% end %>
             <span class="project-time"><%= short_time_detailed project[:duration] %></span>
           </div>
           <div class="project-progress-bar">

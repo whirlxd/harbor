@@ -8,6 +8,7 @@ class User < ApplicationRecord
   has_many :heartbeats
   has_many :email_addresses
   has_many :sign_in_tokens
+  has_many :project_repo_mappings
 
   has_many :hackatime_heartbeats,
     foreign_key: :user_id,
