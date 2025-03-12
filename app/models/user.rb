@@ -186,7 +186,7 @@ class User < ApplicationRecord
   end
 
   def active_project
-    heartbeats.order(time: :desc).first&.project
+    most_recent_direct_entry_heartbeat&.project
   end
 
   def active_project_duration
