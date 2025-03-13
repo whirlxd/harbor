@@ -25,7 +25,7 @@ if (-not $apiUrl -or -not $apiKey) {
 
 Write-Host "Successfully read config:"
 Write-Host "API URL: $apiUrl"
-Write-Host "API Key: $($apiKey.Substring(0,8)..." # Show only first 8 chars for security
+Write-Host ("API Key: " + $apiKey.Substring(0,8) + "...") # Show only first 8 chars for security
 
 # Send test heartbeat using values from config
 Write-Host "Sending test heartbeat..."
