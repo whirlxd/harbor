@@ -37,6 +37,17 @@ api_key = $env:HACKATIME_API_KEY
             -Body "[$($heartbeat | ConvertTo-Json)]"
             
         Write-Host "Test heartbeat sent successfully"
+        
+        # Display ASCII art on success
+        Write-Host "`n" -NoNewline
+        Write-Host "  _   _            _         _   _                " -ForegroundColor Cyan
+        Write-Host " | | | | __ _  ___| | ____ _| |_(_)_ __ ___   ___ " -ForegroundColor Cyan
+        Write-Host " | |_| |/ _` |/ __| |/ / _` | __| | '_ ` _ \ / _ \" -ForegroundColor Cyan
+        Write-Host " |  _  | (_| | (__|   < (_| | |_| | | | | | |  __/" -ForegroundColor Cyan
+        Write-Host " |_| |_|\__,_|\___|_|\_\__,_|\__|_|_| |_| |_|\___|" -ForegroundColor Cyan
+        Write-Host "`n                Ready to track!                 " -ForegroundColor Green
+        Write-Host "           https://hackatime.hackclub.com         " -ForegroundColor Yellow
+        Write-Host "`n"
     } else {
         throw "Failed to create config file"
     }
