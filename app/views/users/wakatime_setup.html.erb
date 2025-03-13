@@ -1,8 +1,6 @@
 <h1>Hackatime Set Up</h1>
 <p>Step 1 of 4</p>
 
-<h2>Copy and run the following commands in your terminal</h2>
-
 <div class="setup-instructions">
   <div id="os-detection-message" class="text-center">
     <p>Detecting your operating system...</p>
@@ -11,6 +9,12 @@
 
   <div id="mac-linux-section" style="display: none;">
     <h3>Mac/Linux users:</h3>
+    <p>Instructions:</p>
+    <ol>
+      <li>Open your terminal (on Mac it's called <code>Terminal</code>)</li>
+      <li>Copy and paste the following command into your terminal</li>
+      <li>Press <code>Return / Enter</code> to run it</li>
+    </ol>
     <div class="code-block">
       <code>export HACKATIME_API_KEY="<%= @current_user_api_key %>" && export HACKATIME_API_URL="<%= api_hackatime_v1_url %>" && export SUCCESS_URL="<%= root_url %>/success.txt" && curl -sSL <%= root_url %>hackatime/setup.sh | bash</code>
       <button class="copy-button" onclick="copyCode(this)">Copy</button>
@@ -25,6 +29,12 @@
 
   <div id="windows-section" style="display: none;">
     <h3>Windows users:</h3>
+    <p>Instructions:</p>
+    <ol>
+      <li>Open <code>PowerShell</code></li>
+      <li>Copy and paste the following command (<code>Ctrl+V</code> to paste)</li>
+      <li>Press <code>Enter</code> to run it</li>
+    </ol>
     <div class="code-block">
       <code>$env:HACKATIME_API_KEY="<%= @current_user_api_key %>"; $env:HACKATIME_API_URL="<%= api_hackatime_v1_url %>"; powershell -ExecutionPolicy Bypass -Command "& {iwr <%= root_url %>hackatime/setup.ps1 -UseBasicParsing | iex}"</code>
       <button class="copy-button" onclick="copyCode(this)">Copy</button>
