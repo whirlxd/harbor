@@ -16,6 +16,7 @@
     <code>$env:HACKATIME_API_KEY="<%= @current_user_api_key %>"; $env:HACKATIME_API_URL="<%= api_hackatime_v1_url %>"; powershell -ExecutionPolicy Bypass -Command "& {iwr <%= root_url %>hackatime/setup.ps1 -UseBasicParsing | iex}"</code>
     <button class="copy-button" onclick="copyCode(this)">Copy</button>
   </div>
+  <iframe width="560" height="315" src="https://www.youtube.com/embed/fX9tsiRvzhg?si=y2B2mZVfiYrHY9ah&autoplay=1&loop=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 </div>
 
 <p class="mt-4 text-sm text-gray-600">This will create your WakaTime config file and send a test heartbeat to verify the set up.</p>
