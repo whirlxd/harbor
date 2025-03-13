@@ -14,7 +14,7 @@ Rails.application.configure do
       args: [ :daily ]
     },
     weekly_leaderboard_update: {
-      cron: "0 0 * * 1",
+      cron: "0 0 * * *",
       class: "LeaderboardUpdateJob",
       args: [ :weekly ]
     },
