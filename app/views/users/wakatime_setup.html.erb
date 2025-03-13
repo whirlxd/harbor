@@ -248,17 +248,17 @@ api_key = <%= @current_user_api_key %></code>
       const diffInYears = Math.floor(diffInDays / 365);
 
       if (diffInYears > 0) {
-        return `${diffInYears} years ago`;
+        return diffInYears === 1 ? "1 year ago" : `${diffInYears} years ago`;
       } else if (diffInMonths > 0) {
-        return `${diffInMonths} months ago`;
+        return diffInMonths === 1 ? "1 month ago" : `${diffInMonths} months ago`;
       } else if (diffInDays > 0) {
-        return `${diffInDays} days ago`;
+        return diffInDays === 1 ? "1 day ago" : `${diffInDays} days ago`;
       } else if (diffInHours > 0) {
-        return `${diffInHours} hours ago`;
+        return diffInHours === 1 ? "1 hour ago" : `${diffInHours} hours ago`;
       } else if (diffInMinutes > 0) {
-        return `${diffInMinutes} minutes ago`;
+        return diffInMinutes === 1 ? "1 minute ago" : `${diffInMinutes} minutes ago`;
       } else {
-        return `${diffInSeconds} seconds ago`;
+        return diffInSeconds === 1 ? "1 second ago" : `${diffInSeconds} seconds ago`;
       }
     }
 
