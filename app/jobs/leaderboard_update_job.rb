@@ -16,11 +16,11 @@ class LeaderboardUpdateJob < ApplicationJob
     leaderboard = Leaderboard.create!(start_date: parsed_date)
 
     # Get list of valid user IDs from our database
-    valid_slack_uids = User.pluck(:id)
-    return if valid_slack_uids.empty?
+    valid_user_ids = User.pluck(:id)
+    return if valid_user_ids.empty?
 
     ActiveRecord::Base.transaction do
-      valid_slack_uids.each_slice(BATCH_SIZE) do |batch_user_ids|
+      valid_user_ids.each_slice(BATCH_SIZE) do |batch_user_ids|
         entries_data = Heartbeat.where(user_id: batch_user_ids)
                                            .where(time: parsed_date.all_day)
                                            .group(:user_id)
@@ -31,7 +31,7 @@ class LeaderboardUpdateJob < ApplicationJob
         entries_data = entries_data.map do |user_id, total_seconds|
           {
             leaderboard_id: leaderboard.id,
-            slack_uid: User.find(user_id).slack_uid,
+            user_id: user_id,
             total_seconds: total_seconds
           }
         end
