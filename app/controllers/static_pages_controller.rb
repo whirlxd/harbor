@@ -49,11 +49,11 @@ class StaticPagesController < ApplicationController
       in_past_hour = Heartbeat.where("time > ?", 1.hour.ago.to_f).distinct.count(:user_id)
       @social_proof ||= begin
         if in_past_hour > 5
-          "in the past hour #{in_past_hour} teenagers have logged time"
+          "In the past hour #{in_past_hour} teenagers have logged time"
         elsif in_past_day > 5
-          "in the past day #{in_past_day} teenagers have logged time"
+          "In the past day #{in_past_day} teenagers have logged time"
         elsif in_past_week > 5
-          "in the past week #{in_past_week} teenagers have logged time"
+          "In the past week #{in_past_week} teenagers have logged time"
         end
       end
 
