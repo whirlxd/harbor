@@ -180,7 +180,8 @@ class FlavorText
 
   def self.rare_motto
     [
-      "I don't care what everyone else says, you're not that dumb"
+      "i don't care what everyone else says, you're not that dumb",
+      "<a href='https://github.com/hackclub/hackatime' target='_blank'>open source!</a>".html_safe
     ]
   end
 end
