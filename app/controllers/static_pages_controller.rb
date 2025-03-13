@@ -60,11 +60,6 @@ class StaticPagesController < ApplicationController
       @users_tracked = Heartbeat.distinct.count(:user_id)
       @hours_tracked = Heartbeat.duration_seconds / 3600
     end
-
-    # time column is stored as a float timestamp, so convert it to float for comparison
-    @active_users_count = Heartbeat.where("time > ?", 1.hour.ago.to_f)
-                                   .distinct
-                                   .count(:user_id)
   end
 
   def project_durations
