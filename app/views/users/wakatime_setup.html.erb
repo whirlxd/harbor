@@ -13,7 +13,7 @@
 
   <h3>Windows users:</h3>
   <div class="code-block">
-    <code>$env:HACKATIME_API_KEY="<%= @current_user_api_key %>"; $env:HACKATIME_API_URL="<%= api_hackatime_v1_url %>"; iwr <%= root_url %>hackatime/setup.ps1 -UseBasicParsing | iex</code>
+    <code>$env:HACKATIME_API_KEY="<%= @current_user_api_key %>"; $env:HACKATIME_API_URL="<%= api_hackatime_v1_url %>"; powershell -ExecutionPolicy Bypass -Command "& {iwr <%= root_url %>hackatime/setup.ps1 -UseBasicParsing | iex}"</code>
     <button class="copy-button" onclick="copyCode(this)">Copy</button>
   </div>
 </div>
