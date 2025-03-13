@@ -61,86 +61,86 @@
     setupPlayers();
   }
   
+  // Function to setup YouTube players
+  function setupPlayers() {
+    // Only setup if the players haven't been created
+    if (!macLinuxPlayer) {
+      macLinuxPlayer = new YT.Player('mac-linux-video-container', {
+        height: '315',
+        width: '560',
+        videoId: 'QTwhJy7nT_w',
+        playerVars: {
+          'loop': 1,
+          'playsinline': 1,
+          'modestbranding': 1,
+          'rel': 0
+        },
+        events: {
+          'onReady': onMacLinuxPlayerReady
+        }
+      });
+    }
+    
+    if (!windowsPlayer) {
+      windowsPlayer = new YT.Player('windows-video-container', {
+        height: '315',
+        width: '560',
+        videoId: 'fX9tsiRvzhg',
+        playerVars: {
+          'loop': 1,
+          'playsinline': 1,
+          'modestbranding': 1,
+          'rel': 0
+        }
+      });
+    }
+  }
+  
+  function onMacLinuxPlayerReady(event) {
+    // Now detect OS and show relevant section
+    detectOS();
+  }
+  
+  // Detect operating system
+  function detectOS() {
+    const userAgent = window.navigator.userAgent;
+    const macLinuxSection = document.getElementById('mac-linux-section');
+    const windowsSection = document.getElementById('windows-section');
+    const osDetectionMessage = document.getElementById('os-detection-message');
+    
+    // Hide detection message
+    osDetectionMessage.style.display = 'none';
+    
+    // Check if Windows
+    if (userAgent.indexOf('Windows') !== -1) {
+      windowsSection.style.display = 'block';
+      // Play Windows video if player is ready
+      if (windowsPlayer && typeof windowsPlayer.playVideo === 'function') {
+        try {
+          windowsPlayer.playVideo();
+        } catch (e) {
+          console.error("Could not play Windows video:", e);
+        }
+      }
+    } else {
+      // Assume Mac/Linux for all other OSes
+      macLinuxSection.style.display = 'block';
+      // Play Mac/Linux video if player is ready
+      if (macLinuxPlayer && typeof macLinuxPlayer.playVideo === 'function') {
+        try {
+          macLinuxPlayer.playVideo();
+        } catch (e) {
+          console.error("Could not play Mac/Linux video:", e);
+        }
+      }
+    }
+  }
+  
   document.addEventListener('turbo:load', function() {
     // If the YouTube API is already loaded
     if (window.YT && window.YT.Player) {
       playerReady = true;
       setupPlayers();
-    }
-    
-    // Function to setup YouTube players
-    function setupPlayers() {
-      // Only setup if the players haven't been created
-      if (!macLinuxPlayer) {
-        macLinuxPlayer = new YT.Player('mac-linux-video-container', {
-          height: '315',
-          width: '560',
-          videoId: 'QTwhJy7nT_w',
-          playerVars: {
-            'loop': 1,
-            'playsinline': 1,
-            'modestbranding': 1,
-            'rel': 0
-          },
-          events: {
-            'onReady': onMacLinuxPlayerReady
-          }
-        });
-      }
-      
-      if (!windowsPlayer) {
-        windowsPlayer = new YT.Player('windows-video-container', {
-          height: '315',
-          width: '560',
-          videoId: 'fX9tsiRvzhg',
-          playerVars: {
-            'loop': 1,
-            'playsinline': 1,
-            'modestbranding': 1,
-            'rel': 0
-          }
-        });
-      }
-    }
-    
-    function onMacLinuxPlayerReady(event) {
-      // Now detect OS and show relevant section
-      detectOS();
-    }
-    
-    // Detect operating system
-    function detectOS() {
-      const userAgent = window.navigator.userAgent;
-      const macLinuxSection = document.getElementById('mac-linux-section');
-      const windowsSection = document.getElementById('windows-section');
-      const osDetectionMessage = document.getElementById('os-detection-message');
-      
-      // Hide detection message
-      osDetectionMessage.style.display = 'none';
-      
-      // Check if Windows
-      if (userAgent.indexOf('Windows') !== -1) {
-        windowsSection.style.display = 'block';
-        // Play Windows video if player is ready
-        if (windowsPlayer && typeof windowsPlayer.playVideo === 'function') {
-          try {
-            windowsPlayer.playVideo();
-          } catch (e) {
-            console.error("Could not play Windows video:", e);
-          }
-        }
-      } else {
-        // Assume Mac/Linux for all other OSes
-        macLinuxSection.style.display = 'block';
-        // Play Mac/Linux video if player is ready
-        if (macLinuxPlayer && typeof macLinuxPlayer.playVideo === 'function') {
-          try {
-            macLinuxPlayer.playVideo();
-          } catch (e) {
-            console.error("Could not play Mac/Linux video:", e);
-          }
-        }
-      }
     }
     
     // Function to toggle between OS sections
