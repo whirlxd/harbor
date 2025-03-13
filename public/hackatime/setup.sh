@@ -39,6 +39,7 @@ http_code=$(echo "$response" | tail -n1)
 body=$(echo "$response" | sed '$d')
 
 if [ "$http_code" = "200" ] || [ "$http_code" = "202" ]; then
+  curl "$SUCCESS_URL"
   echo -e "\nTest heartbeat sent successfully"
 else
   echo -e "\nError sending heartbeat: $body"
