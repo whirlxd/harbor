@@ -50,3 +50,5 @@ try {
   Write-Error "Error sending heartbeat: $($_.Exception.Response.StatusCode.Value__) $($_.Exception.Message)"
   exit 1
 } 
+
+Read-Host -Prompt "Press Enter to exit..."
