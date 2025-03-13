@@ -146,7 +146,16 @@ class FlavorText
       "https://hc-cdn.hel1.your-objectstorage.com/s/v3/125740ef06dac1b3a32d9d2c453d8c81bddd7fdb_stop-measuring-time-v0-1n64qvw0xfpa1.webp",
       "https://hc-cdn.hel1.your-objectstorage.com/s/v3/1112c1e28e3a017738d1c4db1a18e292651fc49d_ey3jskc8brp11.webp",
       "https://hc-cdn.hel1.your-objectstorage.com/s/v3/0bea6b9ea2f2d1a4a2bcb34f4763c390ea5d7672_1fagap51epelkfjtbs0ioh0ax116ed5_djuufhyvpie.webp",
-      "https://hc-cdn.hel1.your-objectstorage.com/s/v3/b35fd20790ab01c9f8400efaf454a21337a7f51e_8o4i3olrnqpy.webp"
+      "https://hc-cdn.hel1.your-objectstorage.com/s/v3/b35fd20790ab01c9f8400efaf454a21337a7f51e_8o4i3olrnqpy.webp",
+      "https://hc-cdn.hel1.your-objectstorage.com/s/v3/f9a9607e54bc4930fcfefd1f6541e81337ff338f_the_sound_of_a_dozen_clocks_out_of_sync__loud___gpigswnscqa_.mp4",
+      "https://hc-cdn.hel1.your-objectstorage.com/s/v3/a63ee6882e391a7e7e6affb4dc5818ec207ac4f2_bean_clock__jhd3o7owkbi_.mp4",
+      "https://hc-cdn.hel1.your-objectstorage.com/s/v3/cf5f3a38510d67d7f494ff706c08db8df03b554f_12_34_56__8rzn02qhbhc_.mp4",
+      "https://hc-cdn.hel1.your-objectstorage.com/s/v3/fe9daf4289985d6eb4194259623aec3f1ca3550d_clock.mp4__olqqe-7xjtm_.webm",
+      "https://hc-cdn.hel1.your-objectstorage.com/s/v3/8221a4b09a64822058338952fc55bdcdf295ccb0_curtis_leszczynski_eating_a_clock__fssk0b_b8x0_.mp4",
+      "https://hc-cdn.hel1.your-objectstorage.com/s/v3/88ad8245ed9c07ab61d00dcac7a3d78b4550e205_it_s_gonna_be_2_00_o_clock_watch_this__cq_fbs5gpcq_.webm",
+      "https://hc-cdn.hel1.your-objectstorage.com/s/v3/873ec323b4a8e5dd7caaa0bc34880dbf99299ae7_it_s_time_o_clock__kvfrybwub8a_.webm",
+      "https://hc-cdn.hel1.your-objectstorage.com/s/v3/1a28712d0c864563075eda92a60452555cb21a38____clocks____played_with_clocks__coldplay_cover___bjsox9dpw4e_.mp4",
+      "https://hc-cdn.hel1.your-objectstorage.com/s/v3/4e885cbf3e599e4b325ab16a2024d2907f7df09f_doctor_who_-_blink_-_big_ball_of_wibbly_wobbly..._time-y_wimey..._stuff.__q2nnzno_xps_.mp4"
     ]
   end
 
