@@ -4,7 +4,7 @@
 <h2>Copy and run the following commands in your terminal</h2>
 
 <div class="setup-instructions">
-  <div id="os-detection-message" class="text-center mb-4">
+  <div id="os-detection-message" class="text-center">
     <p>Detecting your operating system...</p>
     <div class="progress-indicator"></div>
   </div>
@@ -17,8 +17,9 @@
     </div>
     <div id="mac-linux-video-container"></div>
     
-    <div class="mt-4">
+    <div>
       <button id="show-windows-button" class="copy-button" onclick="toggleSection('windows')">Using Windows? Click here</button>
+      <button id="show-advanced-button-from-mac" class="copy-button" onclick="toggleSection('advanced')">Advanced/Custom Setup</button>
     </div>
   </div>
 
@@ -30,15 +31,34 @@
     </div>
     <div id="windows-video-container"></div>
     
-    <div class="mt-4">
+    <div>
       <button id="show-mac-linux-button" class="copy-button" onclick="toggleSection('mac-linux')">Using Mac/Linux? Click here</button>
+      <button id="show-advanced-button" class="copy-button" onclick="toggleSection('advanced')">Advanced/Custom Setup</button>
+    </div>
+  </div>
+
+  <div id="advanced-section" style="display: none;">
+    <h3>Advanced/Custom Setup:</h3>
+    <p>For advanced users or custom installations, you can manually set up your WakaTime configuration.</p>
+    <p>Create or edit <code>~/.wakatime.cfg</code> with the following content:</p>
+    
+    <div class="code-block">
+      <code>[settings]
+api_url = <%= api_hackatime_v1_url %>
+api_key = <%= @current_user_api_key %></code>
+      <button class="copy-button" onclick="copyCode(this)">Copy</button>
+    </div>
+    
+    <div>
+      <button id="show-mac-linux-from-advanced-button" class="copy-button" onclick="toggleSection('mac-linux')">Using Mac/Linux? Click here</button>
+      <button id="show-windows-from-advanced-button" class="copy-button" onclick="toggleSection('windows')">Using Windows? Click here</button>
     </div>
   </div>
 </div>
 
-<p class="mt-4 text-sm text-gray-600">This will create your WakaTime config file and send a test heartbeat to verify the set up.</p>
+<p class="text-sm text-gray-600">This will create your WakaTime config file and send a test heartbeat to verify the set up.</p>
 
-<div id="heartbeat-status" class="mt-4">
+<div id="heartbeat-status">
   <p>Waiting for your first heartbeat...</p>
   <div class="progress-indicator"></div>
 </div>
@@ -147,20 +167,34 @@
     window.toggleSection = function(section) {
       const macLinuxSection = document.getElementById('mac-linux-section');
       const windowsSection = document.getElementById('windows-section');
+      const advancedSection = document.getElementById('advanced-section');
       
-      if (section === 'windows') {
-        macLinuxSection.style.display = 'none';
-        windowsSection.style.display = 'block';
-        
-        // Pause Mac/Linux video and play Windows video
-        if (macLinuxPlayer && typeof macLinuxPlayer.pauseVideo === 'function') {
-          try {
-            macLinuxPlayer.pauseVideo();
-          } catch (e) {
-            console.error("Could not pause Mac/Linux video:", e);
-          }
+      // Hide all sections first
+      macLinuxSection.style.display = 'none';
+      windowsSection.style.display = 'none';
+      advancedSection.style.display = 'none';
+      
+      // Pause both videos
+      if (macLinuxPlayer && typeof macLinuxPlayer.pauseVideo === 'function') {
+        try {
+          macLinuxPlayer.pauseVideo();
+        } catch (e) {
+          console.error("Could not pause Mac/Linux video:", e);
         }
-        
+      }
+      
+      if (windowsPlayer && typeof windowsPlayer.pauseVideo === 'function') {
+        try {
+          windowsPlayer.pauseVideo();
+        } catch (e) {
+          console.error("Could not pause Windows video:", e);
+        }
+      }
+      
+      // Show the selected section
+      if (section === 'windows') {
+        windowsSection.style.display = 'block';
+        // Play Windows video
         if (windowsPlayer && typeof windowsPlayer.playVideo === 'function') {
           try {
             windowsPlayer.playVideo();
@@ -168,19 +202,12 @@
             console.error("Could not play Windows video:", e);
           }
         }
+      } else if (section === 'advanced') {
+        advancedSection.style.display = 'block';
       } else {
-        windowsSection.style.display = 'none';
+        // Default to Mac/Linux
         macLinuxSection.style.display = 'block';
-        
-        // Pause Windows video and play Mac/Linux video
-        if (windowsPlayer && typeof windowsPlayer.pauseVideo === 'function') {
-          try {
-            windowsPlayer.pauseVideo();
-          } catch (e) {
-            console.error("Could not pause Windows video:", e);
-          }
-        }
-        
+        // Play Mac/Linux video
         if (macLinuxPlayer && typeof macLinuxPlayer.playVideo === 'function') {
           try {
             macLinuxPlayer.playVideo();
@@ -340,13 +367,5 @@
   
   .text-center {
     text-align: center;
-  }
-  
-  .mb-4 {
-    margin-bottom: 1rem;
-  }
-  
-  .mt-4 {
-    margin-top: 1rem;
   }
 </style>
