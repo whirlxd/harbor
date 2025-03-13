@@ -171,7 +171,15 @@ class FlavorText
       "have your time and eat it too!",
       "give it some time!",
       "take a time, leave a time!",
-      "the only thing that can't be bought!"
+      "the only thing that can't be bought!",
+      "everyone always asks how i'm doing, not when i'm doing",
+      "go forth and commit times!"
+    ]
+  end
+
+  def self.rare_motto
+    [
+      "I don't care what everyone else says, you're not that dumb"
     ]
   end
 end
