@@ -5,10 +5,16 @@
 
 <div class="setup-instructions">
   <h3>Mac/Linux users:</h3>
-<pre><code>export HACKATIME_API_KEY="<%= @current_user_api_key %>" && export HACKATIME_API_URL="<%= api_hackatime_v1_url %>" && curl -sSL <%= root_url %>hackatime/setup.sh | bash</code></pre>
+  <div class="code-block">
+    <code>export HACKATIME_API_KEY="<%= @current_user_api_key %>" && export HACKATIME_API_URL="<%= api_hackatime_v1_url %>" && curl -sSL <%= root_url %>hackatime/setup.sh | bash</code>
+    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+  </div>
 
-<h3>Windows users:</h3>
-<pre><code>$env:HACKATIME_API_KEY="<%= @current_user_api_key %>"; $env:HACKATIME_API_URL="<%= api_hackatime_v1_url %>"; iwr <%= root_url %>hackatime/setup.ps1 -UseBasicParsing | iex</code></pre>
+  <h3>Windows users:</h3>
+  <div class="code-block">
+    <code>$env:HACKATIME_API_KEY="<%= @current_user_api_key %>"; $env:HACKATIME_API_URL="<%= api_hackatime_v1_url %>"; iwr <%= root_url %>hackatime/setup.ps1 -UseBasicParsing | iex</code>
+    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+  </div>
 </div>
 
 <p class="mt-4 text-sm text-gray-600">This will create your WakaTime config file and send a test heartbeat to verify the set up.</p>
@@ -83,6 +89,17 @@
     // Start checking
     checkForHeartbeats();
   });
+
+  function copyCode(button) {
+    const codeBlock = button.previousElementSibling;
+    const text = codeBlock.textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      button.textContent = 'Copied!';
+      setTimeout(() => {
+        button.textContent = 'Copy';
+      }, 2000);
+    });
+  }
 </script>
 
 <style>
@@ -108,5 +125,40 @@
 
   .error {
     color: #cf222e;
+  }
+
+  .setup-instructions {
+    width: 100%;
+    max-width: 100vw;
+    overflow: hidden;
+  }
+
+  .code-block {
+    position: relative;
+    margin-bottom: 1rem;
+    width: fit-content;
+    max-width: 75vw;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .copy-button {
+    position: static;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-top: 0.25rem;
+  }
+
+  .setup-instructions code {
+    display: block;
+    width: 75%;
+    white-space: pre;
+    overflow-x: auto;
+    padding-right: 1rem;
+    box-sizing: border-box;
   }
 </style>
