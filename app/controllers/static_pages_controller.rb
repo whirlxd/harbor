@@ -66,7 +66,6 @@ class StaticPagesController < ApplicationController
                                    .distinct
                                    .count(:user_id)
   end
-  end
 
   def project_durations
     return unless current_user
