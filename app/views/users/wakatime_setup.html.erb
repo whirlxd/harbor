@@ -11,9 +11,9 @@
     <h3>Mac/Linux users:</h3>
     <p>Instructions:</p>
     <ol>
-      <li>Open your terminal (on Mac it's called <code>Terminal</code>)</li>
+      <li>Open your terminal (on Mac it's called <i>Terminal</i>)</li>
       <li>Copy and paste the following command into your terminal</li>
-      <li>Press <code>Return / Enter</code> to run it</li>
+      <li>Press <i>Return / Enter</i> to run it</li>
     </ol>
     <div class="code-block">
       <code>export HACKATIME_API_KEY="<%= @current_user_api_key %>" && export HACKATIME_API_URL="<%= api_hackatime_v1_url %>" && export SUCCESS_URL="<%= root_url %>/success.txt" && curl -sSL <%= root_url %>hackatime/setup.sh | bash</code>
@@ -31,9 +31,9 @@
     <h3>Windows users:</h3>
     <p>Instructions:</p>
     <ol>
-      <li>Open <code>PowerShell</code></li>
-      <li>Copy and paste the following command (<code>Ctrl+V</code> to paste)</li>
-      <li>Press <code>Enter</code> to run it</li>
+      <li>Open <i>PowerShell</i></li>
+      <li>Copy and paste the following command (<i>Ctrl+V</i> to paste)</li>
+      <li>Press <i>Enter</i> to run it</li>
     </ol>
     <div class="code-block">
       <code>$env:HACKATIME_API_KEY="<%= @current_user_api_key %>"; $env:HACKATIME_API_URL="<%= api_hackatime_v1_url %>"; powershell -ExecutionPolicy Bypass -Command "& {iwr <%= root_url %>hackatime/setup.ps1 -UseBasicParsing | iex}"</code>
