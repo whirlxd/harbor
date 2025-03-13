@@ -42,7 +42,7 @@
           <span class="user" style="display: inline-block;">
             <%= render "shared/user_mention", user: entry.user %>
           </span>
-          <span class="time"><%= Time.at(entry.total_seconds).utc.strftime("%H:%M:%S") %></span>
+          <span class="time"><%= short_time_detailed entry.total_seconds %></span>
         </div>
       <% end %>
     </div>
