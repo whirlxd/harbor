@@ -58,7 +58,6 @@ api_key = $env:HACKATIME_API_KEY
     Write-Host "----------------------------------------"
 }
 finally {
-    Write-Host "`nSetup process completed. Review any errors above."
     Write-Host "Press any key to exit..."
     $null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown')
 }
