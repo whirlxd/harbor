@@ -150,6 +150,13 @@ class FlavorText
     ]
   end
 
+  def self.dino_meme_videos
+    [
+      "https://hc-cdn.hel1.your-objectstorage.com/s/v3/4154af08cda2835006529a36afc36b9dcc06d63e_untitled15_ezgif_com_crop_v1__1_.mp4",
+      "https://hc-cdn.hel1.your-objectstorage.com/s/v3/575e6cd9fc079117a34b97cd93b671f92dbe06c6_get-dinoed.mp4"
+    ]
+  end
+
   def self.motto
     [
       "track your time before it tracks you!",
