@@ -51,4 +51,11 @@ try {
   exit 1
 } 
 
-Read-Host -Prompt "Press Enter to exit..."
+# Ensure the window stays open regardless of how the script is invoked
+Write-Host "`nSetup completed. Check the messages above to see if it was successful."
+Write-Host "Press Enter to exit..."
+$null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown')
+# Fallback if ReadKey doesn't work when invoked with iex
+if ($MyInvocation.CommandOrigin -eq "Runspace") {
+    Start-Sleep -Seconds 300  # Keep window open for 5 minutes
+}
