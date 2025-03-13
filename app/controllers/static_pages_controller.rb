@@ -52,6 +52,9 @@ class StaticPagesController < ApplicationController
         return "in the past day #{in_past_day} teenagers have logged time" unless in_past_day < 5
         "in the past week #{in_past_week} teenagers have logged time" unless in_past_week < 5
       end
+
+      @users_tracked = Heartbeat.distinct.count(:user_id)
+      @hours_tracked = Heartbeat.duration_seconds / 3600
     end
 
     @active_users_count = Rails.cache.fetch("active_users_last_hour", expires_in: 1.minute) do
