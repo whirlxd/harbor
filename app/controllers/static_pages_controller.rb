@@ -43,6 +43,15 @@ class StaticPagesController < ApplicationController
 
       # Get today's leaderboard
       @leaderboard = Leaderboard.find_by(start_date: Date.current, deleted_at: nil)
+    else
+      in_past_week = Heartbeat.where("time > ?", 1.week.ago.to_f).distinct.count(:user_id)
+      in_past_day = Heartbeat.where("time > ?", 1.day.ago.to_f).distinct.count(:user_id)
+      in_past_hour = Heartbeat.where("time > ?", 1.hour.ago.to_f).distinct.count(:user_id)
+      @social_proof ||= begin
+        return "in the past hour #{in_past_hour} teenagers have logged time" unless in_past_hour < 5
+        return "in the past day #{in_past_day} teenagers have logged time" unless in_past_day < 5
+        "in the past week #{in_past_week} teenagers have logged time" unless in_past_week < 5
+      end
     end
 
     @active_users_count = Rails.cache.fetch("active_users_last_hour", expires_in: 1.minute) do
