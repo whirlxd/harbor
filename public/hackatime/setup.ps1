@@ -2,7 +2,7 @@
 New-Item -Path $env:USERPROFILE\.wakatime.cfg -Force
 Set-Content -Path $env:USERPROFILE\.wakatime.cfg -Value @"
 [settings]
-api_url = https://hackatime.hackclub.com/api/hackatime/v1
+api_url = $env:HACKATIME_API_URL
 api_key = $env:HACKATIME_API_KEY
 "@
 

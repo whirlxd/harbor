@@ -5,10 +5,10 @@
 
 <div class="setup-instructions">
   <h3>Mac/Linux users:</h3>
-<pre><code>export HACKATIME_API_KEY="<%= @current_user_api_key %>" && curl -sSL <%= root_url %>hackatime/setup.sh | bash</code></pre>
+<pre><code>export HACKATIME_API_KEY="<%= @current_user_api_key %>" && export HACKATIME_API_URL="<%= api_hackatime_v1_url %>" && curl -sSL <%= root_url %>hackatime/setup.sh | bash</code></pre>
 
 <h3>Windows users:</h3>
-<pre><code>$env:HACKATIME_API_KEY="<%= @current_user_api_key %>"; iwr <%= root_url %>hackatime/setup.ps1 -UseBasicParsing | iex</code></pre>
+<pre><code>$env:HACKATIME_API_KEY="<%= @current_user_api_key %>"; $env:HACKATIME_API_URL="<%= api_hackatime_v1_url %>"; iwr <%= root_url %>hackatime/setup.ps1 -UseBasicParsing | iex</code></pre>
 </div>
 
 <p class="mt-4 text-sm text-gray-600">This will create your WakaTime config file and send a test heartbeat to verify the set up.</p>

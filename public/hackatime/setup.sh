@@ -4,7 +4,7 @@ set -e
 # Create or update config file
 cat > ~/.wakatime.cfg << EOL
 [settings]
-api_url = https://hackatime.hackclub.com/api/hackatime/v1
+api_url = ${HACKATIME_API_URL}
 api_key = ${HACKATIME_API_KEY}
 EOL
 
