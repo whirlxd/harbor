@@ -3,7 +3,7 @@
   <h1 class="title">Keep Track of <span class="primary-color">Your</span> Coding Time</h1>
   <p class="flavor">
     <%= FlavorText.motto.sample %>
-    <%= @social_proof.downcase %>
+    <%= @social_proof&.downcase %>
   </p>
   <% unless current_user %>
     <p class="subtitle">
