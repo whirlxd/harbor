@@ -9,7 +9,7 @@ Rails.application.configure do
       class: "UserSlackStatusUpdateJob"
     },
     daily_leaderboard_update: {
-      cron: "0 0 * * *",
+      cron: "*/5 * * * *",
       class: "LeaderboardUpdateJob",
       args: [ :daily ]
     },
