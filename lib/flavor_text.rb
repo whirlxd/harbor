@@ -169,8 +169,8 @@ class FlavorText
   def self.motto
     [
       "track your time before it tracks you!",
-      "it's the thought that counts",
-      "git #{%w[good gud].sample}",
+      "it's the thought that counts.",
+      "git #{%w[good gud].sample}.",
       "time flies when you git good!",
       "take your time!",
       "have your time and eat it too!",
@@ -181,7 +181,7 @@ class FlavorText
       "give it some time!",
       "take a time, leave a time!",
       "the only thing that can't be bought!",
-      "everyone always asks how i'm doing, not when i'm doing",
+      "everyone always asks how i'm doing, not when i'm doing.",
       "go forth and commit times!",
       "time you can count on!"
     ]
