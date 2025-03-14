@@ -1,16 +1,16 @@
 <div class="container">
   <p class="super">aka Wakatime v2</p>
-  <h1 class="title">Welcome to <span class="primary-color">Hackatime</span></h1>
+  <h1 class="title">Keep Track of <span class="primary-color">Your</span> Coding Time</h1>
   <p class="flavor">
     <%= FlavorText.motto.sample %>
+    <%= @social_proof.downcase %>
   </p>
   <% unless current_user %>
     <p class="subtitle">
-      Hackatime is an open source tool for tracking your coding time.
-      <%= @social_proof %>
+      Hackatime is an open source tool that helps you keep track of the time spent coding on different projects.  Ideal for statistics nerds and everyone else.
     </p>
     <p class="subtitle">
-      Tracking <span class="primary-color"><%= pluralize(@hours_tracked, 'hour') %></span> of coding across <span class="primary-color"><%= pluralize(@users_tracked, 'teenager') %></span> since <span class="primary-color">2025</span>.
+      Tracking <span class="primary-color"><%= number_with_delimiter(@hours_tracked) %> <%= 'hour'.pluralize(@hours_tracked) %></span> of coding across <span class="primary-color"><%= number_with_delimiter(@users_tracked) %> <%= 'Hack Clubber'.pluralize(@users_tracked) %></span> since <span class="primary-color">2025</span>.
     </p>
   <% end %>
   <% if current_user %>
