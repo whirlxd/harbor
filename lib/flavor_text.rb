@@ -183,7 +183,8 @@ class FlavorText
       "the only thing that can't be bought!",
       "everyone always asks how i'm doing, not when i'm doing.",
       "go forth and commit times!",
-      "time you can count on!"
+      "time you can count on!",
+      "it's about time!"
     ]
   end
 
