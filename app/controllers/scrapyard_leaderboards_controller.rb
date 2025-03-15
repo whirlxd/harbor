@@ -66,47 +66,40 @@ class ScrapyardLeaderboardsController < ApplicationController
   def show
     @event = Warehouse::ScrapyardEvent.find(params[:id])
 
-    # Get attendees and their emails
-    attendees = Warehouse::ScrapyardLocalAttendee
-      .where.not(email: nil)
-      .for_event(@event)
-      .uniq { |attendee| attendee.email }
+    @attendee_stats = Rails.cache.fetch("scrapyard_leaderboard_event_#{@event.id}", expires_in: 10.seconds) do
+      attendees = Warehouse::ScrapyardLocalAttendee
+        .where.not(email: nil)
+        .for_event(@event)
+        .uniq { |attendee| attendee.email }
 
-    # Pre-fetch all users for the emails we have
-    emails = attendees.map(&:email).compact
-    email_to_user = EmailAddress.where(email: emails).includes(:user).index_by(&:email)
+      emails = attendees.map(&:email).compact
+      email_to_user = EmailAddress.where(email: emails).includes(:user).index_by(&:email)
 
-    # Create a map of email to attendee for looking up preferred names
-    email_to_attendee = attendees.index_by(&:email)
+      user_attendees = attendees.map do |attendee|
+        {
+          user: email_to_user[attendee.email]&.user,
+          attendee: attendee
+        }
+      end.select { |ua| ua[:user].present? }
 
-    # Map attendees to users while keeping track of the original attendee
-    user_attendees = attendees.map do |attendee|
-      {
-        user: email_to_user[attendee.email]&.user,
-        attendee: attendee
-      }
-    end.select { |ua| ua[:user].present? }
+      users = user_attendees.map { |ua| ua[:user] }
+      user_heartbeats = Heartbeat
+        .where(user: users)
+        .where("time >= ?", TRACKING_START_TIME)
+        .group(:user_id)
+        .duration_seconds
 
-    # Get all heartbeats for all users in one query
-    users = user_attendees.map { |ua| ua[:user] }
-    user_heartbeats = Heartbeat
-      .where(user: users)
-      .where("time >= ?", TRACKING_START_TIME)
-      .group(:user_id)
-      .duration_seconds
+      stats = user_attendees.map do |ua|
+        email = ua[:attendee].email if Rails.env.development?
+        {
+          user: ua[:user],
+          display_name: ua[:user].username || ua[:attendee].preferred_name || "Anonymous",
+          total_seconds: user_heartbeats[ua[:user].id] || 0,
+          email: email || nil
+        }
+      end
 
-    # Map the results
-    @attendee_stats = user_attendees.map do |ua|
-      email = ua[:attendee].email if Rails.env.development?
-      {
-        user: ua[:user],
-        display_name: ua[:user].username || ua[:attendee].preferred_name || "Anonymous",
-        total_seconds: user_heartbeats[ua[:user].id] || 0,
-        email: email || nil
-      }
+      stats.sort_by { |stats| -stats[:total_seconds] }
     end
-
-    # Sort by total coding time
-    @attendee_stats = @attendee_stats.sort_by { |stats| -stats[:total_seconds] }
   end
 end
