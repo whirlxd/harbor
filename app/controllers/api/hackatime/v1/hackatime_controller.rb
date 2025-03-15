@@ -61,7 +61,11 @@ class Api::Hackatime::V1::HackatimeController < ApplicationController
         source_type = :test_entry
       end
 
-      attrs = heartbeat.merge({ user_id: @user.id, source_type: source_type })
+      attrs = heartbeat.merge({
+        user_id: @user.id,
+        source_type: source_type,
+        ip_address: request.remote_ip
+      })
       new_heartbeat = Heartbeat.find_or_create_by(attrs)
       results << [ new_heartbeat.attributes, 201 ]
     rescue => e
