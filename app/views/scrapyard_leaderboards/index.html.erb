@@ -1,21 +1,55 @@
-<h1>Scrapyard Event Leaderboard</h1>
+<h1>Scrapyard Leaderboard</h1>
+
+<div class="sort-controls">
+  Sort by:
+  <%= link_to "Total Time", scrapyard_leaderboards_path(sort: 'total'), 
+      class: "sort-link #{@sort_by == 'total' ? 'active' : ''}" %>
+  |
+  <%= link_to "Average Time", scrapyard_leaderboards_path(sort: 'average'), 
+      class: "sort-link #{@sort_by == 'average' ? 'active' : ''}" %>
+</div>
 
 <div class="scrapyard-leaderboard">
-  <% @event_stats.each do |stats| %>
+  <% @event_stats.each_with_index do |stats, index| %>
     <div class="event-card">
-      <h2><%= link_to stats[:event].name, scrapyard_leaderboard_path(stats[:event]) %></h2>
+      <h2>
+        <%= link_to scrapyard_leaderboard_path(stats[:event]) do %>
+          <% case index %>
+          <% when 0 %>
+            🥇
+          <% when 1 %>
+            🥈
+          <% when 2 %>
+            🥉
+          <% else %>
+            <span class="ordinal"><%= (index + 1).ordinalize %></span>
+          <% end %>
+          <%= stats[:event].name %>
+        <% end %>
+      </h2>
       <div class="stats">
         <div class="stat">
-          <label>Total Coding Time:</label>
-          <span><%= ApplicationController.helpers.short_time_simple(stats[:total_seconds]) %></span>
+          <label>Coding Time:</label>
+          <span>
+            <% if stats[:total_seconds] > 0 %>
+              <span class="<%= @sort_by == 'total' ? 'active-sort' : '' %>">
+                <%= short_time_detailed(stats[:total_seconds]) %>
+              </span>
+              <span class="average <%= @sort_by == 'average' ? 'active-sort' : '' %>">
+                (<%= short_time_detailed(stats[:average_seconds_per_attendee]) %> avg)
+              </span>
+            <% else %>
+              <span class="no-time">No time logged</span>
+            <% end %>
+          </span>
         </div>
         <div class="stat">
-          <label>Attendees:</label>
-          <span><%= stats[:attendee_count] %></span>
-        </div>
-        <div class="stat">
-          <label>Average Time per Attendee:</label>
-          <span><%= ApplicationController.helpers.short_time_detailed(stats[:average_seconds_per_attendee]) %></span>
+          <label>Hackatime users / Attendees:</label>
+          <span>
+            <%= stats[:hackatime_users] %>/<%= stats[:total_attendees] %>
+            <% percent = (stats[:hackatime_users].to_f / stats[:total_attendees] * 100) %>
+            (<%= percent < 1 ? "%.1f" % percent : percent.to_i %>%)
+          </span>
         </div>
       </div>
     </div>
@@ -24,6 +58,30 @@
 
 <% content_for :head do %>
   <style>
+    .sort-controls {
+      max-width: 800px;
+      margin: 0 auto 20px;
+      padding: 0 20px;
+      text-align: right;
+    }
+
+    .sort-link {
+      color: inherit;
+      text-decoration: none;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+      padding: 4px 8px;
+    }
+
+    .sort-link:hover {
+      opacity: 1;
+    }
+
+    .sort-link.active {
+      opacity: 1;
+      font-weight: bold;
+    }
+
     .scrapyard-leaderboard {
       max-width: 800px;
       margin: 0 auto;
@@ -50,6 +108,12 @@
       text-decoration: underline;
     }
 
+    .ordinal {
+      font-size: 0.9em;
+      opacity: 0.7;
+      font-weight: normal;
+    }
+
     .stats {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -69,6 +133,23 @@
     .stat span {
       font-size: 1.2em;
       font-weight: bold;
+    }
+
+    .stat .average {
+      font-size: 0.9em;
+      opacity: 0.8;
+      font-weight: normal;
+      margin-left: 4px;
+    }
+
+    .stat .no-time {
+      opacity: 0.7;
+      font-weight: normal;
+    }
+
+    .active-sort {
+      font-weight: bold !important;
+      opacity: 1 !important;
     }
   </style>
 <% end %> 

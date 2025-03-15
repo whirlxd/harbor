@@ -3,6 +3,8 @@ class ScrapyardLeaderboardsController < ApplicationController
   TRACKING_START_TIME = Time.find_zone("Eastern Time (US & Canada)").local(2025, 3, 14, 20, 0).to_i
 
   def index
+    @sort_by = params[:sort] == "average" ? "average" : "total"
+
     # Get all attendees and their emails in one query
     event_attendees = Warehouse::ScrapyardLocalAttendee
       .where.not(email: nil)
@@ -39,16 +41,23 @@ class ScrapyardLeaderboardsController < ApplicationController
       {
         event: event,
         total_seconds: total_seconds,
-        attendee_count: users.count,
+        hackatime_users: users.count,
+        total_attendees: attendees.count,
         average_seconds_per_attendee: users.any? ? (total_seconds.to_f / users.count) : 0
       }
     end
 
     # filter out events with no users
-    @event_stats = @event_stats.select { |stats| stats[:attendee_count] > 0 }
+    @event_stats = @event_stats.select { |stats| stats[:hackatime_users] > 0 }
 
-    # Sort by total coding time
-    @event_stats = @event_stats.sort_by { |stats| -stats[:total_seconds] }
+    # Sort by selected metric
+    @event_stats = @event_stats.sort_by do |stats|
+      if @sort_by == "average"
+        -stats[:average_seconds_per_attendee]
+      else
+        -stats[:total_seconds]
+      end
+    end
   end
 
   def show
