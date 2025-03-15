@@ -2,7 +2,7 @@ class StaticPagesController < ApplicationController
   def index
     # Get today's leaderboard for both authenticated and unauthenticated users
     @leaderboard = Leaderboard.find_by(start_date: Date.current, deleted_at: nil)
-    
+
     if current_user
       unless params[:date].blank?
         # implement this later– for now just redirect to a random video
@@ -116,7 +116,7 @@ class StaticPagesController < ApplicationController
                             .distinct.count(:user_id)
     this_year = Heartbeat.where("time > ? AND source_type = ?", Time.current.beginning_of_year.to_f, Heartbeat.source_types[:test_entry])
                         .distinct.count(:user_id)
-    
+
     # Choose the most appropriate time period based on user count
     if in_past_5_min >= 1
       "#{in_past_5_min} Hack Clubber#{in_past_5_min > 1 ? 's' : ''} set up Hackatime in the past 5 minutes"
