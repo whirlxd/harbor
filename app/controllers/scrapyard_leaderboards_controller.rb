@@ -5,52 +5,55 @@ class ScrapyardLeaderboardsController < ApplicationController
   def index
     @sort_by = params[:sort] == "average" ? "average" : "total"
 
-    # Get all attendees and their emails in one query
-    event_attendees = Warehouse::ScrapyardLocalAttendee
-      .where.not(email: nil)
-      .group_by(&:event_id)
+    # Cache the expensive computations for 10 seconds
+    @event_stats = Rails.cache.fetch("scrapyard_leaderboard_stats", expires_in: 10.seconds) do
+      # Get all attendees and their emails in one query
+      event_attendees = Warehouse::ScrapyardLocalAttendee
+        .where.not(email: nil)
+        .group_by(&:event_id)
 
-    # Only get events that have attendees
-    @events = Warehouse::ScrapyardEvent
-      .where(id: event_attendees.keys)
-      .order(created_at: :desc)
+      # Only get events that have attendees
+      events = Warehouse::ScrapyardEvent
+        .where(id: event_attendees.keys)
+        .order(created_at: :desc)
 
-    # Pre-fetch all users for the emails we have
-    all_emails = event_attendees.values.flatten.map(&:email).compact
-    email_to_user = EmailAddress.where(email: all_emails).includes(:user).index_by(&:email)
+      # Pre-fetch all users for the emails we have
+      all_emails = event_attendees.values.flatten.map(&:email).compact
+      email_to_user = EmailAddress.where(email: all_emails).includes(:user).index_by(&:email)
 
-    # For each event, get the total coding time of its attendees
-    @event_stats = @events.map do |event|
-      # Get attendees for this event
-      attendees = event_attendees[event.id] || []
-      users = attendees
-        .map { |a| email_to_user[a.email]&.user }
-        .compact
-        .uniq
+      # For each event, get the total coding time of its attendees
+      event_stats = events.map do |event|
+        # Get attendees for this event
+        attendees = event_attendees[event.id] || []
+        users = attendees
+          .map { |a| email_to_user[a.email]&.user }
+          .compact
+          .uniq
 
-      # Calculate total duration for all users in one query
-      total_seconds = if users.any?
-        Heartbeat
-          .where(user: users)
-          .where("time >= ?", TRACKING_START_TIME)
-          .duration_seconds
-      else
-        0
+        # Calculate total duration for all users in one query
+        total_seconds = if users.any?
+          Heartbeat
+            .where(user: users)
+            .where("time >= ?", TRACKING_START_TIME)
+            .duration_seconds
+        else
+          0
+        end
+
+        {
+          event: event,
+          total_seconds: total_seconds,
+          hackatime_users: users.count,
+          total_attendees: attendees.count,
+          average_seconds_per_attendee: users.any? ? (total_seconds.to_f / users.count) : 0
+        }
       end
 
-      {
-        event: event,
-        total_seconds: total_seconds,
-        hackatime_users: users.count,
-        total_attendees: attendees.count,
-        average_seconds_per_attendee: users.any? ? (total_seconds.to_f / users.count) : 0
-      }
+      # filter out events with no users
+      event_stats.select { |stats| stats[:hackatime_users] > 0 }
     end
 
-    # filter out events with no users
-    @event_stats = @event_stats.select { |stats| stats[:hackatime_users] > 0 }
-
-    # Sort by selected metric
+    # Sort by selected metric (do this outside cache since it depends on params)
     @event_stats = @event_stats.sort_by do |stats|
       if @sort_by == "average"
         -stats[:average_seconds_per_attendee]
