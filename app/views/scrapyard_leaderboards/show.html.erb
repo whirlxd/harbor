@@ -5,13 +5,12 @@
   </div>
 
   <div class="attendee-leaderboard">
-    <h2>Attendee Leaderboard</h2>
+    <h2>Hackatime Users</h2>
     
     <% if @attendee_stats.any? %>
       <div class="attendees">
         <% @attendee_stats.each_with_index do |stats, index| %>
           <div class="attendee-card">
-            <div class="rank"><%= index + 1 %></div>
             <div class="info">
               <div class="name">
                 <%= stats[:display_name] %>
