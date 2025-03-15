@@ -32,10 +32,12 @@ class ScrapyardLeaderboardsController < ApplicationController
 
         # Calculate total duration for all users in one query
         total_seconds = if users.any?
-          Heartbeat
-            .where(user: users)
-            .where("time >= ?", TRACKING_START_TIME)
-            .duration_seconds
+          Heartbeat.where(user: users)
+                   .where("time >= ?", TRACKING_START_TIME)
+                   .group(:user_id)
+                   .duration_seconds
+                   .values
+                   .sum
         else
           0
         end
