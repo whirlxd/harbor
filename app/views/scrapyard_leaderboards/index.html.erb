@@ -11,7 +11,8 @@
   </div>
 
   <% @event_stats.each_with_index do |stats, index| %>
-    <div class="event-card">
+    <div class="event-card" id="event-<%= stats[:event].id %>">
+      <a href="#<%= stats[:event].id %>" class="pin-link" title="Copy link to this event" data-turbo="false">📌</a>
       <h2>
         <%= link_to scrapyard_leaderboard_path(stats[:event]) do %>
           <% case index %>
@@ -95,6 +96,28 @@
       border-radius: 8px;
       padding: 20px;
       margin-bottom: 20px;
+      position: relative;
+      transition: all 0.3s;
+      border: 2px solid transparent;
+    }
+
+    .event-card.highlighted {
+      border: 2px solid #FFE066;
+      background: #f4f9f4;
+      box-shadow: 0 0 10px rgba(255, 224, 102, 0.3);
+    }
+
+    .pin-link {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      text-decoration: none;
+      opacity: 0.5;
+      transition: opacity 0.2s;
+    }
+
+    .pin-link:hover {
+      opacity: 1;
     }
 
     .event-card h2 {
@@ -154,4 +177,56 @@
       opacity: 1 !important;
     }
   </style>
+
+  <script>
+    function handlePin() {
+      console.log("Handling pin");
+      const pinId = window.location.hash.substring(1);
+      
+      if (pinId) {
+        const targetCard = document.getElementById('event-' + pinId);
+        if (targetCard) {
+          // Remove any existing highlights
+          document.querySelectorAll('.event-card.highlighted').forEach(card => {
+            card.classList.remove('highlighted');
+          });
+          
+          targetCard.classList.add('highlighted');
+          // Center the card
+          const windowHeight = window.innerHeight;
+          const cardHeight = targetCard.offsetHeight;
+          const cardTop = targetCard.offsetTop;
+          const scrollTo = cardTop - (windowHeight - cardHeight) / 2;
+          window.scrollTo({ top: scrollTo });
+        }
+      }
+    }
+
+    // Handle both initial page load and subsequent Turbo navigations
+    document.addEventListener('turbo:load', handlePin);
+    document.addEventListener('turbo:render', handlePin);
+    document.addEventListener('DOMContentLoaded', handlePin);
+
+    // Set up auto-refresh if we have a pin
+    document.addEventListener('turbo:load', function() {
+      if (window.location.hash) {
+        // Clear any existing refresh interval
+        if (window.refreshInterval) {
+          clearInterval(window.refreshInterval);
+        }
+        
+        // Set up new refresh using Turbo
+        window.refreshInterval = setInterval(() => {
+          Turbo.visit(window.location.href, { action: 'replace' });
+        }, 5000);
+      }
+    });
+
+    // Clean up interval when leaving the page
+    document.addEventListener('turbo:before-visit', function() {
+      if (window.refreshInterval) {
+        clearInterval(window.refreshInterval);
+      }
+    });
+  </script>
 <% end %> 
