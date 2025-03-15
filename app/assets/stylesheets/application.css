@@ -67,10 +67,55 @@
   margin-top: 1rem;
 }
 
+/* Login grid layout */
+.login-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin: 2rem 0;
+  align-items: center;
+}
+
+.video-container {
+  width: 100%;
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+  height: 0;
+  overflow: hidden;
+}
+
+.video-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+}
+
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Mobile layout - stack elements on small screens */
+@media (max-width: 768px) {
+  .login-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .video-container {
+    margin-bottom: 1rem;
+  }
+}
+
 .auth-options {
   max-width: 400px;
-  margin: 2rem auto;
+  margin: 0 auto;
   text-align: center;
+  width: 100%;
 }
 
 .auth-button {
