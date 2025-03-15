@@ -9,9 +9,10 @@ class SailorsLogPollForChangesJob < ApplicationJob
                                           .distinct.pluck(:user_id)
 
     puts "users_who_coded: #{users_who_coded}"
+    slack_uids = users_who_coded.map { |user_id| User.find(user_id).slack_uid }
 
     # Get all of those with enabled preferences
-    enabled_users = SailorsLogNotificationPreference.where(enabled: true, slack_uid: users_who_coded).distinct.pluck(:slack_uid)
+    enabled_users = SailorsLogNotificationPreference.where(enabled: true, slack_uid: slack_uids).distinct.pluck(:slack_uid)
 
     puts "enabled_users: #{enabled_users}"
 
@@ -42,10 +43,8 @@ class SailorsLogPollForChangesJob < ApplicationJob
       end
       log.save! if log.changed?
 
-      GoodJob::Bulk.enqueue do
-        log.notifications.where(sent: false).each do |notification|
-          notification.notify_user!
-        end
+      log.notifications.where(sent: false).each do |notification|
+        notification.notify_user!
       end
     end
   end
