@@ -10,9 +10,11 @@
         class: "sort-link #{@sort_by == 'average' ? 'active' : ''}" %>
   </div>
 
+  <em>Use the "📌" button to pin an event.</em>
+
   <% @event_stats.each_with_index do |stats, index| %>
     <div class="event-card" id="event-<%= stats[:event].id %>">
-      <a href="#<%= stats[:event].id %>" class="pin-link" title="Copy link to this event" data-turbo="false">📌</a>
+      <a href="#<%= stats[:event].id %>" class="pin-link" title="Copy link to this event">📌</a>
       <h2>
         <%= link_to scrapyard_leaderboard_path(stats[:event]) do %>
           <% case index %>
@@ -202,10 +204,24 @@
       }
     }
 
+    // Add click handlers to pin links
+    document.addEventListener('turbo:load', function() {
+      document.querySelectorAll('.pin-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          const hash = this.getAttribute('href');
+          window.location.hash = hash;
+          handlePin();
+          window.location.reload();
+        });
+      });
+    });
+
     // Handle both initial page load and subsequent Turbo navigations
     document.addEventListener('turbo:load', handlePin);
     document.addEventListener('turbo:render', handlePin);
     document.addEventListener('DOMContentLoaded', handlePin);
+    window.addEventListener('hashchange', handlePin);
 
     // Set up auto-refresh if we have a pin
     document.addEventListener('turbo:load', function() {
