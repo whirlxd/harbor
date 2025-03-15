@@ -15,9 +15,6 @@
             <div class="info">
               <div class="name">
                 <%= stats[:display_name] %>
-                <% if Rails.env.development? %>
-                  <%= stats[:email] %>
-                <% end %>
               </div>
               <div class="time">
                 <%= ApplicationController.helpers.short_time_simple(stats[:total_seconds]) %>
