@@ -104,6 +104,8 @@ class StaticPagesController < ApplicationController
 
   def get_setup_social_proof
     # Count users who set up in different time periods
+    in_past_5_min = Heartbeat.where("time > ? AND source_type = ?", 5.minutes.ago.to_f, Heartbeat.source_types[:test_entry])
+                            .distinct.count(:user_id)
     in_past_hour = Heartbeat.where("time > ? AND source_type = ?", 1.hour.ago.to_f, Heartbeat.source_types[:test_entry])
                            .distinct.count(:user_id)
     in_past_day = Heartbeat.where("time > ? AND source_type = ?", 1.day.ago.to_f, Heartbeat.source_types[:test_entry])
@@ -116,7 +118,9 @@ class StaticPagesController < ApplicationController
                         .distinct.count(:user_id)
     
     # Choose the most appropriate time period based on user count
-    if in_past_hour >= 3
+    if in_past_5_min >= 1
+      "#{in_past_5_min} Hack Clubber#{in_past_5_min > 1 ? 's' : ''} set up Hackatime in the past 5 minutes"
+    elsif in_past_hour >= 3
       "#{in_past_hour} Hack Clubbers set up Hackatime in the past hour"
     elsif in_past_day >= 5
       "#{in_past_day} Hack Clubbers set up Hackatime in the past day"
