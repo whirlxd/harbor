@@ -6,6 +6,11 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
+/* Styling for the leaderboard on the homepage for unauthenticated users */
+h3 + .mini-leaderboard {
+  margin-bottom: 30px;
+}
+
 .leaderboard-entries {
   display: flex;
   flex-direction: column;

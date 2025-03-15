@@ -60,6 +60,11 @@
       </div>
     <% end %>
   <% else %>
+    <% if @leaderboard %>
+      <h3>Today's Top Hack Clubbers</h3>
+      <%= render "leaderboards/mini_leaderboard", leaderboard: @leaderboard, current_user: nil %>
+    <% end %>
+    
     <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/eFVA_ZWnzDk?si=TcEVwiigFZh0Sp_Z&loop=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
     
     <div class="auth-options">

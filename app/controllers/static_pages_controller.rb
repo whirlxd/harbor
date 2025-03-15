@@ -1,5 +1,8 @@
 class StaticPagesController < ApplicationController
   def index
+    # Get today's leaderboard for both authenticated and unauthenticated users
+    @leaderboard = Leaderboard.find_by(start_date: Date.current, deleted_at: nil)
+    
     if current_user
       unless params[:date].blank?
         # implement this later– for now just redirect to a random video
@@ -40,9 +43,6 @@ class StaticPagesController < ApplicationController
       @todays_languages = language_counts.map(&:first)
       @todays_editors = editor_counts.map(&:first)
       @show_logged_time_sentence = @todays_languages.any? || @todays_editors.any?
-
-      # Get today's leaderboard
-      @leaderboard = Leaderboard.find_by(start_date: Date.current, deleted_at: nil)
     else
       in_past_week = Heartbeat.where("time > ?", 1.week.ago.to_f).distinct.count(:user_id)
       in_past_day = Heartbeat.where("time > ?", 1.day.ago.to_f).distinct.count(:user_id)
