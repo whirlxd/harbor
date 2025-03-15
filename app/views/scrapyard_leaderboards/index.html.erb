@@ -29,7 +29,7 @@
       </h2>
       <div class="stats">
         <div class="stat">
-          <label>Coding Time:</label>
+          <label>Coding time</label>
           <span>
             <% if stats[:total_seconds] > 0 %>
               <span class="<%= @sort_by == 'total' ? 'active-sort' : '' %>">
@@ -44,7 +44,7 @@
           </span>
         </div>
         <div class="stat">
-          <label>Hackatime users / Attendees:</label>
+          <label>Hackatime users / Estimated attendees</label>
           <span>
             <%= stats[:hackatime_users] %>/<%= stats[:total_attendees] %>
             <% percent = (stats[:hackatime_users].to_f / stats[:total_attendees] * 100) %>
