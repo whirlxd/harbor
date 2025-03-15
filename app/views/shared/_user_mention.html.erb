@@ -3,7 +3,7 @@
                 size: "32x32",
                 class: "avatar",
                 alt: "#{user.username}'s avatar" if user.avatar_url %>
-  <%= user.username if user.username %>
+  <%= user.display_name %>
   <% unless current_user == user %>
     <% admin_tool('', 'span') do %>
       <%= link_to impersonate_user_path(user), class: "impersonate-link" do %>

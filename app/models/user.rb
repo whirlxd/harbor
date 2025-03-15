@@ -180,6 +180,16 @@ class User < ApplicationRecord
     "https://i2.wp.com/ui-avatars.com/api/#{initials}/48/#{hashed_initials}/fff?ssl=1" if initials.present?
   end
 
+  def display_name
+    return username if username.present?
+
+    # "zach@hackclub.com" -> "zach (email sign-up)"
+    email = email_addresses&.first&.email
+    return "error displaying name" unless email.present?
+
+    email.split('@')&.first + " (email sign-up)"
+  end
+
   def project_names
     heartbeats.select(:project).distinct.pluck(:project)
   end
