@@ -56,8 +56,9 @@ class StaticPagesController < ApplicationController
         end
       end
 
-      @users_tracked = Heartbeat.distinct.count(:user_id)
-      @hours_tracked = Heartbeat.duration_seconds / 3600
+      seconds_by_user = Heartbeat.group(:user_id).duration_seconds
+      @users_tracked = seconds_by_user.size
+      @hours_tracked = seconds_by_user.values.sum / 3600
     end
   end
 
