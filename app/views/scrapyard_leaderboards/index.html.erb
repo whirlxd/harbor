@@ -1,15 +1,15 @@
-<h1>Scrapyard Leaderboard</h1>
-
-<div class="sort-controls">
-  Sort by:
-  <%= link_to "Total Time", scrapyard_leaderboards_path(sort: 'total'), 
-      class: "sort-link #{@sort_by == 'total' ? 'active' : ''}" %>
-  |
-  <%= link_to "Average Time", scrapyard_leaderboards_path(sort: 'average'), 
-      class: "sort-link #{@sort_by == 'average' ? 'active' : ''}" %>
-</div>
-
 <div class="scrapyard-leaderboard">
+  <h1>Scrapyard Leaderboard</h1>
+
+  <div class="sort-controls">
+    Sort by:
+    <%= link_to "Total Time", scrapyard_leaderboards_path(sort: 'total'), 
+        class: "sort-link #{@sort_by == 'total' ? 'active' : ''}" %>
+    |
+    <%= link_to "Average Time", scrapyard_leaderboards_path(sort: 'average'), 
+        class: "sort-link #{@sort_by == 'average' ? 'active' : ''}" %>
+  </div>
+
   <% @event_stats.each_with_index do |stats, index| %>
     <div class="event-card">
       <h2>
@@ -58,11 +58,19 @@
 
 <% content_for :head do %>
   <style>
-    .sort-controls {
+    .scrapyard-leaderboard {
       max-width: 800px;
-      margin: 0 auto 20px;
-      padding: 0 20px;
-      text-align: right;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .scrapyard-leaderboard h1 {
+      margin-top: 0;
+    }
+
+    .sort-controls {
+      margin-bottom: 20px;
+      text-align: left;
     }
 
     .sort-link {
@@ -80,12 +88,6 @@
     .sort-link.active {
       opacity: 1;
       font-weight: bold;
-    }
-
-    .scrapyard-leaderboard {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 20px;
     }
 
     .event-card {
