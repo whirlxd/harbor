@@ -11,6 +11,7 @@ class StaticPagesController < ApplicationController
       end
 
       @show_wakatime_setup_notice = current_user.heartbeats.empty?
+      @setup_social_proof = get_setup_social_proof if @show_wakatime_setup_notice
 
       @project_names = current_user.project_names
       @projects = current_user.project_labels
@@ -97,5 +98,34 @@ class StaticPagesController < ApplicationController
       daily_durations: @daily_durations,
       length_of_busiest_day: @length_of_busiest_day
     }
+  end
+
+  private
+
+  def get_setup_social_proof
+    # Count users who set up in different time periods
+    in_past_hour = Heartbeat.where("time > ? AND source_type = ?", 1.hour.ago.to_f, Heartbeat.source_types[:test_entry])
+                           .distinct.count(:user_id)
+    in_past_day = Heartbeat.where("time > ? AND source_type = ?", 1.day.ago.to_f, Heartbeat.source_types[:test_entry])
+                          .distinct.count(:user_id)
+    in_past_week = Heartbeat.where("time > ? AND source_type = ?", 1.week.ago.to_f, Heartbeat.source_types[:test_entry])
+                           .distinct.count(:user_id)
+    in_past_month = Heartbeat.where("time > ? AND source_type = ?", 1.month.ago.to_f, Heartbeat.source_types[:test_entry])
+                            .distinct.count(:user_id)
+    this_year = Heartbeat.where("time > ? AND source_type = ?", Time.current.beginning_of_year.to_f, Heartbeat.source_types[:test_entry])
+                        .distinct.count(:user_id)
+    
+    # Choose the most appropriate time period based on user count
+    if in_past_hour >= 3
+      "#{in_past_hour} Hack Clubbers set up Hackatime in the past hour"
+    elsif in_past_day >= 5
+      "#{in_past_day} Hack Clubbers set up Hackatime in the past day"
+    elsif in_past_week >= 5
+      "#{in_past_week} Hack Clubbers set up Hackatime in the past week"
+    elsif in_past_month >= 5
+      "#{in_past_month} Hack Clubbers set up Hackatime in the past month"
+    else
+      "#{this_year} Hack Clubbers set up Hackatime this year"
+    end
   end
 end

@@ -18,7 +18,7 @@
     <% if @show_wakatime_setup_notice %>
       <div class="setup-notice">
         <%= link_to "Set up time tracking! Click me.", my_wakatime_setup_path, class: "auth-button setup-button primary-action" %>
-        <p class="setup-hint">Required to start tracking your coding time</p>
+        <p class="setup-hint"><%= @setup_social_proof %></p>
       </div>
     <% end %>
 
