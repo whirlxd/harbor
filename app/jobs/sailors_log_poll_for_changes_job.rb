@@ -5,11 +5,13 @@ class SailorsLogPollForChangesJob < ApplicationJob
     puts "performing SailorsLogPollForChangesJob"
     # get all users who've coded in the last minute
     users_who_coded = Heartbeat.where("created_at > ?", 1.minutes.ago)
-                                          .where(time: 1.minutes.ago..)
-                                          .distinct.pluck(:user_id)
+                               .where(time: 1.minutes.ago..)
+                               .distinct.pluck(:user_id)
 
     puts "users_who_coded: #{users_who_coded}"
-    slack_uids = users_who_coded.map { |user_id| User.find(user_id).slack_uid }
+    slack_uids = User.where(id: users_who_coded)
+                     .where.not(slack_uid: nil)
+                     .distinct.pluck(:slack_uid)
 
     # Get all of those with enabled preferences
     enabled_users = SailorsLogNotificationPreference.where(enabled: true, slack_uid: slack_uids).distinct.pluck(:slack_uid)
