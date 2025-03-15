@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_14_153542) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_15_030446) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -149,6 +149,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_14_153542) do
     t.datetime "updated_at", null: false
     t.text "fields_hash"
     t.integer "source_type", null: false
+    t.inet "ip_address"
     t.index ["fields_hash"], name: "index_heartbeats_on_fields_hash", unique: true
     t.index ["user_id"], name: "index_heartbeats_on_user_id"
   end
