@@ -71,9 +71,6 @@ class ScrapyardLeaderboardsController < ApplicationController
         -stats[:total_seconds]
       end
     end
-
-    # Get currently pinned events
-    @pinned_events = get_pinned_events
   end
 
   def pin
