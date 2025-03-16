@@ -29,6 +29,10 @@ Rails.application.configure do
     slack_username_update: {
       cron: "0 0 * * *",
       class: "SlackUsernameUpdateJob"
+    },
+    cache_home_stats: {
+      cron: "0/10 * * * *",
+      class: "CacheHomeStatsJob"
     }
   }
 end

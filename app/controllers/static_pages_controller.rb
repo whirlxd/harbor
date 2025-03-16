@@ -56,9 +56,8 @@ class StaticPagesController < ApplicationController
         end
       end
 
-      seconds_by_user = Heartbeat.group(:user_id).duration_seconds
-      @users_tracked = seconds_by_user.size
-      @hours_tracked = seconds_by_user.values.sum / 3600
+      @home_stats = Rails.cache.read("home_stats")
+      CacheHomeStatsJob.perform_later if @home_stats.nil?
     end
   end
 

@@ -9,9 +9,13 @@
     <p class="subtitle">
       Hackatime is an open source tool that helps you keep track of the time spent coding on different projects.  Ideal for statistics nerds and everyone else.
     </p>
-    <p class="subtitle">
-      Tracking <span class="primary-color"><%= number_with_delimiter(@hours_tracked) %> <%= 'hour'.pluralize(@hours_tracked) %></span> of coding across <span class="primary-color"><%= number_with_delimiter(@users_tracked) %> <%= 'Hack Clubber'.pluralize(@users_tracked) %></span> since <span class="primary-color">2025</span>.
-    </p>
+    <% if @home_stats&.[](:seconds_tracked) && @home_stats&.[](:users_tracked) %>
+      <p class="subtitle">
+        Tracking <span class="primary-color"><%= number_with_delimiter(@home_stats[:seconds_tracked] / 3600) %> <%= 'hour'.pluralize(@home_stats[:seconds_tracked] / 3600) %></span>
+        of coding across <span class="primary-color"><%= number_with_delimiter(@home_stats[:users_tracked]) %> <%= 'Hack Clubber'.pluralize(@home_stats[:users_tracked]) %></span>
+        since <span class="primary-color">2025</span>.
+      </p>
+    <% end %>
   <% end %>
   <% if current_user %>
 
