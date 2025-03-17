@@ -1,7 +1,8 @@
 class StaticPagesController < ApplicationController
   def index
-    @leaderboard = Leaderboard.joins(:entries)
-                              .where(start_date: Date.current, deleted_at: nil)
+    @leaderboard = Leaderboard.where.associated(:entries)
+                              .where(start_date: Date.current)
+                              .where(deleted_at: nil)
                               .where(period_type: :daily)
                               .distinct
                               .first
