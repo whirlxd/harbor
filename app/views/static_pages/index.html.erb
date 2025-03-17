@@ -87,7 +87,7 @@
             <div class="field">
               <%= email_field_tag :email, nil, placeholder: "Enter your email", required: true %>
             </div>
-            <%= submit_tag "Send sign-in link", class: "auth-button email" %>
+            <%= submit_tag "Send sign-in link", class: "auth-button email", data: { disable_with: "Sending..." } %>
           <% end %>
           <% if params[:sign_in_email] %>
             <div class="auth-success">
