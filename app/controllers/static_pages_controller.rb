@@ -17,10 +17,6 @@ class StaticPagesController < ApplicationController
       @show_wakatime_setup_notice = current_user.heartbeats.empty?
       @setup_social_proof = get_setup_social_proof if @show_wakatime_setup_notice
 
-      @project_names = current_user.project_names
-      @projects = current_user.project_labels
-      @current_project = current_user.active_project
-
       # Get languages and editors in a single query using window functions
       results = current_user.heartbeats.today
         .select(
