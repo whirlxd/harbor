@@ -9,6 +9,7 @@ class HandleEmailSigninJob < ApplicationJob
       end
     end
 
-    LoopsMailer.sign_in_email(email_address).deliver_now
+    token = email_address.user.create_email_signin_token
+    LoopsMailer.sign_in_email(email_address.email, token).deliver_now
   end
 end

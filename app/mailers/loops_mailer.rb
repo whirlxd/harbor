@@ -13,9 +13,9 @@ class LoopsMailer < ApplicationMailer
     }
   end
 
-  def sign_in_email(email_address)
-    @email = email_address.email
-    @token = email_address.user.create_email_signin_token.token
+  def sign_in_email(email, token)
+    @email = email
+    @token = token
     @sign_in_url = auth_token_url(@token)
 
     mail(
