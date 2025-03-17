@@ -184,8 +184,11 @@ class FlavorText
       "everyone always asks how i'm doing, not when i'm doing.",
       "go forth and commit times!",
       "time you can count on!",
-      "it's about time!",
-      "like clocks but better"
+      "well, it's about time!",
+      "like clocks but better",
+      "just a second!",
+      "loading jokes, just give me a sec!",
+      "now you'll never need to second guess yourself"
     ]
   end
 
