@@ -1,7 +1,10 @@
 class StaticPagesController < ApplicationController
   def index
-    # Get today's leaderboard for both authenticated and unauthenticated users
-    @leaderboard = Leaderboard.find_by(start_date: Date.current, deleted_at: nil)
+    @leaderboard = Leaderboard.joins(:entries)
+                              .where(start_date: Date.current, deleted_at: nil)
+                              .where(period_type: :daily)
+                              .distinct
+                              .first
 
     if current_user
       unless params[:date].blank?
