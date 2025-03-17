@@ -152,19 +152,21 @@ class User < ApplicationRecord
 
     return nil unless user_data["ok"]
 
-    user = find_or_initialize_by(slack_uid: data.dig("authed_user", "id"))
+    email = user_data.dig("user", "profile", "email")
+    email_address = EmailAddress.find_or_initialize_by(email: email)
+    user = email_address.user
+    user ||= begin
+      u = User.find_or_initialize_by(slack_uid: data.dig("authed_user", "id"))
+      u.email_addresses << email_address
+      u
+    end
+
     user.username = user_data.dig("user", "profile", "username")
     user.username ||= user_data.dig("user", "profile", "display_name_normalized")
     user.slack_avatar_url = user_data.dig("user", "profile", "image_192") || user_data.dig("user", "profile", "image_72")
-    # Store the OAuth data
+
     user.slack_access_token = data["authed_user"]["access_token"]
     user.slack_scopes = data["authed_user"]["scope"]&.split(/,\s*/)
-
-    # Handle email address
-    if email = user_data.dig("user", "profile", "email")
-      # Find or create email address record
-      user.email_addresses.find_or_initialize_by(email: email)
-    end
 
     user.save!
     user
