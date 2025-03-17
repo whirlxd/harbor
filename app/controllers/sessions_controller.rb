@@ -36,16 +36,13 @@ class SessionsController < ApplicationController
   def email
     email = params[:email].downcase
 
-    # Use a transaction to ensure both user and email are created atomically
-    email_address = ActiveRecord::Base.transaction do
-      EmailAddress.find_by(email: email) || begin
-        user = User.create!
-        user.email_addresses.create!(email: email)
-      end
+    if Rails.env.production?
+      HandleEmailSigninJob.perform_later(email)
+    else
+      HandleEmailSigninJob.perform_now(email)
     end
 
-    LoopsMailer.sign_in_email(email_address).deliver_later
-    redirect_to root_path(sign_in_email: true)
+    redirect_to root_path(sign_in_email: true), notice: "Check your email for a sign-in link!"
   end
 
   def token
