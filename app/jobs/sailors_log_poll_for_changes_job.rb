@@ -31,7 +31,6 @@ class SailorsLogPollForChangesJob < ApplicationJob
       new_project_times.each do |project, new_project_duration|
         next if project.blank?
         if new_project_duration > (log.projects_summary[project] || 0) + 1.hour
-          # create a new SailorsLogSlackNotification
           log.notification_preferences.each do |preference|
             log.notifications << SailorsLogSlackNotification.new(
               slack_uid: log.slack_uid,
@@ -45,8 +44,11 @@ class SailorsLogPollForChangesJob < ApplicationJob
       end
       log.save! if log.changed?
 
-      log.notifications.where(sent: false).each do |notification|
-        notification.notify_user!
+      # if multiple notifications for the same project, only the most recent one should be sent
+      log.notifications.group_by(&:project_name).each do |project_name, notifications|
+        if notifications.size > 1
+          notifications.sort_by(&:created_at).last.destroy_all
+        end
       end
     end
   end
