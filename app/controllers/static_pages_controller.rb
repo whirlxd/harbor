@@ -66,7 +66,7 @@ class StaticPagesController < ApplicationController
 
     @project_repo_mappings = current_user.project_repo_mappings
 
-    @project_durations = Rails.cache.fetch("user_#{current_user.id}_project_durations", expires_in: 1.minute) do
+    project_durations = Rails.cache.fetch("user_#{current_user.id}_project_durations", expires_in: 1.minute) do
       project_times = current_user.heartbeats.group(:project).duration_seconds
       project_labels = current_user.project_labels
 
@@ -79,22 +79,22 @@ class StaticPagesController < ApplicationController
       end.filter { |p| p[:duration].positive? }.sort_by { |p| p[:duration] }.reverse
     end
 
-    render partial: "project_durations", locals: { project_durations: @project_durations }
+    render partial: "project_durations", locals: { project_durations: project_durations }
   end
 
   def activity_graph
     return unless current_user
 
-    @daily_durations = Rails.cache.fetch("user_#{current_user.id}_daily_durations", expires_in: 1.minute) do
+    daily_durations = Rails.cache.fetch("user_#{current_user.id}_daily_durations", expires_in: 1.minute) do
       current_user.heartbeats.daily_durations.to_h
     end
 
     # Consider 8 hours as a "full" day of coding
-    @length_of_busiest_day = 8.hours.to_i  # 28800 seconds
+    length_of_busiest_day = 8.hours.to_i  # 28800 seconds
 
     render partial: "activity_graph", locals: {
-      daily_durations: @daily_durations,
-      length_of_busiest_day: @length_of_busiest_day
+      daily_durations: daily_durations,
+      length_of_busiest_day: length_of_busiest_day
     }
   end
 
@@ -102,32 +102,21 @@ class StaticPagesController < ApplicationController
 
   def get_setup_social_proof
     # Count users who set up in different time periods
-    in_past_5_min = Heartbeat.where("time > ? AND source_type = ?", 5.minutes.ago.to_f, Heartbeat.source_types[:test_entry])
-                            .distinct.count(:user_id)
-    in_past_hour = Heartbeat.where("time > ? AND source_type = ?", 1.hour.ago.to_f, Heartbeat.source_types[:test_entry])
-                           .distinct.count(:user_id)
-    in_past_day = Heartbeat.where("time > ? AND source_type = ?", 1.day.ago.to_f, Heartbeat.source_types[:test_entry])
-                          .distinct.count(:user_id)
-    in_past_week = Heartbeat.where("time > ? AND source_type = ?", 1.week.ago.to_f, Heartbeat.source_types[:test_entry])
-                           .distinct.count(:user_id)
-    in_past_month = Heartbeat.where("time > ? AND source_type = ?", 1.month.ago.to_f, Heartbeat.source_types[:test_entry])
-                            .distinct.count(:user_id)
-    this_year = Heartbeat.where("time > ? AND source_type = ?", Time.current.beginning_of_year.to_f, Heartbeat.source_types[:test_entry])
-                        .distinct.count(:user_id)
+    social_proof_for_time_period(5.minutes.ago, 1, "in the last 5 minutes") ||
+      social_proof_for_time_period(1.hour.ago, 3, "in the last hour") ||
+      social_proof_for_time_period(1.day.ago, 5, "today") ||
+      social_proof_for_time_period(1.week.ago, 5, "in the past week") ||
+      social_proof_for_time_period(1.month.ago, 5, "in the past month") ||
+      social_proof_for_time_period(Time.current.beginning_of_year, 5, "this year")
+  end
 
-    # Choose the most appropriate time period based on user count
-    if in_past_5_min >= 1
-      "#{in_past_5_min} Hack Clubber#{in_past_5_min > 1 ? 's' : ''} set up Hackatime in the past 5 minutes"
-    elsif in_past_hour >= 3
-      "#{in_past_hour} Hack Clubbers set up Hackatime in the past hour"
-    elsif in_past_day >= 5
-      "#{in_past_day} Hack Clubbers set up Hackatime in the past day"
-    elsif in_past_week >= 5
-      "#{in_past_week} Hack Clubbers set up Hackatime in the past week"
-    elsif in_past_month >= 5
-      "#{in_past_month} Hack Clubbers set up Hackatime in the past month"
-    else
-      "#{this_year} Hack Clubbers set up Hackatime this year"
-    end
+  def social_proof_for_time_period(time_period, threshold, humanized_time_period)
+    count_unique = Heartbeat.where("time > ?", time_period.to_f)
+                            .where(source_type: :test_entry)
+                            .distinct.count(:user_id)
+
+    return nil if count_unique < threshold
+
+    "#{count_unique.to_s + ' Hack Clubber'.pluralize(count_unique)} set up Hackatime #{humanized_time_period}"
   end
 end
