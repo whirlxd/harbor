@@ -161,7 +161,9 @@ class User < ApplicationRecord
       u
     end
 
-    user.username = user_data.dig("user", "profile", "username")
+    user.slack_uid = data.dig("authed_user", "id")
+
+    user.username ||= user_data.dig("user", "profile", "username")
     user.username ||= user_data.dig("user", "profile", "display_name_normalized")
     user.slack_avatar_url = user_data.dig("user", "profile", "image_192") || user_data.dig("user", "profile", "image_72")
 
