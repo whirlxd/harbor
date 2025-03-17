@@ -47,7 +47,8 @@ class SailorsLogPollForChangesJob < ApplicationJob
       # if multiple notifications for the same project, only the most recent one should be sent
       log.notifications.group_by(&:project_name).each do |project_name, notifications|
         if notifications.size > 1
-          notifications.sort_by(&:created_at).last.destroy_all
+          # Keep the most recent notification, destroy the older ones
+          notifications.sort_by(&:created_at)[0..-2].each(&:destroy)
         end
       end
     end
