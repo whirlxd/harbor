@@ -110,6 +110,7 @@ class StaticPagesController < ApplicationController
     end
 
     render partial: "currently_hacking", locals: { users: users }
+  end
 
   def 🃏
     redirect_to root_path unless current_user&.slack_uid
