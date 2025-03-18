@@ -188,14 +188,30 @@ class FlavorText
       "like clocks but better",
       "just a second!",
       "loading jokes, just give me a sec!",
-      "now you'll never need to second guess yourself"
+      "now you'll never need to second guess yourself",
+      "better late than never",
+      "beat the clock!",
+      "only time will tell!",
+      "it's of the essence",
+      "all in good time"
     ]
   end
 
   def self.rare_motto
     [
       "i don't care what everyone else says, you're not that dumb",
-      "<a href='https://github.com/hackclub/hackatime' target='_blank'>open source!</a>".html_safe
+      "<a href='https://github.com/hackclub/hackatime' target='_blank'>open source!</a>".html_safe,
+      "kill time, don't let it kill you"
     ]
+  end
+
+  def self.conditional_mottos(user)
+    r = []
+
+    r << "quick slacking off!" if user.slack_uid.present?
+    r << "in the nick of time!" if %w[nick nicholas nickolas].include?(user.username)
+    r << "just-in time!" if %w[justin justine].include?(user.username)
+
+    r
   end
 end

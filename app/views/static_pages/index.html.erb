@@ -13,7 +13,7 @@
     }
   </style>
   <p class="flavor">
-    <%= FlavorText.motto.sample %>
+    <%= @flavor_text %>
     <%= @social_proof&.downcase %>
   </p>
   <% unless current_user %>

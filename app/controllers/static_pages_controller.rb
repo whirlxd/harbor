@@ -8,6 +8,10 @@ class StaticPagesController < ApplicationController
                               .first
 
     if current_user
+      flavor_texts = FlavorText.motto + FlavorText.conditional_mottos(current_user)
+      flavor_texts += FlavorText.rare_motto if Random.rand(10) < 1
+      @flavor_text = flavor_texts.sample
+
       unless params[:date].blank?
         # implement this later– for now just redirect to a random video
         allowed_hosts = FlavorText.random_time_video.map { |v| URI.parse(v).host }
