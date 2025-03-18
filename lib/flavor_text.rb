@@ -208,7 +208,7 @@ class FlavorText
   def self.conditional_mottos(user)
     r = []
 
-    r << "quick slacking off!" if user.slack_uid.present?
+    r << "quit slacking off!" if user.slack_uid.present?
     r << "in the nick of time!" if %w[nick nicholas nickolas].include?(user.username)
     r << "just-in time!" if %w[justin justine].include?(user.username)
 
