@@ -1,10 +1,12 @@
 <%= turbo_frame_tag "currently_hacking" do %>
-  <%= cache ["currently_hacking"], expires_in: 1.second do %>
+  <%= cache ["currently_hacking"], expires_in: 1.minute do %>
     <% if users.any? %>
       <div class="currently-hacking" onclick="this.classList.toggle('visible')">
         <div class="currently-hacking-header">
-          <span><%= pluralize(users.count, "person") %> currently hacking</span>
-          <%# live recording indicator  %>
+          <span>
+            <div class="live-indicator"></div>
+            <%= pluralize(users.count, "person") %> currently hacking
+          </span>
         </div>
         <div class="currently-hacking-list">
           <hr>

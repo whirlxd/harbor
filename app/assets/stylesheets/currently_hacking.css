@@ -3,7 +3,7 @@
   position: fixed;
   top: 0px;
   right: 20px;
-  width: 300px;
+  max-width: 300px;
   max-height: 80vh;
   background: white;
   border-radius: 8px;
@@ -23,6 +23,39 @@
   cursor: pointer;
   user-select: none;
   color: var(--black);
+}
+
+.currently-hacking-header {
+  cursor: pointer;
+  user-select: none;
+  color: var(--black);
+}
+
+.currently-hacking-header span {
+  display: inline-flex;
+  align-items: center;
+}
+
+.live-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  display: inline-block;
+  margin-right: 0.2em;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.5;
+  }
 }
 
 .currently-hacking-list {
