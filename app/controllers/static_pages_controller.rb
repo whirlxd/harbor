@@ -63,6 +63,16 @@ class StaticPagesController < ApplicationController
       @home_stats = Rails.cache.read("home_stats")
       CacheHomeStatsJob.perform_later if @home_stats.nil?
     end
+
+    # Get active projects for the mini leaderboard
+    if @leaderboard
+      user_ids = @leaderboard.entries.pluck(:user_id)
+      users = User.where(id: user_ids).includes(:project_repo_mappings)
+      @active_projects = {}
+      users.each do |user|
+        @active_projects[user.id] = user.project_repo_mappings.find { |p| p.project_name == user.active_project }
+      end
+    end
   end
 
   def project_durations
