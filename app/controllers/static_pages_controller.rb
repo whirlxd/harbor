@@ -120,7 +120,7 @@ class StaticPagesController < ApplicationController
   end
 
   def 🃏
-    redirect_to root_path unless current_user&.slack_uid
+    redirect_to root_path unless current_user && current_user.slack_uid.present?
 
     record = HTTP.auth("Bearer #{ENV.fetch("WILDCARD_AIRTABLE_KEY")}").patch("https://api.airtable.com/v0/appt3yVn2nbiUaijm/tblRCAMjfQ4MIsMPp",
       json: {
