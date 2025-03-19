@@ -47,6 +47,32 @@ class User < ApplicationRecord
     end
   end
 
+  def set_timezone_from_slack
+    return unless slack_uid.present?
+
+    user_response = HTTP.auth("Bearer #{slack_access_token}")
+      .get("https://slack.com/api/users.info?user=#{slack_uid}")
+
+    user_data = JSON.parse(user_response.body.to_s)
+
+    return unless user_data["ok"]
+
+    timezone_string = user_data.dig("user", "tz")
+
+    return unless timezone_string.present?
+
+    parse_and_set_timezone(timezone_string)
+  end
+
+  def parse_and_set_timezone(timezone)
+    begin
+      tz = ActiveSupport::TimeZone.find_tzinfo(timezone)
+      self.timezone = tz.name
+    rescue TZInfo::InvalidTimezoneIdentifier => e
+      Rails.logger.error "Invalid timezone #{timezone} for user #{id}: #{e.message}"
+    end
+  end
+
   def admin?
     is_admin
   end
