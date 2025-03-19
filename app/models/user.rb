@@ -193,6 +193,8 @@ class User < ApplicationRecord
     user.username ||= user_data.dig("user", "profile", "display_name_normalized")
     user.slack_avatar_url = user_data.dig("user", "profile", "image_192") || user_data.dig("user", "profile", "image_72")
 
+    user.parse_and_set_timezone(user_data.dig("user", "tz"))
+
     user.slack_access_token = data["authed_user"]["access_token"]
     user.slack_scopes = data["authed_user"]["scope"]&.split(/,\s*/)
 
