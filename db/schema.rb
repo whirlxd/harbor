@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_15_030446) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_19_142656) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -150,6 +150,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_15_030446) do
     t.text "fields_hash"
     t.integer "source_type", null: false
     t.inet "ip_address"
+    t.index ["category", "time"], name: "index_heartbeats_on_category_and_time"
     t.index ["fields_hash"], name: "index_heartbeats_on_fields_hash", unique: true
     t.index ["user_id"], name: "index_heartbeats_on_user_id"
   end
@@ -242,7 +243,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_15_030446) do
     t.string "slack_scopes", default: [], array: true
     t.text "slack_access_token"
     t.integer "hackatime_extension_text_type", default: 0, null: false
+    t.string "timezone", default: "UTC"
     t.index ["slack_uid"], name: "index_users_on_slack_uid", unique: true
+    t.index ["timezone"], name: "index_users_on_timezone"
   end
 
   create_table "versions", force: :cascade do |t|
