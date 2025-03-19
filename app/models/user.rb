@@ -3,6 +3,7 @@ class User < ApplicationRecord
   encrypts :slack_access_token
 
   validates :slack_uid, uniqueness: true, allow_nil: true
+  validates :timezone, inclusion: { in: TZInfo::Timezone.all.map(&:identifier) }, allow_nil: false
 
   has_many :heartbeats
   has_many :email_addresses
@@ -26,6 +27,8 @@ class User < ApplicationRecord
     clock_emoji: 1,
     compliment_text: 2
   }
+
+  after_save :invalidate_activity_graph_cache, if: :saved_change_to_timezone?
 
   def data_migration_jobs
     GoodJob::Job.where(
@@ -246,5 +249,11 @@ class User < ApplicationRecord
 
   def find_valid_token(token)
     sign_in_tokens.valid.find_by(token: token)
+  end
+
+  private
+
+  def invalidate_activity_graph_cache
+    Rails.cache.delete("user_#{id}_daily_durations")
   end
 end
