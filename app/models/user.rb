@@ -299,14 +299,14 @@ class User < ApplicationRecord
   end
 
   def display_name
-    return username if username.present?
+    return slack_username if slack_username.present?
     return github_username if github_username.present?
 
     # "zach@hackclub.com" -> "zach (email sign-up)"
     email = email_addresses&.first&.email
     return "error displaying name" unless email.present?
 
-    email.split("@")&.first + " (email sign-up)"
+    email.split("@")&.first.truncate(10) + " (email sign-up)"
   end
 
   def project_names
