@@ -12,7 +12,7 @@
           <hr>
           <ul>
             <% users.each do |user| %>
-              <%= render "shared/user_mention", user: user %>
+              <%= render "shared/user_mention", user: user, show: [:slack] %>
             <% end %>
           </ul>
         </div>

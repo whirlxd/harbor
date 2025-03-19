@@ -40,7 +40,7 @@
             <span class="rank"><%= (entries.index(entry) + 1).ordinalize %></span>
           <% end %>
           <span class="user" style="display: inline-block;">
-            <%= render "shared/user_mention", user: entry.user %>
+            <%= render "shared/user_mention", user: entry.user, show: [:neighborhood] %>
           </span>
           <span class="time"><%= short_time_detailed entry.total_seconds %></span>
         </div>

@@ -3,12 +3,12 @@
                 size: "32x32",
                 class: "avatar",
                 alt: "#{user.username}'s avatar" if user.avatar_url %>
-  <% if user.slack_uid.present? %>
+  <% if local_assigns.fetch(:show, []).include?(:slack) && user.slack_uid.present? %>
     <%= link_to "@#{user.display_name}", "https://slack.com/app_redirect?channel=#{user.slack_uid}", target: "_blank" %>
   <% else %>
     <%= user.display_name %>
   <% end %>
-  <% if user.slack_uid.present? && neighborhood = SlackNeighborhood.find_by_id(user.slack_uid) %>
+  <% if local_assigns.fetch(:show, []).include?(:neighborhood) && user.slack_uid.present? && neighborhood = SlackNeighborhood.find_by_id(user.slack_uid) %>
     <%= link_to "🏘️", "https://slack.com/app_redirect?channel=#{neighborhood.dig("id")}", target: "_blank" %>
   <% end %>
   <% unless current_user == user %>
