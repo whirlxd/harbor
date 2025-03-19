@@ -45,6 +45,9 @@
 
 <div>
   <h2 id="user_github_account">GitHub Account</h2>
+  <p>
+    This is used to show your active projects on the leaderboard & current hacking activity on the dashboard.
+  </p>
   <% if @user.github_uid.present? %>
     <p>Your GitHub account is linked. <%= link_to "@#{@user.github_username}", "https://github.com/#{@user.github_username}", target: "_blank" %></p>
   <% else %>

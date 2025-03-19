@@ -41,6 +41,11 @@
           <% end %>
           <span class="user">
             <%= render "shared/user_mention", user: entry.user, show: [:neighborhood] %>
+            <% if entry.user == current_user && current_user.github_username.blank? %>
+              <span class="super">
+                <%= link_to "Link active projects", my_settings_path(anchor: "user_github_account"), target: "_blank" %>
+              </span>
+            <% end %>
             <% if @active_projects&.dig(entry.user_id).present? %>
               <span class="super">
                 working on <%= link_to @active_projects[entry.user_id].project_name, @active_projects[entry.user_id].repo_url, target: "_blank" %>

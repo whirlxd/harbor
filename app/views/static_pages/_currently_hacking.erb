@@ -18,6 +18,11 @@
                   working on <%= link_to active_projects[user.id].project_name, active_projects[user.id].repo_url, target: "_blank" %>
                 </span>
               <% end %>
+              <% if user == current_user && user.github_username.blank? %>
+                <span class="super">
+                  <%= link_to "Link active projects", my_settings_path(anchor: "user_github_account"), target: "_blank" %>
+                </span>
+              <% end %>
             <% end %>
           </ul>
         </div>
