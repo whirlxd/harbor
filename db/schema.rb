@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_19_165910) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_19_193636) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -248,6 +248,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_19_165910) do
     t.string "github_avatar_url"
     t.text "github_access_token"
     t.string "github_username"
+    t.string "slack_username"
     t.index ["slack_uid"], name: "index_users_on_slack_uid", unique: true
     t.index ["timezone"], name: "index_users_on_timezone"
   end
