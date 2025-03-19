@@ -39,15 +39,15 @@
             <% end %>
             <span class="rank"><%= (entries.index(entry) + 1).ordinalize %></span>
           <% end %>
-          <span class="user" style="display: inline-block;">
+          <span class="user">
             <%= render "shared/user_mention", user: entry.user, show: [:neighborhood] %>
+            <% if @active_projects&.dig(entry.user_id).present? %>
+              <span class="super">
+                working on <%= link_to @active_projects[entry.user_id].project_name, @active_projects[entry.user_id].repo_url, target: "_blank" %>
+              </span>
+            <% end %>
           </span>
           <span class="time"><%= short_time_detailed entry.total_seconds %></span>
-          <% if @active_projects&.dig(entry.user_id).present? %>
-            <span class="super">
-              working on <%= link_to @active_projects[entry.user_id].project_name, @active_projects[entry.user_id].repo_url, target: "_blank" %>
-            </span>
-          <% end %>
         </div>
       <% end %>
     </div>
