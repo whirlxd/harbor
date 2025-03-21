@@ -51,7 +51,7 @@
   <% if @user.github_uid.present? %>
     <p>Your GitHub account is linked. <%= link_to "@#{@user.github_username}", "https://github.com/#{@user.github_username}", target: "_blank" %></p>
   <% else %>
-    <%= link_to "Link GitHub Account", github_auth_path, class: "button" %>
+    <%= link_to "Link GitHub Account", github_auth_path, class: "button", data: { turbo: "false" } %>
   <% end %>
 </div>
 
