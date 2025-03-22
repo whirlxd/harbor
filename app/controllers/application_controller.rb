@@ -45,7 +45,7 @@ class ApplicationController < ActionController::Base
                      .group("hour")
                      .order("hour DESC")
 
-    top_hour_count = hours.max_by(&:count).count
+    top_hour_count = hours.max_by(&:count)&.count || 1
 
     hours = hours.map do |h|
       {
