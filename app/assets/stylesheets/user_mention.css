@@ -1,6 +1,7 @@
 .avatar {
   border-radius: 50%;
   margin-right: 8px;
+  aspect-ratio: 1;
 }
 
 .current-user {
