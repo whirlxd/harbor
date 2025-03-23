@@ -102,7 +102,7 @@ class User < ApplicationRecord
 
     custom_status_regex = /spent on \w+ today$/
     status_present = current_status.dig("profile", "status_text").present?
-    status_custom = !current_status.dig("profile", "status_text").match?(custom_status_regex)
+    status_custom = !current_status.dig("profile", "status_text")&.match?(custom_status_regex)
 
     return if status_present && status_custom
 
