@@ -77,6 +77,37 @@ module Heartbeatable
       end
     end
 
+    def daily_streaks_for_users(user_ids, start_date: 8.days.ago)
+      require "set"
+
+      user_set = Set.new(user_ids)
+
+      heartbeats = where(user_id: user_set)
+        .coding_only
+        .with_valid_timestamps
+        .where(time: start_date..Time.current)
+
+      days_by_user = heartbeats.daily_durations(start_date: start_date)
+        .group_by { |date, _| date }
+        .transform_values { |durations| durations.map(&:last).sum }
+
+      valid_days = days_by_user.select { |_, duration| duration >= 15 * 60 }
+        .sort_by { |date, _| date }
+        .reverse
+
+      user_ids.each_with_object(Hash.new(0)) do |user_id, hash|
+        streak = 0
+        valid_days.each do |_, duration|
+          if duration >= 15 * 60
+            streak += 1
+          else
+            break
+          end
+        end
+        hash[user_id] = streak
+      end
+    end
+
     def daily_durations(start_date: 365.days.ago, end_date: Time.current)
       # Get the timezone from the first associated user (for scoped queries)
       timezone = all.first&.user&.timezone || "UTC"
