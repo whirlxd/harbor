@@ -19,6 +19,36 @@ module Heartbeatable
       end
     end
 
+    def streak_days(start_date: 8.days.ago)
+      scope = coding_only.with_valid_timestamps
+      days = scope.daily_durations(start_date: start_date, end_date: Time.current)
+                .sort_by { |date, _| date }
+                .reverse
+
+      streak = 0
+      days.each do |date, duration|
+        if duration >= 15 * 60
+          streak += 1
+        else
+          break
+        end
+      end
+
+      streak
+    end
+
+    def streak_days_formatted(start_date: 8.days.ago)
+      result = streak_days(start_date: start_date)
+
+      if result > 7
+        "7+"
+      elsif result < 1
+        nil
+      else
+        result.to_s
+      end
+    end
+
     def duration_formatted(scope = all)
       seconds = duration_seconds(scope)
       hours = seconds / 3600
