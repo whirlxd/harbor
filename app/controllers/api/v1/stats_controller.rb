@@ -29,12 +29,18 @@ class Api::V1::StatsController < ApplicationController
   end
 
   def user_stats
+    # Used by the github stats page feature
     user = User.where(id: params[:username]).first
     user ||= User.where(slack_uid: params[:username]).first
 
     return render plain: "User not found", status: :not_found unless user.present?
 
-    summary = WakatimeService.new(user, languages: true).generate_summary
+    limit = params[:limit].to_i
+
+    enabled_features = params[:features]&.split(",")&.map(&:to_sym)
+    enabled_features ||= %i[languages]
+
+    summary = WakatimeService.new(user, enabled_features, false, limit).generate_summary
 
     render json: { data: summary }
   end
