@@ -3,6 +3,7 @@ class Api::V1::My::HeartbeatsController < ApplicationController
 
   def most_recent
     heartbeat = current_user.heartbeats
+      .where(source_type: :test_entry)
       .order(time: :desc)
       .first
 
