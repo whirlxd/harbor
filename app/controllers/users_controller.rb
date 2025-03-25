@@ -65,76 +65,98 @@ class UsersController < ApplicationController
       current_user
     end
 
-    # Load filter options
-    @projects = @user.heartbeats.select(:project).distinct.order(:project).pluck(:project)
-    @languages = @user.heartbeats.select(:language).distinct.order(:language).pluck(:language)
-    @operating_systems = @user.heartbeats.select(:operating_system).distinct.order(:operating_system).pluck(:operating_system)
-    @editors = @user.heartbeats.select(:editor).distinct.order(:editor).pluck(:editor)
+    # Cache key based on user and filter parameters
+    cache_key = [
+      @user,
+      params[:projects],
+      params[:language],
+      params[:os],
+      params[:editor]
+    ]
 
-    # Apply filters to heartbeats
-    @filtered_heartbeats = @user.heartbeats
-    @filtered_heartbeats = @filtered_heartbeats.where(project: params[:projects].split(",")) if params[:projects].present?
-    @filtered_heartbeats = @filtered_heartbeats.where(language: params[:language].split(",")) if params[:language].present?
-    @filtered_heartbeats = @filtered_heartbeats.where(operating_system: params[:os].split(",")) if params[:os].present?
-    @filtered_heartbeats = @filtered_heartbeats.where(editor: params[:editor].split(",")) if params[:editor].present?
+    # Load filter options and apply filters with caching
+    cached_data = Rails.cache.fetch(cache_key, expires_in: 5.minutes) do
+      result = {}
+      # Load filter options
+      result[:projects] = @user.heartbeats.select(:project).distinct.order(:project).pluck(:project)
+      result[:languages] = @user.heartbeats.select(:language).distinct.order(:language).pluck(:language)
+      result[:operating_systems] = @user.heartbeats.select(:operating_system).distinct.order(:operating_system).pluck(:operating_system)
+      result[:editors] = @user.heartbeats.select(:editor).distinct.order(:editor).pluck(:editor)
 
-    # Calculate stats for filtered data
-    @total_time = @filtered_heartbeats.duration_seconds
-    @total_heartbeats = @filtered_heartbeats.count
-    @top_project = @filtered_heartbeats.group(:project).duration_seconds.max_by { |_, v| v }&.first
-    @top_language = @filtered_heartbeats.group(:language).duration_seconds.max_by { |_, v| v }&.first
-    @top_os = @filtered_heartbeats.group(:operating_system).duration_seconds.max_by { |_, v| v }&.first
-    @top_editor = @filtered_heartbeats.group(:editor).duration_seconds.max_by { |_, v| v }&.first
+      # Apply filters to heartbeats
+      filtered_heartbeats = @user.heartbeats
+      filtered_heartbeats = filtered_heartbeats.where(project: params[:projects].split(",")) if params[:projects].present?
+      filtered_heartbeats = filtered_heartbeats.where(language: params[:language].split(",")) if params[:language].present?
+      filtered_heartbeats = filtered_heartbeats.where(operating_system: params[:os].split(",")) if params[:os].present?
+      filtered_heartbeats = filtered_heartbeats.where(editor: params[:editor].split(",")) if params[:editor].present?
 
-    # Prepare project durations data
-    @project_durations = @filtered_heartbeats
-      .group(:project)
-      .duration_seconds
-      .sort_by { |_, duration| -duration }
-      .first(10)
-      .to_h
+      result[:filtered_heartbeats] = filtered_heartbeats
 
-    # Prepare pie chart data
-    @language_stats = @filtered_heartbeats
-      .group(:language)
-      .duration_seconds
-      .sort_by { |_, duration| -duration }
-      .first(10)
-      .map { |k, v| [ k.presence || "Unknown", v ] }
-      .to_h
 
-    @editor_stats = @filtered_heartbeats
-      .group(:editor)
-      .duration_seconds
-      .sort_by { |_, duration| -duration }
-      .map { |k, v| [ k.presence || "Unknown", v ] }
-      .to_h
+      # Calculate stats for filtered data
+      result[:total_time] = filtered_heartbeats.duration_seconds
+      result[:total_heartbeats] = filtered_heartbeats.count
+      result[:top_project] = filtered_heartbeats.group(:project).duration_seconds.max_by { |_, v| v }&.first
+      result[:top_language] = filtered_heartbeats.group(:language).duration_seconds.max_by { |_, v| v }&.first
+      result[:top_os] = filtered_heartbeats.group(:operating_system).duration_seconds.max_by { |_, v| v }&.first
+      result[:top_editor] = filtered_heartbeats.group(:editor).duration_seconds.max_by { |_, v| v }&.first
 
-    @os_stats = @filtered_heartbeats
-      .group(:operating_system)
-      .duration_seconds
-      .sort_by { |_, duration| -duration }
-      .map { |k, v| [ k.presence || "Unknown", v ] }
-      .to_h
-
-    # Calculate weekly project stats for the last 6 months
-    @weekly_project_stats = {}
-    (0..25).each do |week_offset|  # 26 weeks = 6 months
-      week_start = week_offset.weeks.ago.beginning_of_week
-      week_end = week_offset.weeks.ago.end_of_week
-
-      week_stats = @filtered_heartbeats
-        .where(time: week_start.to_f..week_end.to_f)
+      # Prepare project durations data
+      result[:project_durations] = filtered_heartbeats
         .group(:project)
         .duration_seconds
+        .sort_by { |_, duration| -duration }
+        .first(10)
+        .to_h
 
-      @weekly_project_stats[week_start.to_date.iso8601] = week_stats
+      # Prepare pie chart data
+      result[:language_stats] = filtered_heartbeats
+        .group(:language)
+        .duration_seconds
+        .sort_by { |_, duration| -duration }
+        .first(10)
+        .map { |k, v| [ k.presence || "Unknown", v ] }
+        .to_h
+
+      result[:editor_stats] = filtered_heartbeats
+        .group(:editor)
+        .duration_seconds
+        .sort_by { |_, duration| -duration }
+        .map { |k, v| [ k.presence || "Unknown", v ] }
+        .to_h
+
+      result[:os_stats] = filtered_heartbeats
+        .group(:operating_system)
+        .duration_seconds
+        .sort_by { |_, duration| -duration }
+        .map { |k, v| [ k.presence || "Unknown", v ] }
+        .to_h
+
+      # Calculate weekly project stats for the last 6 months
+      result[:weekly_project_stats] = {}
+      (0..25).each do |week_offset|  # 26 weeks = 6 months
+        week_start = week_offset.weeks.ago.beginning_of_week
+        week_end = week_offset.weeks.ago.end_of_week
+
+        week_stats = filtered_heartbeats
+          .where(time: week_start.to_f..week_end.to_f)
+          .group(:project)
+          .duration_seconds
+
+        result[:weekly_project_stats][week_start.to_date.iso8601] = week_stats
+      end
+
+      result
+    end
+
+    cached_data.entries.each do |key, value|
+      instance_variable_set("@#{key}", value)
     end
 
     respond_to do |format|
       format.html do
         if request.xhr?
-          render partial: "filterable_dashboard"
+          render partial: "filterable_dashboard_content"
         end
       end
 
