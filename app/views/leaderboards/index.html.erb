@@ -45,6 +45,9 @@
               <% if @active_projects&.dig(entry.user_id).present? %>
                 <span class="super">
                   working on <%= link_to @active_projects[entry.user_id].project_name, @active_projects[entry.user_id].repo_url, target: "_blank" %>
+                  <% dev_tool(nil, 'span') do %>
+                    <%= link_to "🌌", visualize_git_url(@active_projects[entry.user_id].repo_url), target: "_blank" %>
+                  <% end %>
                 </span>
               <% end %>
               <% if entry.streak_count > 7 %>

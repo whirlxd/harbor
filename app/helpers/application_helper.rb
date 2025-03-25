@@ -15,6 +15,10 @@ module ApplicationHelper
     concat content_tag(element, class: "dev-tool #{class_name}", **options, &block)
   end
 
+  def visualize_git_url(url)
+    url.gsub("https://github.com/", "https://tkww0gcc0gkwwo4gc8kgs0sw.a.selfhosted.hackclub.com/")
+  end
+
   def digital_time(time)
     hours = time.to_i / 3600
     minutes = (time.to_i % 3600) / 60
