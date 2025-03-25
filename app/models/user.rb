@@ -305,8 +305,6 @@ class User < ApplicationRecord
     return github_username.presence.truncate(10) if github_username.present?
     return username.presence.truncate(10) if username.present?
 
-    debugger if slack_uid == "U0824J5AHRB"
-
     # "zach@hackclub.com" -> "zach (email sign-up)"
     email = email_addresses&.first&.email
     return "error displaying name" unless email.present?
