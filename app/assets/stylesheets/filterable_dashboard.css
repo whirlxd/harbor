@@ -201,6 +201,23 @@
   width: 100%;
 }
 
+.dashboard-wrapper .loading-message {
+  opacity: 0;
+  text-align: center;
+  transition: opacity 0.2s ease;
+}
+
+.loading .dashboard-wrapper .loading-message {
+  opacity: 1;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.5; }
+  50% { opacity: 1; }
+  100% { opacity: 0.5; }
+}
+
 .dashboard-wrapper .stats-section {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -361,6 +378,7 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem 1rem;
+  padding-bottom: 0;
 }
 
 .content {

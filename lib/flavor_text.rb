@@ -11,6 +11,13 @@ class FlavorText
     ]
   end
 
+  def self.slack_loading_messages
+    [
+      ".split() === :large_blue_circle::large_green_circle::large_yellow_circle::large_orange_circle::red_circle::large_purple_circle:",
+      "spinning the rgbs"
+    ]
+  end
+
   def self.loading_messages
     [
       "Generating leaderboard...",
@@ -49,6 +56,7 @@ class FlavorText
       "carrying the one",
       "team-carrying the one",
       "carrying the zero",
+      "AD carrying the one",
       "ganking the one before it gets carried",
       "spinning violently around the y-axis",
       "#{%w[tokenizing serializing stringifying].sample} #{[ "blood, sweat, & tears", "the human condition", "personal experiences", "elbow grease" ].sample}",
@@ -56,14 +64,13 @@ class FlavorText
       "petting the bits",
       "testing patience",
       "[npm] now installing #{rand(3..7)} of #{rand(26_000..29_000)} packages",
-      "spinning the rgbs",
       "Installing dependencies",
       "shoveling the overflowed pixels",
-      ".split() === :large_blue_circle::large_green_circle::large_yellow_circle::large_orange_circle::red_circle::large_purple_circle:",
       "Are ya' winning, son?",
       "Dropkicking the cache into the sun",
       "[#{self.other_servers.sample}] starting on port #{self.common_ports.sample}",
-      "compressing the accountants"
+      "compressing the accountants",
+      "loading up TurboTax, time edition"
     ]
   end
 
@@ -121,7 +128,6 @@ class FlavorText
       "You're a star!",
       "Keep it up!",
       "No stopping you!"
-
     ]
   end
 
@@ -201,7 +207,8 @@ class FlavorText
       "beat the clock!",
       "only time will tell!",
       "it's of the essence",
-      "all in good time"
+      "all in good time",
+      "like turbotax for time!"
     ]
   end
 
@@ -209,7 +216,8 @@ class FlavorText
     [
       "i don't care what everyone else says, you're not that dumb",
       "<a href='https://github.com/hackclub/hackatime' target='_blank'>open source!</a>".html_safe,
-      "kill time, don't let it kill you"
+      "kill time, don't let it kill you",
+      "the best way to pay your time tax!"
     ]
   end
 

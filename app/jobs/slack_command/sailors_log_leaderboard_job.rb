@@ -4,9 +4,10 @@ class SlackCommand::SailorsLogLeaderboardJob < ApplicationJob
 
   def perform(slack_uid, channel_id, response_url)
     # Send loading message first
+    loading_messages = FlavorText.loading_messages + FlavorText.rare_loading_messages + FlavorText.slack_loading_messages
     response = HTTP.post(response_url, json: {
       response_type: "ephemeral",
-      text: ":beachball: #{FlavorText.loading_messages.sample}"
+      text: ":beachball: #{loading_messages.sample}"
     })
 
     puts "Performing leaderboard job for channel #{channel_id} and user #{slack_uid}"
