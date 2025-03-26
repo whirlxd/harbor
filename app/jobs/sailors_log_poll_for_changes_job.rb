@@ -18,15 +18,17 @@ class SailorsLogPollForChangesJob < ApplicationJob
 
     puts "enabled_users: #{enabled_users}"
 
-    logs = SailorsLog.where(slack_uid: enabled_users)
+    logs = SailorsLog.includes(:user).where(slack_uid: enabled_users)
+
+    user_ids = logs.map(&:user).pluck(:id)
 
     puts "logs: #{logs}"
 
     logs.each do |log|
       # get all projects for the user with duration
-      new_project_times = Heartbeat.where(user_id: log.slack_uid)
-                                              .group(:project)
-                                              .duration_seconds
+      new_project_times = Heartbeat.where(user_id: user_ids)
+                                   .group(:project)
+                                   .duration_seconds
 
       new_project_times.each do |project, new_project_duration|
         next if project.blank?
