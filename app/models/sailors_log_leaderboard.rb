@@ -53,6 +53,7 @@ class SailorsLogLeaderboard < ApplicationRecord
 
       # Get most common language per project using ActiveRecord
       most_common_languages = user_heartbeats
+        .where.not(language: nil)
         .group(:project, :language)
         .count
         .group_by { |k, _| k[0] }  # Group by project
