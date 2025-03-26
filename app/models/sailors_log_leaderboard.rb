@@ -32,15 +32,17 @@ class SailorsLogLeaderboard < ApplicationRecord
 
   def self.generate_leaderboard_stats(channel)
     # Get all users with enabled preferences in the channel
-    users_in_channel = SailorsLogNotificationPreference.where(enabled: true, slack_channel_id: channel)
-                                                   .distinct
-                                                   .pluck(:slack_uid)
+    slack_ids_in_channel = SailorsLogNotificationPreference.where(enabled: true, slack_channel_id: channel)
+                                                           .distinct
+                                                           .pluck(:slack_uid)
+
+    users_in_channel = User.where(slack_uid: slack_ids_in_channel)
 
     # Get all durations for users in channel
-    user_durations = Heartbeat.where(user_id: users_in_channel)
-                                         .today
-                                         .group(:user_id)
-                                         .duration_seconds
+    user_durations = Heartbeat.where(user: users_in_channel)
+                              .today
+                              .group(:user_id)
+                              .duration_seconds
 
     # Sort and take top 10 users
     top_user_ids = user_durations.sort_by { |_, duration| -duration }.first(10).map(&:first)
