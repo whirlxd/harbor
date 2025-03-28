@@ -77,26 +77,15 @@ class WakatimeService
 
     if matches = user_agent.match(user_agent_pattern)
       os = matches[1].split("-").first
-      os = case os
-      when "win" then "Windows"
-      when "darwin" then "MacOS"
-      else os.capitalize
-      end
 
       editor = matches[2]
       editor ||= matches[3]
-      editor = "kate" if editor == "KTextEditor"
 
       { os: os, editor: editor, err: nil }
     else
       # Try parsing as browser user agent as fallback
       if browser_ua = user_agent.match(/([^\/]+)\/([^\/]+)/)
-        os = if user_agent.downcase.include?("windows")
-          "Windows"
-        else
-          browser_ua[1].capitalize
-        end
-        { os: os, editor: browser_ua[2], err: nil }
+        { os: browser_ua[1], editor: browser_ua[2], err: nil }
       else
         { os: "", editor: "", err: "failed to parse user agent string" }
       end
