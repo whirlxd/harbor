@@ -91,4 +91,21 @@ class WakatimeService
       end
     end
   end
+
+  def categorize_os(os)
+    case os.downcase
+    when "win" then "Windows"
+    when "darwin" then "MacOS"
+    when os.include?("windows") then "Windows"
+    else os.capitalize
+    end
+  end
+
+  def categorize_editor(editor)
+    case editor.downcase
+    when "vscode" then "VSCode"
+    when "KTextEditor" then "Kate"
+    else editor.capitalize
+    end
+  end
 end
