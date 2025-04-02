@@ -5,8 +5,9 @@ class WakatimeService
     @scope = Heartbeat.all
     @user = user
 
-    @start_date = start_date || @scope.minimum(:time)
-    @end_date = end_date || @scope.maximum(:time)
+    # Default to 1 year ago if no start_date provided or if no data exists
+    @start_date = start_date || @scope.minimum(:time) || 1.year.ago.to_i
+    @end_date = end_date || @scope.maximum(:time) || Time.current.to_i
 
     @scope = @scope.where(time: @start_date..@end_date)
 
@@ -28,20 +29,20 @@ class WakatimeService
     summary[:is_other_usage_visible] = true if @user.present?
     summary[:status] = "ok"
 
-    @start_time = @scope.minimum(:time)
-    @end_time = @scope.maximum(:time)
+    @start_time = @scope.minimum(:time) || @start_date
+    @end_time = @scope.maximum(:time) || @end_date
 
-    summary[:start] = @start_time ? Time.at(@start_time).strftime("%Y-%m-%dT%H:%M:%SZ") : nil
-    summary[:end] = @end_time ? Time.at(@end_time).strftime("%Y-%m-%dT%H:%M:%SZ") : nil
+    summary[:start] = Time.at(@start_time).strftime("%Y-%m-%dT%H:%M:%SZ")
+    summary[:end] = Time.at(@end_time).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     summary[:range] = "all_time"
     summary[:human_readable_range] = "All Time"
 
-    @total_seconds = @scope.duration_seconds
+    @total_seconds = @scope.duration_seconds || 0
     summary[:total_seconds] = @total_seconds
 
     @total_days = (@end_time - @start_time) / 86400
-    summary[:daily_average] = @total_seconds / @total_days
+    summary[:daily_average] = @total_days.zero? ? 0 : @total_seconds / @total_days
 
     summary[:human_readable_total] = ApplicationController.helpers.short_time_detailed(@total_seconds)
     summary[:human_readable_daily_average] = ApplicationController.helpers.short_time_detailed(summary[:daily_average])
