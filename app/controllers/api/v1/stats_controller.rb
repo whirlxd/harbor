@@ -33,14 +33,14 @@ class Api::V1::StatsController < ApplicationController
     user = User.where(id: params[:username]).first
     user ||= User.where(slack_uid: params[:username]).first
 
+    return render plain: "User not found", status: :not_found unless user.present?
+
     timezone = params[:timezone] || user.timezone || "UTC"
 
     start_date = Date.parse(params[:start_date]).beginning_of_day.in_time_zone(timezone) if params[:start_date].present?
     start_date ||= 10.years.ago.in_time_zone(timezone)
     end_date = Date.parse(params[:end_date]).end_of_day.in_time_zone(timezone) if params[:end_date].present?
     end_date ||= Date.today.end_of_day.in_time_zone(timezone)
-
-    return render plain: "User not found", status: :not_found unless user.present?
 
     limit = params[:limit].to_i
 
