@@ -30,8 +30,9 @@ class WakatimeService
 
     @start_time = @scope.minimum(:time)
     @end_time = @scope.maximum(:time)
-    summary[:start] = Time.at(@start_time).strftime("%Y-%m-%dT%H:%M:%SZ")
-    summary[:end] = Time.at(@end_time).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    summary[:start] = @start_time ? Time.at(@start_time).strftime("%Y-%m-%dT%H:%M:%SZ") : nil
+    summary[:end] = @end_time ? Time.at(@end_time).strftime("%Y-%m-%dT%H:%M:%SZ") : nil
 
     summary[:range] = "all_time"
     summary[:human_readable_range] = "All Time"
