@@ -151,16 +151,14 @@ module Heartbeatable
       day_trunc = Arel.sql("DATE_TRUNC('day', to_timestamp(time) AT TIME ZONE '#{timezone}')")
 
       select(day_trunc.as("day_group"))
-        .coding_only
         .where(time: start_date..end_date)
-        .with_valid_timestamps
         .group(day_trunc)
         .duration_seconds
         .map { |date, duration| [ date.to_date, duration ] }
     end
 
     def duration_seconds(scope = all)
-      scope = scope.coding_only.with_valid_timestamps
+      scope = scope.with_valid_timestamps
 
       if scope.group_values.any?
         group_column = scope.group_values.first

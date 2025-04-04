@@ -29,6 +29,13 @@
           values: @editor,
           selected: params[:editor]
         } %>
+
+        <%= render partial: 'shared/multi_select', locals: {
+          label: 'Category',
+          param: 'category',
+          values: @category,
+          selected: params[:category]
+        } %>
       </div>
     </div>
   </div>
@@ -181,7 +188,7 @@
     document.addEventListener('turbo:frame-load', function(event) {
       if (event.target.id === 'filterable_dashboard') {
         // Initialize each multi-select
-        ['project', 'language', 'editor', 'operating_system'].forEach(type => {
+        ['project', 'language', 'editor', 'operating_system', 'category'].forEach(type => {
           window.initializeMultiSelect(`${type}-select`);
         });
 

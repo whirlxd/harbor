@@ -251,7 +251,7 @@ class StaticPagesController < ApplicationController
   end
 
   def filterable_dashboard_data
-    filters = %i[project language operating_system editor]
+    filters = %i[project language operating_system editor category]
 
     # Cache key based on user and filter parameters
     cache_key = []
@@ -302,27 +302,43 @@ class StaticPagesController < ApplicationController
           .to_h unless result["singular_project"]
 
         # Prepare pie chart data
-        result[:language_stats] = filtered_heartbeats
-          .group(:language)
-          .duration_seconds
-          .sort_by { |_, duration| -duration }
-          .first(10)
-          .map { |k, v| [ k.presence || "Unknown", v ] }
-          .to_h unless result["singular_language"]
+        %i[language editor operating_system category].each do |filter|
+          result["#{filter}_stats"] = filtered_heartbeats
+            .group(filter)
+            .duration_seconds
+            .sort_by { |_, duration| -duration }
+            .first(10)
+            .map { |k, v| [ k.presence || "Unknown", v ] }
+            .to_h unless result["singular_#{filter}"]
+        end
+        # result[:language_stats] = filtered_heartbeats
+        #   .group(:language)
+        #   .duration_seconds
+        #   .sort_by { |_, duration| -duration }
+        #   .first(10)
+        #   .map { |k, v| [ k.presence || "Unknown", v ] }
+        #   .to_h unless result["singular_language"]
 
-        result[:editor_stats] = filtered_heartbeats
-          .group(:editor)
-          .duration_seconds
-          .sort_by { |_, duration| -duration }
-          .map { |k, v| [ k.presence || "Unknown", v ] }
-          .to_h unless result["singular_editor"]
+        # result[:editor_stats] = filtered_heartbeats
+        #   .group(:editor)
+        #   .duration_seconds
+        #   .sort_by { |_, duration| -duration }
+        #   .map { |k, v| [ k.presence || "Unknown", v ] }
+        #   .to_h unless result["singular_editor"]
 
-        result[:operating_system_stats] = filtered_heartbeats
-          .group(:operating_system)
-          .duration_seconds
-          .sort_by { |_, duration| -duration }
-          .map { |k, v| [ k.presence || "Unknown", v ] }
-          .to_h unless result["singular_operating_system"]
+        # result[:operating_system_stats] = filtered_heartbeats
+        #   .group(:operating_system)
+        #   .duration_seconds
+        #   .sort_by { |_, duration| -duration }
+        #   .map { |k, v| [ k.presence || "Unknown", v ] }
+        #   .to_h unless result["singular_operating_system"]
+
+        # result[:category_stats] = filtered_heartbeats
+        #   .group(:category)
+        #   .duration_seconds
+        #   .sort_by { |_, duration| -duration }
+        #   .map { |k, v| [ k.presence || "Unknown", v ] }
+        #   .to_h unless result["singular_category"]
 
         # Calculate weekly project stats for the last 6 months
         result[:weekly_project_stats] = {}
