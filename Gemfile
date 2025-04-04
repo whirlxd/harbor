@@ -72,6 +72,11 @@ gem "http"
 # Bulk import
 gem "activerecord-import"
 
+# Rack Mini Profiler [https://github.com/MiniProfiler/rack-mini-profiler]
+gem "rack-mini-profiler"
+# For memory profiling via RMP
+gem "memory_profiler"
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
@@ -90,11 +95,6 @@ group :development do
   # Preview emails in the browser [https://github.com/ryanb/letter_opener]
   gem "letter_opener"
   gem "letter_opener_web", "~> 3.0"
-
-  # Rack Mini Profiler [https://github.com/MiniProfiler/rack-mini-profiler]
-  gem "rack-mini-profiler"
-  # For memory profiling via RMP
-  gem "memory_profiler"
 end
 
 group :test do

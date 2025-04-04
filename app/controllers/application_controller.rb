@@ -2,6 +2,12 @@ class ApplicationController < ActionController::Base
   before_action :set_paper_trail_whodunnit
   before_action :initialize_cache_counters
 
+  before_action do
+    if current_user && current_user.is_admin?
+      Rack::MiniProfiler.authorize_request
+    end
+  end
+
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   # allow_browser versions: :modern
 
