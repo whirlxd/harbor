@@ -95,6 +95,9 @@ group :development do
   # Preview emails in the browser [https://github.com/ryanb/letter_opener]
   gem "letter_opener"
   gem "letter_opener_web", "~> 3.0"
+
+  # Bullet [https://github.com/flyerhzm/bullet]
+  gem "bullet"
 end
 
 group :test do
