@@ -76,6 +76,9 @@ gem "activerecord-import"
 gem "rack-mini-profiler"
 # For memory profiling via RMP
 gem "memory_profiler"
+gem "flamegraph"
+
+gem "skylight"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
