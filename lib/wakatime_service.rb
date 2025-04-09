@@ -92,6 +92,9 @@ class WakatimeService
         { os: "", editor: "", err: "failed to parse user agent string" }
       end
     end
+  rescue => e
+    Rails.logger.error("Error parsing user agent string: #{e.message}")
+    { os: "", editor: "", err: "failed to parse user agent string" }
   end
 
   def categorize_os(os)
