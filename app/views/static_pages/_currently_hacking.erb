@@ -15,9 +15,7 @@
             <% if active_projects[user.id].present? %>
               <span class="super">
                 working on <%= link_to active_projects[user.id].project_name, active_projects[user.id].repo_url, target: "_blank" %>
-                <% dev_tool(nil, 'span') do %>
-                  <%= link_to "🌌", visualize_git_url(active_projects[user.id].repo_url), target: "_blank" %>
-                <% end %>
+                <%= link_to "🌌", visualize_git_url(active_projects[user.id].repo_url), target: "_blank" %>
               </span>
             <% end %>
             <% if user == current_user && user.github_username.blank? %>
