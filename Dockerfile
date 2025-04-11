@@ -7,6 +7,13 @@
 
 # For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
 
+# Create a minimal image with curl and wget
+FROM debian:bullseye-slim as tools
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends curl wget && \
+    rm -rf /var/lib/apt/lists/*
+
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version
 ARG RUBY_VERSION=3.4.1
 FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
@@ -17,14 +24,14 @@ WORKDIR /rails
 # Install base packages
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
-    curl \
     libjemalloc2 \
     libvips \
-    sqlite3 \
-    libpq5 \
-    vim \
-    wget && \
+    # sqlite3 \
+    libpq5 && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
+COPY --from=tools /usr/bin/curl /usr/bin/curl
+COPY --from=tools /usr/bin/wget /usr/bin/wget
 
 # Set production environment
 ENV RAILS_ENV="production" \
