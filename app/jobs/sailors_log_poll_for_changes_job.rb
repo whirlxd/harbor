@@ -3,56 +3,63 @@ class SailorsLogPollForChangesJob < ApplicationJob
 
   def perform
     puts "performing SailorsLogPollForChangesJob"
-    # get all users who've coded in the last minute
-    users_who_coded = Heartbeat.where("created_at > ?", 1.minutes.ago)
-                               .where(time: 1.minutes.ago..)
+    users_who_coded = Heartbeat.with_valid_timestamps
+                               .where(time: 10.minutes.ago..)
                                .distinct.pluck(:user_id)
-
     puts "users_who_coded: #{users_who_coded}"
-    slack_uids = User.where(id: users_who_coded)
-                     .where.not(slack_uid: nil)
-                     .distinct.pluck(:slack_uid)
 
-    # Get all of those with enabled preferences
-    enabled_users = SailorsLogNotificationPreference.where(enabled: true, slack_uid: slack_uids).distinct.pluck(:slack_uid)
+    slack_uids = User.where(id: users_who_coded).pluck(:slack_uid)
+    puts "slack_uids: #{slack_uids}"
 
-    puts "enabled_users: #{enabled_users}"
+    new_notifs = SailorsLog.includes(:user, :notification_preferences)
+                           .where(notification_preferences: { enabled: true })
+                           .where(slack_uid: slack_uids)
+                           .map { |sl| update_sailors_log(sl) }.flatten
 
-    logs = SailorsLog.includes(:user).where(slack_uid: enabled_users)
+    notifs_to_send = SailorsLogSlackNotification.insert_all(new_notifs)
+    notif_ids = notifs_to_send.result.to_a.map { |r| r["id"] }
 
-    user_ids = logs.map(&:user).pluck(:id)
+    SailorsLogSlackNotification.where(id: notif_ids).map(&:notify_user_later!)
+  end
 
-    puts "logs: #{logs}"
+  private
 
-    logs.each do |log|
-      # get all projects for the user with duration
-      new_project_times = Heartbeat.where(user_id: user_ids)
-                                   .group(:project)
-                                   .duration_seconds
-
-      new_project_times.each do |project, new_project_duration|
-        next if project.blank?
-        if new_project_duration > (log.projects_summary[project] || 0) + 1.hour
-          log.notification_preferences.each do |preference|
-            log.notifications << SailorsLogSlackNotification.new(
-              slack_uid: log.slack_uid,
-              slack_channel_id: preference.slack_channel_id,
-              project_name: project,
-              project_duration: new_project_duration
-            )
-          end
-          log.projects_summary[project] = new_project_duration
-        end
-      end
-      log.save! if log.changed?
-
-      # if multiple notifications for the same project, only the most recent one should be sent
-      log.notifications.group_by(&:project_name).each do |project_name, notifications|
-        if notifications.size > 1
-          # Keep the most recent notification, destroy the older ones
-          notifications.sort_by(&:created_at)[0..-2].each(&:destroy)
-        end
+  def update_sailors_log(sailors_log)
+    project_updates = []
+    project_durations = Heartbeat.where(user_id: sailors_log.user.id)
+                                 .group(:project).duration_seconds
+    project_durations.each do |k, v|
+      old_duration = sailors_log.projects_summary[k] || 0
+      new_duration = v
+      puts "#{k}| old_duration: #{old_duration}, new_duration: #{new_duration}"
+      if old_duration / 3600 < new_duration / 3600
+        puts "updating #{k} to #{new_duration}"
+        sailors_log.projects_summary[k] = new_duration
+        project_updates << { project: k, duration: new_duration }
       end
     end
+
+    notifications_to_create = []
+    if sailors_log.changed?
+      sailors_log.notification_preferences.each do |np|
+        project_updates.map do |pu|
+          puts "np: #{np.inspect}, pu: #{pu.inspect}"
+          notifications_to_create << {
+            slack_uid: sailors_log.user.slack_uid,
+            slack_channel_id: np.slack_channel_id,
+            project_name: pu[:project],
+            project_duration: pu[:duration]
+          }
+        end
+      end
+
+      sailors_log.save!
+    end
+
+    notifications_to_create
   end
 end
+
+# optimizations?
+# - index heartbeats on user_id + project so we can call duration_seconds grouping by both
+# - investigate lookup by slack_uid, maybe index or computed field?
