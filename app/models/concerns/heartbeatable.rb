@@ -24,7 +24,7 @@ module Heartbeatable
       return [] if heartbeats.empty?
 
       sql = <<~SQL
-        SELECT#{' '}
+        SELECT
           time,
           LEAD(time) OVER (ORDER BY time) as next_time
         FROM (#{heartbeats.to_sql}) AS heartbeats
@@ -35,26 +35,33 @@ module Heartbeatable
 
       spans = []
       current_span_start = results.first["time"]
-      last_heartbeat = results.first["time"]
 
       results.each do |row|
         current_time = row["time"]
         next_time = row["next_time"]
 
         if next_time.nil? || (next_time - current_time) > heartbeat_timeout_duration.to_i
-          duration = (current_time - current_span_start).round
-          if duration > 0
+          base_duration = (current_time - current_span_start).round
+
+          if next_time
+            gap_duration = [ next_time - current_time, heartbeat_timeout_duration.to_i ].min
+            total_duration = base_duration + gap_duration
+            end_time = current_time + gap_duration
+          else
+            total_duration = base_duration
+            end_time = current_time
+          end
+
+          if total_duration > 0
             spans << {
               start_time: current_span_start,
-              end_time: current_time,
-              duration: duration
+              end_time: end_time,
+              duration: total_duration
             }
           end
 
           current_span_start = next_time if next_time
         end
-
-        last_heartbeat = current_time
       end
 
       spans
