@@ -81,6 +81,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       get "stats", to: "stats#show"
       get "users/:username/stats", to: "stats#user_stats"
+      get "users/:username/heartbeats/spans", to: "stats#user_spans"
 
       resources :ysws_programs, only: [ :index ] do
         post :claim, on: :collection
