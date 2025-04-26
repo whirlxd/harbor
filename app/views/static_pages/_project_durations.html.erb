@@ -13,7 +13,7 @@
             <% if project[:repo_url].present? %>
               <%= link_to "🔗", project[:repo_url], target: "_blank" %>
             <% end %>
-            <% if current_user.github_uid.present? %>
+            <% if current_user.github_uid.present? && project[:project].present? %>
               <%= link_to "✏️", edit_my_project_repo_mapping_path(project_name: project[:project]), class: "edit-repo-link", data: { turbo_frame: '_top'} %>
             <% end %>
             <span class="project-time"><%= short_time_detailed project[:duration] %></span>
