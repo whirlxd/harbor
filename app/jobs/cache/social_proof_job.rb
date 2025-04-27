@@ -21,12 +21,19 @@ class Cache::SocialProofJob < ApplicationJob
 
   def calculate
     # Only run queries as needed, starting with the smallest time range
-    if (in_past_hour = Heartbeat.where("time > ?", 1.hour.ago.to_f).distinct.count(:user_id)) > 5
-      "In the past hour, #{in_past_hour} Hack Clubbers have coded with Hackatime."
-    elsif (in_past_day = Heartbeat.where("time > ?", 1.day.ago.to_f).distinct.count(:user_id)) > 5
-      "In the past day, #{in_past_day} Hack Clubbers have coded with Hackatime."
-    elsif (in_past_week = Heartbeat.where("time > ?", 1.week.ago.to_f).distinct.count(:user_id)) > 5
-      "In the past week, #{in_past_week} Hack Clubbers have coded with Hackatime."
+    if (past_hour_count = users_in_past(1.hour)) > 5
+      "In the past hour, #{past_hour_count} Hack Clubbers have coded with Hackatime."
+    elsif (past_day_count = users_in_past(1.day)) > 5
+      "In the past day, #{past_day_count} Hack Clubbers have coded with Hackatime."
+    elsif (past_week_count = users_in_past(1.week)) > 5
+      "In the past week, #{past_week_count} Hack Clubbers have coded with Hackatime."
     end
+  end
+
+  def users_in_past(duration)
+    Heartbeat.coding_only
+             .with_valid_timestamps
+             .where("time > ?", duration.ago.to_f)
+             .distinct.count(:user_id)
   end
 end
