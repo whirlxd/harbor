@@ -46,7 +46,7 @@ Rails.application.configure do
     },
     cache_currently_hacking: {
       cron: "* * * * *",
-      class: "Cache::CurrentlyHacking",
+      class: "Cache::CurrentlyHackingJob",
       kwargs: { force_reload: true }
     },
     cache_home_stats: {
