@@ -58,6 +58,11 @@ Rails.application.configure do
       cron: "* * * * *",
       class: "Cache::ActiveProjectsJob",
       kwargs: { dry_run: false }
+    },
+    cache_social_proof: {
+      cron: "* * * * *",
+      class: "Cache::SocialProofJob",
+      kwargs: { dry_run: false }
     }
   }
 end

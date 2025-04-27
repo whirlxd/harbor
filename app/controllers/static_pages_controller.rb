@@ -63,16 +63,7 @@ class StaticPagesController < ApplicationController
         instance_variable_set("@#{key}", value)
       end
     else
-      @social_proof ||= begin
-        # Only run queries as needed, starting with the smallest time range
-        if (in_past_hour = Heartbeat.where("time > ?", 1.hour.ago.to_f).distinct.count(:user_id)) > 5
-          "In the past hour, #{in_past_hour} Hack Clubbers have coded with Hackatime."
-        elsif (in_past_day = Heartbeat.where("time > ?", 1.day.ago.to_f).distinct.count(:user_id)) > 5
-          "In the past day, #{in_past_day} Hack Clubbers have coded with Hackatime."
-        elsif (in_past_week = Heartbeat.where("time > ?", 1.week.ago.to_f).distinct.count(:user_id)) > 5
-          "In the past week, #{in_past_week} Hack Clubbers have coded with Hackatime."
-        end
-      end
+      @social_proof = Cache::SocialProofJob.perform_now
 
       @home_stats = Cache::HomeStatsJob.perform_now
     end
