@@ -42,27 +42,27 @@ Rails.application.configure do
     cache_active_user_graph_data_job: {
       cron: "*/10 * * * *",
       class: "Cache::ActiveUsersGraphDataJob",
-      kwargs: { dry_run: false }
+      kwargs: { force_reload: true }
     },
     cache_currently_hacking: {
       cron: "* * * * *",
       class: "Cache::CurrentlyHacking",
-      kwargs: { dry_run: false }
+      kwargs: { force_reload: true }
     },
     cache_home_stats: {
       cron: "*/10 * * * *",
       class: "Cache::HomeStatsJob",
-      kwargs: { dry_run: false }
+      kwargs: { force_reload: true }
     },
     cache_active_projects: {
       cron: "* * * * *",
       class: "Cache::ActiveProjectsJob",
-      kwargs: { dry_run: false }
+      kwargs: { force_reload: true }
     },
     cache_social_proof: {
       cron: "* * * * *",
       class: "Cache::SocialProofJob",
-      kwargs: { dry_run: false }
+      kwargs: { force_reload: true }
     }
   }
 end
