@@ -39,6 +39,7 @@ Rails.application.routes.draw do
       get :filterable_dashboard
       get :my_projects
       get "🃏", to: "static_pages#🃏", as: :wildcard
+      get :streak
     end
   end
 

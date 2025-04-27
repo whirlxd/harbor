@@ -1,0 +1,7 @@
+<%= turbo_frame_tag "streak" do %>
+  <% if current_user.streak_days_formatted %>
+    <p title="🔥 <%= current_user.streak_days_formatted %> day streak">
+      <%= current_user.streak_days_formatted %> 🔥
+    </p>
+  <% end %>
+<% end %> 

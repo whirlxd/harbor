@@ -10,11 +10,7 @@
   <% if current_user %>
     <li>
       <%= render "shared/user_mention", user: current_user %>
-      <% if current_user.streak_days_formatted %>
-        <p title="🔥 <%= current_user.streak_days_formatted %> day streak">
-          <%= current_user.streak_days_formatted %> 🔥
-        </p>
-      <% end %>
+      <%= turbo_frame_tag "streak", src: streak_static_pages_path %>
     </li>
   <% else %>
     <li>

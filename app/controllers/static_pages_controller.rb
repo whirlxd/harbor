@@ -118,6 +118,10 @@ class StaticPagesController < ApplicationController
     render partial: "currently_hacking", locals: locals
   end
 
+  def streak
+    render partial: "streak"
+  end
+
   def filterable_dashboard
     cached_data = filterable_dashboard_data
     cached_data.entries.each do |key, value|
