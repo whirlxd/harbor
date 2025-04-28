@@ -14,7 +14,7 @@ development:
     adapter: postgresql
     encoding: unicode
     pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-    url: <%= ENV['POOL_DATABASE_URL'] %>
+    url: <%= ENV['DATABASE_URL'] %>
   wakatime:
     adapter: postgresql
     encoding: unicode
@@ -54,7 +54,7 @@ production:
     adapter: postgresql
     encoding: unicode
     pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 50 } %>
-    url: <%= ENV['DATABASE_URL'] %>
+    url: <%= ENV['POOL_DATABASE_URL'] %>
   wakatime:
     adapter: postgresql
     encoding: unicode
