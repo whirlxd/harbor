@@ -19,7 +19,7 @@ class LeaderboardsController < ApplicationController
     )
 
     if @leaderboard.nil?
-      LeaderboardUpdateJob.perform_later(start_date, @period_type)
+      LeaderboardUpdateJob.perform_later @period_type
       flash.now[:notice] = "Leaderboard is being updated..."
     else
       # Load entries with users and their project repo mappings in a single query
