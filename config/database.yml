@@ -61,6 +61,7 @@ production:
     url: <%= ENV['POOL_DATABASE_URL'] %>
   primary_direct: # https://github.com/bensheldon/good_job?tab=readme-ov-file#pgbouncer-compatibility
     url: <%= ENV['DATABASE_URL'] %>
+    pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
     adapter: postgresql
     encoding: unicode
   wakatime:
