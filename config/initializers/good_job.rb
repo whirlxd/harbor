@@ -3,6 +3,9 @@ Rails.application.configure do
   config.good_job.enable_cron = true
   config.good_job.execution_mode = :async
 
+  #  https://github.com/bensheldon/good_job#pgbouncer-compatibility
+  GoodJob.active_record_parent_class = "ApplicationDirectRecord"
+
   config.good_job.cron = {
     update_slack_status: {
       cron: "*/5 * * * *",
