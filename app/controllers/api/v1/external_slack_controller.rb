@@ -13,42 +13,25 @@ module Api
           .get("https://slack.com/api/auth.test")
 
         auth_data = JSON.parse(auth_response.body.to_s)
-        puts "Auth data: #{auth_data}"
         return render json: { error: "Invalid Slack token" }, status: :unauthorized unless auth_data["ok"]
 
         user_id = auth_data["user_id"]
         return render json: { error: "User ID not found" }, status: :bad_request unless user_id.present?
 
-        # Then get user info
-        user_response = HTTP.auth("Bearer #{token}")
-          .get("https://slack.com/api/users.info?user=#{user_id}")
+        user = User.find_or_initialize_by(slack_uid: user_id)
+        user.slack_access_token = token
 
-        user_data = JSON.parse(user_response.body.to_s)
-        puts "User data: #{user_data}"
-        return render json: { error: "Invalid Slack token" }, status: :unauthorized unless user_data["ok"]
+        user_data = user.raw_slack_user_info
+        return render json: { error: "Invalid Slack token" }, status: :unauthorized unless user_data.present?
 
-        email = user_data.dig("user", "profile", "email")
+        email = user_data.dig("profile", "email")
         return render json: { error: "Email not found" }, status: :bad_request unless email.present?
 
-        # Find or create user
         email_address = EmailAddress.find_or_initialize_by(email: email)
-        user = email_address.user
-        user ||= begin
-          u = User.find_or_initialize_by(slack_uid: user_id)
-          u.email_addresses << email_address
-          u
-        end
+        user.email_addresses << email_address unless user.email_addresses.include?(email_address)
 
-        user.slack_uid = user_id
-        user.username ||= user_data.dig("user", "profile", "username")
-        user.username ||= user_data.dig("user", "profile", "display_name_normalized")
-        user.slack_username = user_data.dig("user", "profile", "username")
-        user.slack_avatar_url = user_data.dig("user", "profile", "image_192") || user_data.dig("user", "profile", "image_72")
-        user.slack_access_token = token
-        # user.slack_scopes = auth_data["scopes"]
-
-        # Set timezone from Slack
-        user.parse_and_set_timezone(user_data.dig("user", "tz"))
+        user.update_from_slack
+        user.parse_and_set_timezone(user_data["tz"])
 
         if user.save
           render json: {
