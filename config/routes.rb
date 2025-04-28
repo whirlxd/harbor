@@ -84,6 +84,9 @@ Rails.application.routes.draw do
       get "users/:username/stats", to: "stats#user_stats"
       get "users/:username/heartbeats/spans", to: "stats#user_spans"
 
+      # External service Slack OAuth integration
+      post "external/slack/oauth", to: "external_slack#create_user"
+
       resources :ysws_programs, only: [ :index ] do
         post :claim, on: :collection
       end
