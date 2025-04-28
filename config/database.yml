@@ -17,6 +17,8 @@ development:
     url: <%= ENV['DATABASE_URL'] %>
   primary_direct:
     url: <%= ENV['DATABASE_URL'] %>
+    adapter: postgresql
+    encoding: unicode
   wakatime:
     adapter: postgresql
     encoding: unicode
@@ -59,6 +61,8 @@ production:
     url: <%= ENV['POOL_DATABASE_URL'] %>
   primary_direct: # https://github.com/bensheldon/good_job?tab=readme-ov-file#pgbouncer-compatibility
     url: <%= ENV['DATABASE_URL'] %>
+    adapter: postgresql
+    encoding: unicode
   wakatime:
     adapter: postgresql
     encoding: unicode
