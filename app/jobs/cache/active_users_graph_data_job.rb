@@ -1,23 +1,4 @@
-class Cache::ActiveUsersGraphDataJob < ApplicationJob
-  # TODO: create concern for these cache jobs– make it single enqueue
-  include GoodJob::ActiveJobExtensions::Concurrency
-
-  # Limits concurrency to 1 job per date
-  good_job_control_concurrency_with(
-    total: 1,
-    drop: true
-  )
-
-  def perform(force_reload: false)
-    key = "cache:active_users_graph_data"
-    expiration = 1.hour
-    Rails.cache.write(key, calculate, expires_in: expiration) if force_reload
-
-    Rails.cache.fetch(key, expires_in: expiration) do
-      calculate
-    end
-  end
-
+class Cache::ActiveUsersGraphDataJob < Cache::ActivityJob
   private
 
   def calculate

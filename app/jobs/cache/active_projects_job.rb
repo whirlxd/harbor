@@ -1,23 +1,9 @@
-class Cache::ActiveProjectsJob < ApplicationJob
-  include GoodJob::ActiveJobExtensions::Concurrency
-
-  # Limits concurrency to 1 job per date
-  good_job_control_concurrency_with(
-    total: 1,
-    drop: true
-  )
-
-  def perform(force_reload: false)
-    key = "active_projects"
-    expiration = 15.minutes
-    Rails.cache.write(key, calculate, expires_in: expiration) if force_reload
-
-    Rails.cache.fetch(key, expires_in: expiration,) do
-      calculate
-    end
-  end
-
+class Cache::ActiveProjectsJob < Cache::ActivityJob
   private
+
+  def cache_expiration
+    15.minutes
+  end
 
   def calculate
     # Get recent heartbeats with matching project_repo_mappings in a single SQL query

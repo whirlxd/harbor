@@ -1,23 +1,9 @@
-class Cache::CurrentlyHackingJob < ApplicationJob
-  include GoodJob::ActiveJobExtensions::Concurrency
-
-  # Limits concurrency to 1 job per date
-  good_job_control_concurrency_with(
-    total: 1,
-    drop: true
-  )
-
-  def perform(force_reload: false)
-    key = "currently_hacking"
-    expiration = 1.minute
-    Rails.cache.write(key, calculate, expires_in: expiration) if force_reload
-
-    Rails.cache.fetch(key, expires_in: expiration) do
-      calculate
-    end
-  end
-
+class Cache::CurrentlyHackingJob < Cache::ActivityJob
   private
+
+  def cache_expiration
+    5.minutes
+  end
 
   def calculate
     # Get most recent heartbeats and users in a single query
