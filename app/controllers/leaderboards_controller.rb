@@ -1,7 +1,9 @@
 class LeaderboardsController < ApplicationController
   def index
     @period_type = (params[:period_type] || "daily").to_sym
-    @period_type = :daily unless [ :daily, :weekly, :last_7_days ].include?(@period_type)
+    @period_type = :daily unless Leaderboard.period_types
+                                            .values
+                                            .include?(@period_type)
 
     start_date = case @period_type
     when :weekly
@@ -12,11 +14,12 @@ class LeaderboardsController < ApplicationController
       Date.current
     end
 
-    @leaderboard = Leaderboard.find_by(
-      start_date: start_date,
-      period_type: @period_type,
-      deleted_at: nil
-    )
+    @leaderboard = Leaderboard.where.not(finished_generating_at: nil)
+                              .find_by(
+                                start_date: start_date,
+                                period_type: @period_type,
+                                deleted_at: nil
+                              )
 
     if @leaderboard.nil?
       LeaderboardUpdateJob.perform_later @period_type
