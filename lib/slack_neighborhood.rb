@@ -1,5 +1,3 @@
-# https://l.hack.club/personal
-
 class SlackNeighborhood
   def self.find_by_id(id)
     # Get the neighborhood data from the cache or fetch it from the API
@@ -7,7 +5,7 @@ class SlackNeighborhood
 
     specific_neighborhood = Rails.cache.fetch(key, expires_in: 10.days) do
       neighborhood_data = Rails.cache.fetch("slack_neighborhood_list", expires_in: 10.hours) do
-        response = HTTP.get("https://l.hack.club/personal")
+        response = HTTP.get("https://skksk8sos4g4c0kw4cw0ks80.a.selfhosted.hackclub.com/personal")
         JSON.parse(response.body)
       end
 
