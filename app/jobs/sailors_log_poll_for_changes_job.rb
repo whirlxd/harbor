@@ -27,7 +27,7 @@ class SailorsLogPollForChangesJob < ApplicationJob
     notifs_to_send = SailorsLogSlackNotification.insert_all(new_notifs)
     notif_ids = notifs_to_send.result.to_a.map { |r| r["id"] }
 
-    SailorsLogSlackNotification.where(id: notif_ids).map(&:notify_user_later!)
+    SailorsLogSlackNotification.where(id: notif_ids).map(&:notify_user!)
   end
 
   private
