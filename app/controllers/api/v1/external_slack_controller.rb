@@ -19,6 +19,15 @@ module Api
         return render json: { error: "User ID not found" }, status: :bad_request unless user_id.present?
 
         user = User.find_or_initialize_by(slack_uid: user_id)
+
+        if user.persisted?
+          return render json: {
+            user_id: user.id,
+            username: user.username,
+            email: user.email_addresses.first&.email
+          }, status: :ok
+        end
+
         user.slack_access_token = token
 
         user_data = user.raw_slack_user_info
