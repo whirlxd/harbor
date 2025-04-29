@@ -4,7 +4,7 @@ class SessionsController < ApplicationController
     Rails.logger.info "Starting Slack OAuth flow with redirect URI: #{redirect_uri}"
     redirect_to User.authorize_url(redirect_uri, close_window: params[:close_window].present?),
                 host: "https://slack.com",
-                allow_other_host: true
+                allow_other_host: "https://slack.com"
   end
 
   def create
