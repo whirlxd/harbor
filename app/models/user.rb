@@ -183,11 +183,16 @@ class User < ApplicationRecord
       })
   end
 
-  def self.authorize_url(redirect_uri)
+  def self.authorize_url(redirect_uri, close_window: false)
+    state = {
+      token: SecureRandom.hex(24),
+      close_window: close_window
+    }.to_json
+
     params = {
       client_id: ENV["SLACK_CLIENT_ID"],
       redirect_uri: redirect_uri,
-      state: SecureRandom.hex(24),
+      state: state,
       user_scope: "users.profile:read,users.profile:write,users:read,users:read.email"
     }
 
