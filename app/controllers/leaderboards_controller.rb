@@ -2,8 +2,9 @@ class LeaderboardsController < ApplicationController
   def index
     @period_type = (params[:period_type] || "daily").to_sym
     @period_type = :daily unless Leaderboard.period_types
-                                            .values
-                                            .include?(@period_type.to_sym)
+                                            .keys
+                                            .map(&:to_sym)
+                                            .include?(@period_type)
 
     start_date = case @period_type
     when :weekly
