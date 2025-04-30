@@ -23,7 +23,6 @@ RUN apt-get update -qq && \
     sqlite3 \
     libpq5 \
     vim \
-    git \
     wget && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
@@ -62,6 +61,8 @@ FROM base
 # Copy built artifacts: gems, application
 COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
 COPY --from=build /rails /rails
+COPY --from=build /usr/bin/git /usr/bin/git
+COPY --from=build /usr/lib/git-core /usr/lib/git-core
 
 # Run and own only the runtime files as a non-root user for security
 RUN groupadd --system --gid 1000 rails && \
