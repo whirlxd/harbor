@@ -1,5 +1,10 @@
 # Harbor README
 
+<a href="https://status.hackatime.hackclub.com/status/hackatime" target="_blank">
+  ![](https://status.hackatime.hackclub.com/api/badge/1/ping)
+  ![](https://status.hackatime.hackclub.com/api/badge/1/status)
+</a>
+
 ## Local development
 
 ```sh
