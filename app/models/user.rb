@@ -231,7 +231,7 @@ class User < ApplicationRecord
 
     return nil unless user_data["ok"]
 
-    email = user_data.dig("user", "profile", "email")
+    email = user_data.dig("user", "profile", "email")&.downcase
     email_address = EmailAddress.find_or_initialize_by(email: email)
     user = email_address.user
     user ||= begin
