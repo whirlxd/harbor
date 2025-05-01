@@ -1,5 +1,6 @@
 class Api::V1::StatsController < ApplicationController
   before_action :ensure_authenticated!, only: [ :show ], unless: -> { Rails.env.development? }
+  before_action :set_user, only: [ :user_stats, :user_spans ]
 
   def show
     # take either user_id with a start date & end date
@@ -9,10 +10,10 @@ class Api::V1::StatsController < ApplicationController
     end_date ||= Date.today.end_of_day
 
     query = Heartbeat.where(time: start_date..end_date)
-    if params[:user_id].present?
-      user_id = params[:user_id]
+    if params[:username].present?
+      user_id = params[:username]
 
-      return render plain: "User not found", status: :not_found unless user_id.present?
+      return render json: { error: "User not found" }, status: :not_found unless user_id.present?
 
       query = query.where(user_id: user_id)
     end
@@ -20,7 +21,7 @@ class Api::V1::StatsController < ApplicationController
     if params[:user_email].present?
       user_id = EmailAddress.find_by(email: params[:user_email])&.user_id || find_by_email(params[:user_email])
 
-      return render plain: "User not found", status: :not_found unless user_id.present?
+      return render json: { error: "User not found" }, status: :not_found unless user_id.present?
 
       query = query.where(user_id: user_id)
     end
@@ -30,7 +31,6 @@ class Api::V1::StatsController < ApplicationController
 
   def user_stats
     # Used by the github stats page feature
-    set_user
 
     return render plain: "User not found", status: :not_found unless @user.present?
 
@@ -59,8 +59,6 @@ class Api::V1::StatsController < ApplicationController
   end
 
   def user_spans
-    set_user
-
     return render json: { error: "User not found" }, status: :not_found unless @user
 
     start_date = Date.parse(params[:start_date]) if params[:start_date].present?
@@ -84,13 +82,13 @@ class Api::V1::StatsController < ApplicationController
 
   def set_user
     token = request.headers["Authorization"]&.split(" ")&.last
-    user_id = params[:user_id]
+    username = params[:username]
 
     @user = begin
-      if user_id == "my"
+      if username == "my" && token.present?
         ApiKey.find_by(token: token)&.user
       else
-        User.where(id: user_id).or(User.where(slack_uid: user_id)).first
+        User.where(id: username).or(User.where(slack_uid: username)).first
       end
     end
   end
