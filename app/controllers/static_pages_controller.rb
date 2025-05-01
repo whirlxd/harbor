@@ -1,5 +1,9 @@
 class StaticPagesController < ApplicationController
-  before_action :ensure_current_user, except: :index
+  before_action :ensure_current_user, only: %i[
+    filterable_dashboard
+    filterable_dashboard_content
+    my_projects
+  ]
 
   def index
     @leaderboard = Leaderboard.where.associated(:entries)
