@@ -12,10 +12,13 @@ module Api
       end_date = date_range.end.to_i
 
       # Get user if specified
-      user = User.find_by(slack_uid: params[:user]) if params[:user].present?
+      if params[:user].present?
+        user = User.find_by(slack_uid: params[:user])
+        return render json: { error: "User not found" }, status: :not_found unless user
+      end
 
       # Determine which summary elements we want
-      specific_filters = [ :projects, :languages, :editors, :operating_systems, :machines, :categories, :branches, :entities ]
+      specific_filters = [ :projects, :languages, :editors, :operating_systems, :machines, :categories, :branches, :entities, :labels ]
 
       # Create service instance with filters applied
       service = WakatimeService.new(
@@ -30,19 +33,20 @@ module Api
       # Get the summary data from WakatimeService
       wakatime_summary = service.generate_summary
 
-      # Format for API response
+      # Format for API response using ISO8601 timestamps and returning extra fields as {} if not provided
       summary = {
-        from: date_range.begin.strftime("%Y-%m-%d %H:%M:%S.000"),
-        to: date_range.end.strftime("%Y-%m-%d %H:%M:%S.000"),
-        projects: wakatime_summary[:projects] || [],
-        languages: wakatime_summary[:languages] || [],
-        editors: wakatime_summary[:editors] || [],
-        operating_systems: wakatime_summary[:operating_systems] || [],
-        machines: wakatime_summary[:machines] || [],
-        categories: wakatime_summary[:categories] || [],
-        branches: wakatime_summary[:branches] || [],
-        entities: wakatime_summary[:entities] || [],
-        labels: wakatime_summary[:labels] || []
+        user_id: user.slack_uid,
+        from: Time.parse(wakatime_summary[:start]).iso8601,
+        to: Time.parse(wakatime_summary[:end]).iso8601,
+        projects: wakatime_summary[:projects] ? wakatime_summary[:projects].map { |item| { key: item[:name].presence || "Other", total: item[:total_seconds] } } : [],
+        languages: wakatime_summary[:languages] ? wakatime_summary[:languages].map { |item| { key: item[:name].presence || "Other", total: item[:total_seconds] } } : [],
+        editors: wakatime_summary[:editors] || {},
+        operating_systems: wakatime_summary[:operating_systems] || {},
+        machines: wakatime_summary[:machines] || {},
+        categories: wakatime_summary[:categories] || {},
+        branches: wakatime_summary[:branches] || {},
+        entities: wakatime_summary[:entities] || {},
+        labels: wakatime_summary[:labels] || {}
       }
 
       render json: summary
@@ -121,7 +125,6 @@ module Api
       branches = {}
       entities = {}
       labels = {}
-
 
       # Format summary items
       {
