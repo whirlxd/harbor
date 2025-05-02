@@ -1,5 +1,7 @@
 <div class="container">
-  <p class="super">aka Wakatime v2</p>
+  <p class="super">
+    <%= @flavor_text %>
+  </p>
   <h1 class="title">
     Keep Track of <span class="primary-color">Your</span> Coding Time
     <%# link_to "🃏", wildcard_static_pages_path, class: "wildcard" %>
@@ -13,7 +15,6 @@
     }
   </style>
   <p class="flavor">
-    <%= @flavor_text %>
     <%= @social_proof&.downcase %>
   </p>
   <% unless current_user %>
