@@ -14,9 +14,19 @@ class OneTime::MigrateUserFromHackatimeJob < ApplicationJob
     # Import from Hackatime
     import_api_keys
     import_heartbeats
+
+    # We don't want to trigger notifications due to extra time from importing
+    # heartbeats, so reset
+    reset_sailors_log
   end
 
   private
+
+  def reset_sailors_log
+    return unless @user.sailors_log.present?
+    @user.sailors_log.update!(projects_summary: nil)
+    @user.sailors_log.send(:initialize_projects_summary)
+  end
 
   def import_heartbeats
     # create Heartbeat records for each Hackatime::Heartbeat in batches of 1000 as upsert
