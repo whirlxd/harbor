@@ -3,6 +3,9 @@ Rails.application.configure do
   config.good_job.enable_cron = true
   config.good_job.execution_mode = :async
 
+  # https://github.com/bensheldon/good_job#configuring-your-queues
+  config.good_job.queues = "latency_10s:2; latency_1m:2; *:2"
+
   #  https://github.com/bensheldon/good_job#pgbouncer-compatibility
   GoodJob.active_record_parent_class = "ApplicationDirectRecord"
 
