@@ -1,4 +1,6 @@
 class Cache::HomeStatsJob < Cache::ActivityJob
+  queue_as :latency_1m
+
   private
 
   def calculate

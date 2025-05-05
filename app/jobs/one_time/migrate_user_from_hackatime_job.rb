@@ -1,5 +1,5 @@
 class OneTime::MigrateUserFromHackatimeJob < ApplicationJob
-  queue_as :default
+  queue_as :latency_1m
 
   include GoodJob::ActiveJobExtensions::Concurrency
 
