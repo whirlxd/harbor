@@ -24,7 +24,7 @@ class OneTime::MigrateUserFromHackatimeJob < ApplicationJob
 
   def reset_sailors_log
     return unless @user.sailors_log.present?
-    @user.sailors_log.update!(projects_summary: nil)
+    @user.sailors_log.update!(projects_summary: {})
     @user.sailors_log.send(:initialize_projects_summary)
   end
 
