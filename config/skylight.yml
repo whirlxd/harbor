@@ -1,3 +1,8 @@
 ---
 # The authentication token for the application.
 authentication: SJGDElOyNN4OESRDxcL3qTgjIgJVyHnYCW6-XUddxgk
+ignored_endpoints:
+  - SessionsController#impersonate
+  - SessionsController#stop_impersonating
+  - LetterOpenerWeb::Engine
+  - ScrapyardLeaderboardsController#*
