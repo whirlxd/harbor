@@ -43,7 +43,7 @@ class User < ApplicationRecord
     GoodJob::Job.where(
       "serialized_params->>'arguments' = ?", [ id ].to_json
     ).where(
-      "job_class = ?", "OneTime::MigrateUserFromHackatimeJob"
+      "job_class = ?", "MigrateUserFromHackatimeJob"
     ).order(created_at: :desc).limit(10).all
   end
 

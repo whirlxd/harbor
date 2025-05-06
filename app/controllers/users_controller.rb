@@ -33,7 +33,7 @@ class UsersController < ApplicationController
   end
 
   def migrate_heartbeats
-    OneTime::MigrateUserFromHackatimeJob.perform_later(@user.id)
+    MigrateUserFromHackatimeJob.perform_later(@user.id)
 
     redirect_to is_own_settings? ? my_settings_path : user_settings_path(@user),
       notice: "Heartbeats & api keys migration started"

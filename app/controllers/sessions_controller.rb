@@ -23,7 +23,7 @@ class SessionsController < ApplicationController
 
       if @user.data_migration_jobs.empty?
         # if they don't have a data migration job, add one to the queue
-        OneTime::MigrateUserFromHackatimeJob.perform_later(@user.id)
+        MigrateUserFromHackatimeJob.perform_later(@user.id)
       end
 
       state = JSON.parse(params[:state]) rescue {}
