@@ -8,8 +8,8 @@
   <% else %>
     <%= user.display_name %>
   <% end %>
-  <% if local_assigns.fetch(:show, []).include?(:neighborhood) && user.slack_uid.present? && neighborhood = SlackNeighborhood.find_by_id(user.slack_uid) %>
-    <%= link_to "🏘️", "https://slack.com/app_redirect?channel=#{neighborhood.dig("id")}", target: "_blank" %>
+  <% if local_assigns.fetch(:show, []).include?(:neighborhood) && user.slack_neighborhood_channel.present? %>
+    <%= link_to "🏘️", "https://slack.com/app_redirect?channel=#{user.slack_neighborhood_channel}", target: "_blank" %>
   <% end %>
   <% unless current_user == user %>
     <% admin_tool('', 'span') do %>

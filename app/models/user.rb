@@ -271,6 +271,8 @@ class User < ApplicationRecord
     user.slack_access_token = data["authed_user"]["access_token"]
     user.slack_scopes = data["authed_user"]["scope"]&.split(/,\s*/)
 
+    user.set_neighborhood_channel
+
     user.save!
     user
   rescue => e
