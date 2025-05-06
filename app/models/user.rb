@@ -47,6 +47,12 @@ class User < ApplicationRecord
     ).order(created_at: :desc).limit(10).all
   end
 
+  def set_neighborhood_channel
+    return unless slack_uid.present?
+
+    self.slack_neighborhood_channel = SlackNeighborhood.find_by_id(slack_uid)
+  end
+
   def format_extension_text(duration)
     case hackatime_extension_text_type
     when "simple_text"
