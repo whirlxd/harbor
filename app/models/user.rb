@@ -29,7 +29,19 @@ class User < ApplicationRecord
     primary_key: :slack_uid,
     class_name: "SailorsLog"
 
-  delegate :streak_days, :streak_days_formatted, to: :heartbeats
+  def streak_days
+    @streak_days ||= heartbeats.daily_streaks_for_users([ id ]).values.first
+  end
+
+  def streak_days_formatted
+    if streak_days > 7
+      "7+"
+    elsif streak_days < 1
+      nil
+    else
+      streak_days.to_s
+    end
+  end
 
   enum :hackatime_extension_text_type, {
     simple_text: 0,

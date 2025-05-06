@@ -67,46 +67,46 @@ module Heartbeatable
       spans
     end
 
-    def streak_days(start_date: 8.days.ago)
-      timezone = all.first&.user&.timezone || "UTC"
-      current_date = Time.current.in_time_zone(timezone).to_date
+    # def streak_days(start_date: 8.days.ago)
+    #   timezone = all.first&.user&.timezone || "UTC"
+    #   current_date = Time.current.in_time_zone(timezone).to_date
 
-      scope = coding_only.with_valid_timestamps
-      days = scope.daily_durations(start_date: start_date, end_date: Time.current)
-                .sort_by { |date, _| date }
-                .reverse
+    #   scope = coding_only.with_valid_timestamps
+    #   days = scope.daily_durations(start_date: start_date, end_date: Time.current)
+    #             .sort_by { |date, _| date }
+    #             .reverse
 
-      streak = 0
-      days.each do |date, duration|
-        next if date > current_date
+    #   streak = 0
+    #   days.each do |date, duration|
+    #     next if date > current_date
 
-        if date == current_date
-          next unless duration >= 15 * 60
-          streak += 1
-          next
-        end
+    #     if date == current_date
+    #       next unless duration >= 15 * 60
+    #       streak += 1
+    #       next
+    #     end
 
-        if date == current_date - streak.days && duration >= 15 * 60
-          streak += 1
-        else
-          break
-        end
-      end
+    #     if date == current_date - streak.days && duration >= 15 * 60
+    #       streak += 1
+    #     else
+    #       break
+    #     end
+    #   end
 
-      streak
-    end
+    #   streak
+    # end
 
-    def streak_days_formatted(start_date: 8.days.ago)
-      result = streak_days(start_date: start_date)
+    # def streak_days_formatted(start_date: 8.days.ago)
+    #   result = streak_days(start_date: start_date)
 
-      if result > 7
-        "7+"
-      elsif result < 1
-        nil
-      else
-        result.to_s
-      end
-    end
+    #   if result > 7
+    #     "7+"
+    #   elsif result < 1
+    #     nil
+    #   else
+    #     result.to_s
+    #   end
+    # end
 
     def duration_formatted(scope = all)
       seconds = duration_seconds(scope)
