@@ -6,3 +6,8 @@ ignored_endpoints:
   - SessionsController#stop_impersonating
   - LetterOpenerWeb::Engine
   - ScrapyardLeaderboardsController#*
+  - Api::Hackatime::V1::HackatimeController#*
+  - Api::V1::StatsController#*
+  - Rails::HealthController#show
+  - ActionDispatch::Routing::RouteSet#*
+  - ActionDispatch::Static
