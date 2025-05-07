@@ -5,10 +5,12 @@ ignored_endpoints:
   - SessionsController#impersonate
   - SessionsController#stop_impersonating
   - LetterOpenerWeb::Engine
-  - ScrapyardLeaderboardsController#*
+  - ScrapyardLeaderboardsController#index
   - Api::Hackatime::V1::HackatimeController#push_heartbeats
   - Api::Hackatime::V1::HackatimeController#status_bar_today
-  - Api::V1::StatsController#*
+  - Api::V1::StatsController#user_stats
+  - Avo::ApiKeysController#index
   - Rails::HealthController#show
+  - AhoyCaptain::StatsController#show
   - ActionDispatch::Routing::RouteSet#*
   - ActionDispatch::Static
