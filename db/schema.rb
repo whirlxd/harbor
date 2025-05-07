@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_07_183451) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_07_184341) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -209,7 +209,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_07_183451) do
     t.integer "ysws_program", default: 0, null: false
     t.datetime "deleted_at"
     t.index ["category", "time"], name: "index_heartbeats_on_category_and_time"
-    t.index ["fields_hash"], name: "index_heartbeats_on_fields_hash", unique: true
     t.index ["fields_hash"], name: "index_heartbeats_on_fields_hash_when_not_deleted", unique: true, where: "(deleted_at IS NULL)"
     t.index ["user_id"], name: "index_heartbeats_on_user_id"
   end
