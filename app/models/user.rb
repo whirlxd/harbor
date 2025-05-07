@@ -6,6 +6,12 @@ class User < ApplicationRecord
   validates :github_uid, uniqueness: true, allow_nil: true
   validates :timezone, inclusion: { in: TZInfo::Timezone.all.map(&:identifier) }, allow_nil: false
 
+  enum :trust_level, {
+    default: 0,
+    untrusted: 1,
+    trusted: 2
+  }
+
   has_many :heartbeats
   has_many :email_addresses, dependent: :destroy
   has_many :email_verification_requests, dependent: :destroy

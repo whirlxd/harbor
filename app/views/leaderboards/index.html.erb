@@ -46,7 +46,7 @@
     <% if @entries&.any? %>
       <div class="leaderboard-entries">
         <% @entries.each_with_index do |entry, index| %>
-          <div class="leaderboard-entry <%= 'current-user' if entry.user_id == current_user&.id %> <%= 'omitted' if entry.user.omit_from_leaderboard && current_user&.admin? %>">
+          <div class="leaderboard-entry <%= 'current-user' if entry.user_id == current_user&.id %> <%= 'omitted' if entry.user.untrusted? && current_user&.admin? %>">
             <span class="rank">
               <% case index %>
               <% when 0 then %>
