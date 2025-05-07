@@ -6,8 +6,13 @@ class Heartbeat < ApplicationRecord
 
   time_range_filterable_field :time
 
+  # Default scope to exclude deleted records
+  default_scope { where(deleted_at: nil) }
+
   scope :today, -> { where(time: Time.current.beginning_of_day..Time.current.end_of_day) }
   scope :recent, -> { where("created_at > ?", 24.hours.ago) }
+  scope :with_deleted, -> { unscope(where: :deleted_at) }
+  scope :only_deleted, -> { with_deleted.where.not(deleted_at: nil) }
 
   enum :source_type, {
     direct_entry: 0,
@@ -97,11 +102,25 @@ class Heartbeat < ApplicationRecord
   end
 
   def self.generate_fields_hash(attributes)
-    Digest::MD5.hexdigest(attributes.except(*self.unindexed_attributes).to_json)
+    string_attributes = attributes.transform_keys(&:to_s)
+    indexed_attributes = string_attributes.slice(*self.indexed_attributes)
+    Digest::MD5.hexdigest(indexed_attributes.to_json)
   end
 
-  def self.unindexed_attributes
-    %w[id created_at updated_at source_type fields_hash ysws_program]
+  def self.indexed_attributes
+    %w[user_id branch category dependencies editor entity language machine operating_system project type user_agent line_additions line_deletions lineno lines cursorpos project_root_count time is_write]
+  end
+
+  def set_raw_data
+    self.raw_data = self.attributes.slice(*self.class.indexed_attributes)
+  end
+
+  def soft_delete
+    update_column(:deleted_at, Time.current)
+  end
+
+  def restore
+    update_column(:deleted_at, nil)
   end
 
   private
