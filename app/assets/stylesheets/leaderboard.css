@@ -103,6 +103,14 @@ h3+.mini-leaderboard {
   background-color: #e0e0e0;
 }
 
+.leaderboard-entry.omitted {
+  opacity: 0.4;
+}
+
+.leaderboard-entry.omitted:hover {
+  opacity: 0.6;
+}
+
 /* Dark mode overrides */
 @media (prefers-color-scheme: dark) {
   .mini-leaderboard {
