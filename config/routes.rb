@@ -38,7 +38,6 @@ Rails.application.routes.draw do
       get :currently_hacking
       get :filterable_dashboard_content
       get :filterable_dashboard
-      get :my_projects
       get "🃏", to: "static_pages#🃏", as: :wildcard
       get :streak
     end
@@ -64,6 +63,8 @@ Rails.application.routes.draw do
       patch :update_trust_level
     end
   end
+
+  get "my/projects", to: "my/project_repo_mappings#index", as: :my_projects
 
   # Namespace for current user actions
   get "my/settings", to: "users#edit", as: :my_settings

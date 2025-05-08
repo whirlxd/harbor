@@ -2,7 +2,6 @@ class StaticPagesController < ApplicationController
   before_action :ensure_current_user, only: %i[
     filterable_dashboard
     filterable_dashboard_content
-    my_projects
   ]
 
   def index
@@ -79,9 +78,6 @@ class StaticPagesController < ApplicationController
 
       @home_stats = Cache::HomeStatsJob.perform_now
     end
-  end
-
-  def my_projects
   end
 
   def project_durations

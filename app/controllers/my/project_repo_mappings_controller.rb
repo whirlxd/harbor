@@ -2,6 +2,13 @@ class My::ProjectRepoMappingsController < ApplicationController
   before_action :require_github_oauth
   before_action :set_project_repo_mapping, only: [ :edit, :update ]
 
+  def index
+    @project_repo_mappings = current_user.project_repo_mappings
+    @interval = params[:interval] || "daily"
+    @from = params[:from]
+    @to = params[:to]
+  end
+
   def edit
   end
 
@@ -11,7 +18,7 @@ class My::ProjectRepoMappingsController < ApplicationController
     end
 
     if @project_repo_mapping.update(project_repo_mapping_params)
-      redirect_to my_projects_static_pages_path, notice: "Repository mapping updated successfully."
+      redirect_to my_project_repo_mapping_path, notice: "Repository mapping updated successfully."
     else
       flash.now[:alert] = @project_repo_mapping.errors.full_messages.join(", ")
       render :edit, status: :unprocessable_entity

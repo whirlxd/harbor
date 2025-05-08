@@ -31,8 +31,8 @@
     </li>
     <% if current_user %>
       <li>
-        <%= link_to my_projects_static_pages_path, class: "nav-item #{current_page?(my_projects_static_pages_path) ? 'active' : ''}" do %>
-          My Projects
+        <%= link_to my_projects_path, class: "nav-item #{current_page?(my_projects_path) ? 'active' : ''}" do %>
+          Projects
         <% end %>
       </li>
       <li>
