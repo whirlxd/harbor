@@ -90,11 +90,11 @@ class Heartbeat < ApplicationRecord
   validates :time, presence: true
 
   def self.recent_count
-    Cache::HeartbeatCountsJob.new.calculate[:recent_count]
+    Cache::HeartbeatCountsJob.calculate[:recent_count]
   end
 
   def self.recent_imported_count
-    Cache::HeartbeatCountsJob.new.calculate[:recent_imported_count]
+    Cache::HeartbeatCountsJob.calculate[:recent_imported_count]
   end
 
   def self.generate_fields_hash(attributes)
