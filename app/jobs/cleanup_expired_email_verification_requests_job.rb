@@ -1,5 +1,5 @@
 class CleanupExpiredEmailVerificationRequestsJob < ApplicationJob
-  queue_as :interval_10s
+  queue_as :latency_10s
 
   include GoodJob::ActiveJobExtensions::Concurrency
 
