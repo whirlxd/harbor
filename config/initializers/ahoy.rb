@@ -9,4 +9,4 @@ Ahoy.api = false
 # see https://github.com/ankane/ahoy#geocoding
 Ahoy.geocode = true
 
-Ahoy.job_queue = :latency_10s
+Ahoy.job_queue = :latency_1s
