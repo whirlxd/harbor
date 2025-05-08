@@ -90,15 +90,11 @@ class Heartbeat < ApplicationRecord
   validates :time, presence: true
 
   def self.recent_count
-    Rails.cache.fetch("heartbeats_recent_count", expires_in: 5.minutes) do
-      recent.count
-    end
+    Cache::HeartbeatCountsJob.new.calculate[:recent_count]
   end
 
   def self.recent_imported_count
-    Rails.cache.fetch("heartbeats_recent_imported_count", expires_in: 5.minutes) do
-      recent.where.not(source_type: :direct_entry).count
-    end
+    Cache::HeartbeatCountsJob.new.calculate[:recent_imported_count]
   end
 
   def self.generate_fields_hash(attributes)
