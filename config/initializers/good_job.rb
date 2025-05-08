@@ -33,10 +33,10 @@ Rails.application.configure do
       cron: "*/2 * * * *",
       class: "SailorsLogPollForChangesJob"
     },
-    update_slack_channel_cache: {
-      cron: "0 11 * * *",
-      class: "SlackCommand::UpdateSlackChannelCacheJob"
-    },
+    # update_slack_channel_cache: {
+    #   cron: "0 11 * * *",
+    #   class: "SlackCommand::UpdateSlackChannelCacheJob"
+    # },
     update_slack_neighborhood_channels: {
       cron: "0 12 * * *",
       class: "UpdateSlackNeighborhoodChannelsJob"
