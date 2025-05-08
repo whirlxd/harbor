@@ -3,7 +3,7 @@ class FlavorText
     [
       "it u!",
       "it's yUwU",
-      "uwu"
+      "uwu",
       "hey there",
       "look familiar?",
       "i'm seeing double!!",
