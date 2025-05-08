@@ -5,25 +5,39 @@ class Cache::SetupSocialProofJob < Cache::ActivityJob
 
   def calculate
     # Only run queries as needed, starting with the smallest time range
-    if (past_5min_count = users_in_past(5.minutes)) >= 1
-      "#{past_5min_count} #{'Hack Clubber'.pluralize(past_5min_count)} set up Hackatime in the last 5 minutes"
-    elsif (past_hour_count = users_in_past(1.hour)) >= 3
-      "#{past_hour_count} #{'Hack Clubber'.pluralize(past_hour_count)} set up Hackatime in the last hour"
-    elsif (past_day_count = users_in_past(1.day)) >= 5
-      "#{past_day_count} #{'Hack Clubber'.pluralize(past_day_count)} set up Hackatime today"
-    elsif (past_week_count = users_in_past(1.week)) >= 5
-      "#{past_week_count} #{'Hack Clubber'.pluralize(past_week_count)} set up Hackatime in the past week"
-    elsif (past_month_count = users_in_past(1.month)) >= 5
-      "#{past_month_count} #{'Hack Clubber'.pluralize(past_month_count)} set up Hackatime in the past month"
-    elsif (year_count = users_in_past(Time.current.beginning_of_year)) >= 5
-      "#{year_count} #{'Hack Clubber'.pluralize(year_count)} set up Hackatime this year"
-    end
+    check_social_proof(5.minutes, 1, "in the last 5 minutes") ||
+      check_social_proof(1.hour, 3, "in the last hour") ||
+      check_social_proof(1.day, 5, "today") ||
+      check_social_proof(1.week, 5, "in the past week") ||
+      check_social_proof(1.month, 5, "in the past month") ||
+      check_social_proof(Time.current.beginning_of_year, 5, "this year")
   end
 
-  def users_in_past(time_period)
-    Heartbeat.where("time > ?", time_period.to_f)
-             .where(source_type: :test_entry)
-             .distinct
-             .count(:user_id)
+  def check_social_proof(time_period, threshold, humanized_time_period)
+    user_ids = Heartbeat.where("time > ?", time_period.ago.to_f)
+                        .where("time < ?", Time.current.to_f)
+                        .with_valid_timestamps
+                        .where(source_type: :test_entry)
+                        .distinct
+                        .pluck(:user_id)
+
+    user_count = user_ids.size
+    return nil if user_count < threshold
+
+    recent_setup_users = User.where(id: user_ids).limit(5).map do |user|
+      {
+        id: user.id,
+        avatar_url: user.avatar_url,
+        display_name: user.display_name || "Hack Clubber"
+      }
+    end
+
+    message = "#{user_count.to_s + ' Hack Clubber'.pluralize(user_count)} set up Hackatime #{humanized_time_period}"
+
+    {
+      message: message,
+      users_size: user_count,
+      users_recent: recent_setup_users
+    }
   end
 end 

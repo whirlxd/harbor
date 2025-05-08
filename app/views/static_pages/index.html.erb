@@ -35,21 +35,21 @@
       <div class="setup-notice">
         <%= link_to "Set up Hackatime! Click me.", my_wakatime_setup_path, class: "auth-button setup-button primary-action" %>
         <div class="setup-info">
-          <% if @recent_setup_users&.any? %>
+          <% if @ssp_users_recent&.any? %>
             <div class="recent-setup-users">
-              <% @recent_setup_users.each do |user| %>
+              <% @ssp_users_recent.each do |user| %>
                 <div class="avatar-container">
                   <div class="avatar-tooltip"><%= user[:display_name] %></div>
                   <img src="<%= user[:avatar_url] %>" alt="<%= user[:display_name] %>" class="setup-avatar" />
                 </div>
               <% end %>
-              <% if @all_setup_users && @all_setup_users.size > 5 %>
-                <div class="avatar-container all-users-hover" title="See all <%= @all_setup_users.size %> users">
-                  <div class="setup-avatar more-avatars">+<%= @all_setup_users.size - 5 %></div>
+              <% if @ssp_users_size && @ssp_users_size > 5 %>
+                <div class="avatar-container all-users-hover" title="See all <%= @ssp_users_size %> users">
+                  <div class="setup-avatar more-avatars">+<%= @ssp_users_size - 5 %></div>
                   <div class="users-hover-list">
                     <h4>All users who set up Hackatime</h4>
                     <div class="hover-user-list">
-                      <% @all_setup_users.each do |user| %>
+                      <% @ssp_users_recent.each do |user| %>
                         <div class="user-item">
                           <img src="<%= user[:avatar_url] %>" alt="<%= user[:display_name] %>" class="user-avatar" />
                           <span class="user-name"><%= user[:display_name] %></span>
@@ -61,8 +61,8 @@
               <% end %>
             </div>
           <% end %>
-          <% if @setup_social_proof %>
-            <p class="setup-hint"><%= @setup_social_proof %> (this is real data)</p>
+          <% if @ssp_message %>
+            <p class="setup-hint"><%= @ssp_message %> (this is real data)</p>
           <% end %>
         </div>
       </div>

@@ -27,8 +27,14 @@ class StaticPagesController < ApplicationController
         redirect_to FlavorText.random_time_video.sample, allow_other_host: allowed_hosts
       end
 
-      @show_wakatime_setup_notice = current_user.heartbeats.empty? || params[:show_wakatime_setup_notice]
-      @setup_social_proof = Cache::SetupSocialProofJob.perform_now if @show_wakatime_setup_notice
+      if current_user.heartbeats.empty? || params[:show_wakatime_setup_notice]
+        @show_wakatime_setup_notice = true
+
+        setup_social_proof = Cache::SetupSocialProofJob.perform_now
+        @ssp_message = setup_social_proof[:message]
+        @ssp_users_recent = setup_social_proof[:users_recent]
+        @ssp_users_size = setup_social_proof[:users_size]
+      end
 
       # Get languages and editors in a single query using window functions
       Time.use_zone(current_user.timezone) do
