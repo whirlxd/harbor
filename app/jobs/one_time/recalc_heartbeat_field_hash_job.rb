@@ -2,7 +2,7 @@ class OneTime::RecalcHeartbeatFieldHashJob < ApplicationJob
   queue_as :default
 
   def perform
-    Heartbeat.find_each(batch_size: 100) do |heartbeat|
+    Heartbeat.find_each(batch_size: 2500) do |heartbeat|
       begin
         heartbeat.send(:set_fields_hash!)
         heartbeat.save!
