@@ -86,6 +86,11 @@ Rails.application.configure do
       cron: "* * * * *",
       class: "Cache::MinutesLoggedJob",
       kwargs: { force_reload: true }
+    },
+    cache_heartbeat_counts: {
+      cron: "* * * * *",
+      class: "Cache::HeartbeatCountsJob",
+      kwargs: { force_reload: true }
     }
   }
 end
