@@ -30,7 +30,7 @@ Rails.application.configure do
       args: [ :last_7_days ]
     },
     sailors_log_poll: {
-      cron: "* * * * *",
+      cron: "*/2 * * * *",
       class: "SailorsLogPollForChangesJob"
     },
     update_slack_channel_cache: {
