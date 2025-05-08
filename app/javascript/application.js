@@ -3,14 +3,18 @@ import "@hotwired/turbo-rails"
 import "controllers"
 
 function setupCurrentlyHacking() {
-  const container = document.querySelector('.currently-hacking-container');
-  const header = container?.querySelector('.currently-hacking-header');
-  if (container && header) {
-    header.addEventListener('click', function() {
+  const header = document.querySelector('.currently-hacking-header');
+  // only if no existing event listener
+  if (!header) { return }
+  header.onclick = function() {
+    const container = document.querySelector('.currently-hacking-container');
+    if (container) {
       container.classList.toggle('visible');
-    });
+    }
   }
 }
 
-document.addEventListener("DOMContentLoaded", setupCurrentlyHacking);
-document.addEventListener("turbo:load", setupCurrentlyHacking);
+// Handle both initial page load and subsequent Turbo navigations
+document.addEventListener('turbo:load', setupCurrentlyHacking);
+document.addEventListener('turbo:render', setupCurrentlyHacking);
+document.addEventListener('DOMContentLoaded', setupCurrentlyHacking);
