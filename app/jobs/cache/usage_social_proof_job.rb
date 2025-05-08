@@ -1,4 +1,4 @@
-class Cache::SocialProofJob < Cache::ActivityJob
+class Cache::UsageSocialProofJob < Cache::ActivityJob
   queue_as :latency_10s
 
   private

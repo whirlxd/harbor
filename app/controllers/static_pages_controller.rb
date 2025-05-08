@@ -69,7 +69,7 @@ class StaticPagesController < ApplicationController
         instance_variable_set("@#{key}", value)
       end
     else
-      @social_proof = Cache::SocialProofJob.perform_now
+      @usage_social_proof = Cache::UsageSocialProofJob.perform_now
 
       @home_stats = Cache::HomeStatsJob.perform_now
     end
