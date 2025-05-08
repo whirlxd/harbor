@@ -2,8 +2,8 @@ class UsersController < ApplicationController
   include ActionView::Helpers::NumberHelper
 
   before_action :set_user
-  before_action :require_current_user
-  before_action :require_admin, unless: :is_own_settings?
+  before_action :require_current_user, except: [:update_trust_level]
+  before_action :require_admin, only: [:update_trust_level]
 
   def edit
     @can_enable_slack_status = @user.slack_access_token.present? && @user.slack_scopes.include?("users.profile:write")
@@ -60,6 +60,17 @@ class UsersController < ApplicationController
     ].sample
   end
 
+  def update_trust_level
+    @user = User.find(params[:id])
+    require_admin
+
+    if @user.update(trust_level: params[:trust_level])
+      render json: { status: "success" }
+    else
+      render json: { status: "error", message: @user.errors.full_messages.join(", ") }, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def require_admin
@@ -76,7 +87,7 @@ class UsersController < ApplicationController
 
   def set_user
     @user = if params["id"].present?
-      User.find_by!(slack_uid: params["id"])
+      User.find(params["id"])
     else
       current_user
     end
