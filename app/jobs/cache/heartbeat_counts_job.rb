@@ -2,7 +2,7 @@ class Cache::HeartbeatCountsJob < Cache::ActivityJob
   queue_as :latency_10s
 
   def expires_in
-    5.minutes
+    5.hours
   end
 
   private
