@@ -40,4 +40,4 @@ class Cache::SetupSocialProofJob < Cache::ActivityJob
       users_recent: recent_setup_users
     }
   end
-end 
+end

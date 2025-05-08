@@ -2,8 +2,8 @@ class UsersController < ApplicationController
   include ActionView::Helpers::NumberHelper
 
   before_action :set_user
-  before_action :require_current_user, except: [:update_trust_level]
-  before_action :require_admin, only: [:update_trust_level]
+  before_action :require_current_user, except: [ :update_trust_level ]
+  before_action :require_admin, only: [ :update_trust_level ]
 
   def edit
     @can_enable_slack_status = @user.slack_access_token.present? && @user.slack_scopes.include?("users.profile:write")
