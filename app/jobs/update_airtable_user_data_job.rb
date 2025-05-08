@@ -10,10 +10,12 @@ class UpdateAirtableUserDataJob < ApplicationJob
         first_heartbeat_time = user.heartbeats.with_valid_timestamps.order(time: :asc).limit(1).pluck(:time).first
         first_direct_heartbeat_time = user.heartbeats.direct_entry.with_valid_timestamps.order(time: :asc).limit(1).pluck(:time).first
         first_test_heartbeat_time = user.heartbeats.test_entry.with_valid_timestamps.order(time: :asc).limit(1).pluck(:time).first
+        created_at = user.created_at.to_i
         next if first_heartbeat_time > Time.now.to_i
         user.email_addresses.map do |email_address|
           records << Table.new({
             email: email_address.email,
+            signed_up_at: Time.at(created_at).iso8601,
             first_direct_heartbeat_time: first_direct_heartbeat_time ? Time.at(first_direct_heartbeat_time.to_i).iso8601 : nil,
             first_test_heartbeat_time: first_test_heartbeat_time ? Time.at(first_test_heartbeat_time.to_i).iso8601 : nil,
             first_heartbeat_time: Time.at(first_heartbeat_time.to_i).iso8601 # airtable expects milliseconds
