@@ -2,7 +2,7 @@
 import "@hotwired/turbo-rails"
 import "controllers"
 
-document.addEventListener("DOMContentLoaded", function() {
+function setupCurrentlyHacking() {
   const container = document.querySelector('.currently-hacking-container');
   const header = container?.querySelector('.currently-hacking-header');
   if (container && header) {
@@ -10,4 +10,7 @@ document.addEventListener("DOMContentLoaded", function() {
       container.classList.toggle('visible');
     });
   }
-});
+}
+
+document.addEventListener("DOMContentLoaded", setupCurrentlyHacking);
+document.addEventListener("turbo:load", setupCurrentlyHacking);
