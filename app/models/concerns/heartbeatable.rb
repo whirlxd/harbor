@@ -220,6 +220,10 @@ module Heartbeatable
       scope = scope.with_valid_timestamps
 
       if scope.group_values.any?
+        if scope.group_values.length > 1
+          raise NotImplementedError, "Multiple group values are not supported"
+        end
+
         group_column = scope.group_values.first
 
         # Don't quote if it's a SQL function (contains parentheses)
