@@ -69,7 +69,7 @@ class User < ApplicationRecord
   def set_neighborhood_channel
     return unless slack_uid.present?
 
-    self.slack_neighborhood_channel = SlackNeighborhood.find_by_id(slack_uid)
+    self.slack_neighborhood_channel = SlackNeighborhood.find_by_id(slack_uid)&.dig("id")
   end
 
   def format_extension_text(duration)
