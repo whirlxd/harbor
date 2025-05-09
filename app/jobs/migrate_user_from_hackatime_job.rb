@@ -67,7 +67,8 @@ class MigrateUserFromHackatimeJob < ApplicationJob
           cursorpos: heartbeat.cursor_position,
           project_root_count: heartbeat.project_root_count,
           is_write: heartbeat.is_write,
-          source_type: :wakapi_import
+          source_type: :wakapi_import,
+          raw_data: heartbeat.attributes.slice(*Heartbeat.indexed_attributes)
         }
 
         {
