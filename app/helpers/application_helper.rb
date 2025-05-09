@@ -15,6 +15,12 @@ module ApplicationHelper
     concat content_tag(element, class: "dev-tool #{class_name}", **options, &block)
   end
 
+  def country_to_emoji(country_code)
+    # Hack to turn country code into the country's flag
+    # https://stackoverflow.com/a/50859942
+    country_code.tr("A-Z", "\u{1F1E6}-\u{1F1FF}")
+  end
+
   def timezone_difference_in_seconds(timezone1, timezone2)
     return 0 if timezone1 == timezone2
 

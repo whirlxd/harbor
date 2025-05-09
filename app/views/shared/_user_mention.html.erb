@@ -8,6 +8,7 @@
   <% else %>
     <%= user.display_name %>
   <% end %>
+  <%= country_to_emoji(user.country_code) if user.country_code.present? %>
   <% if local_assigns.fetch(:show, []).include?(:neighborhood) && user.slack_neighborhood_channel.present? %>
     <%= link_to "🏘️", "https://slack.com/app_redirect?channel=#{user.slack_neighborhood_channel}", target: "_blank" %>
   <% end %>
