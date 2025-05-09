@@ -3,7 +3,7 @@ import "@hotwired/turbo-rails"
 import "controllers"
 
 function setupCurrentlyHacking() {
-  const header = document.querySelector('.currently-hacking-header');
+  const header = document.querySelector('.currently-hacking');
   // only if no existing event listener
   if (!header) { return }
   header.onclick = function() {
