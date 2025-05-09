@@ -189,6 +189,20 @@ class StaticPagesController < ApplicationController
     redirect_to "#{wildcard_host}?auth_key=#{auth_key}", allow_other_host: wildcard_host
   end
 
+  def timeline
+    render partial: "timeline", locals: {
+      users_to_display: [
+        current_user,
+        User.find(1),
+        User.find(10),
+        User.find(1792),
+        User.find(69),
+        User.find(1476),
+        User.find(805),
+      ]
+    }
+  end
+
   private
 
   def ensure_current_user

@@ -40,6 +40,8 @@ Rails.application.routes.draw do
       get :filterable_dashboard
       get "🃏", to: "static_pages#🃏", as: :wildcard
       get :streak
+
+      get :timeline
     end
   end
 
