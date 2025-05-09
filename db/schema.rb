@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_09_170101) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_09_191155) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -236,6 +236,21 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_09_170101) do
     t.integer "period_type", default: 0, null: false
   end
 
+  create_table "mailing_addresses", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "first_name", null: false
+    t.string "last_name", null: false
+    t.string "zip_code", null: false
+    t.string "line_1", null: false
+    t.string "line_2"
+    t.string "city", null: false
+    t.string "state", null: false
+    t.string "country", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_mailing_addresses_on_user_id"
+  end
+
   create_table "project_repo_mappings", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "project_name", null: false
@@ -313,6 +328,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_09_170101) do
     t.string "slack_neighborhood_channel"
     t.integer "trust_level", default: 0, null: false
     t.string "country_code"
+    t.string "mailing_address_otc"
     t.index ["slack_uid"], name: "index_users_on_slack_uid", unique: true
     t.index ["timezone"], name: "index_users_on_timezone"
   end
@@ -334,6 +350,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_09_170101) do
   add_foreign_key "heartbeats", "users"
   add_foreign_key "leaderboard_entries", "leaderboards"
   add_foreign_key "leaderboard_entries", "users"
+  add_foreign_key "mailing_addresses", "users"
   add_foreign_key "project_repo_mappings", "users"
   add_foreign_key "sign_in_tokens", "users"
 end
