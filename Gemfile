@@ -85,7 +85,11 @@ gem "ahoy_matey"
 gem "geocoder"
 gem "ahoy_captain", git: "https://github.com/johnmcdowall/ahoy_captain.git", branch: "fix_importmaps"
 
+# Airtable syncing
 gem "norairrecord", "~> 0.3.0"
+
+# Country codes
+gem "countries"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem

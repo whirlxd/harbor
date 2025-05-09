@@ -5,6 +5,7 @@ class User < ApplicationRecord
   validates :slack_uid, uniqueness: true, allow_nil: true
   validates :github_uid, uniqueness: true, allow_nil: true
   validates :timezone, inclusion: { in: TZInfo::Timezone.all_identifiers }, allow_nil: false
+  validates :country_code, inclusion: { in: ISO3166::Country.codes }, allow_nil: true
 
   enum :trust_level, {
     default: 0,
