@@ -47,8 +47,26 @@ test:
     username: postgres
     password: postgres
     # url: <%= ENV['TEST_DATABASE_URL'] %>
+  primary_direct:
+    adapter: postgresql
+    database: test_db
+    username: postgres
+    password: postgres
+    database_tasks: false
   wakatime:
     url: <%= ENV['WAKATIME_DATABASE_URL'] %>
+    replica: true
+  sailors_log:
+    adapter: postgresql
+    database: test_sailors_log
+    username: postgres
+    password: postgres
+    replica: true
+  warehouse:
+    adapter: postgresql
+    database: test_warehouse
+    username: postgres
+    password: postgres
     replica: true
 
 
