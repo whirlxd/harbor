@@ -36,19 +36,15 @@ class Api::Hackatime::V1::HackatimeController < ApplicationController
 
   def status_bar_today
     hbt = @user.heartbeats.today
-
-    timezone = @user.timezone || "UTC"
-    Time.use_zone(timezone) do
-      result = {
-        data: {
-          grand_total: {
-            text: @user.format_extension_text(hbt.duration_seconds),
-            total_seconds: hbt.duration_seconds
-          }
+    result = {
+      data: {
+        grand_total: {
+          text: @user.format_extension_text(hbt.duration_seconds),
+          total_seconds: hbt.duration_seconds
         }
       }
-      render json: result
-    end
+    }
+    render json: result
   end
 
   private
