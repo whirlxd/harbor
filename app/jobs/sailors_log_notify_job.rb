@@ -1,6 +1,5 @@
 class SailorsLogNotifyJob < ApplicationJob
   queue_as :latency_10s
-  priority 10
 
   include GoodJob::ActiveJobExtensions::Concurrency
 
