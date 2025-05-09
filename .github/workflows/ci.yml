@@ -105,6 +105,7 @@ jobs:
           bin/rails db:create RAILS_ENV=test
           bin/rails db:migrate RAILS_ENV=test
           # Create additional test databases
+          psql -h localhost -U postgres -c "CREATE DATABASE test_wakatime;"
           psql -h localhost -U postgres -c "CREATE DATABASE test_sailors_log;"
           psql -h localhost -U postgres -c "CREATE DATABASE test_warehouse;"
           bin/rails test

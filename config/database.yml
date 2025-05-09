@@ -54,7 +54,10 @@ test:
     password: postgres
     database_tasks: false
   wakatime:
-    url: <%= ENV['WAKATIME_DATABASE_URL'] %>
+    adapter: postgresql
+    database: test_wakatime
+    username: postgres
+    password: postgres
     replica: true
   sailors_log:
     adapter: postgresql
