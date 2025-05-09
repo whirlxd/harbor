@@ -24,7 +24,12 @@
     gutter_rem = 0.25
 
     total_gutter_space_rem = num_users > 1 ? (num_users - 1) * gutter_rem : 0
-    css_single_col_width = "calc((100% - #{activity_col_area_start_rem}rem - #{activity_col_area_end_rem}rem - #{total_gutter_space_rem}rem) / #{num_users})"
+    
+    # Width for activity blocks (100% refers to timeline-grid-scroll-container width)
+    css_activity_column_width = "calc((100% - #{activity_col_area_start_rem}rem - #{activity_col_area_end_rem}rem - #{total_gutter_space_rem}rem) / #{num_users})"
+    
+    # Width for header items (100% refers to sticky header's content width, after its margins)
+    css_header_item_width = "calc((100% - #{total_gutter_space_rem}rem) / #{num_users})"
 
     pixels_per_hour = 128
     pixels_per_minute = pixels_per_hour / 60.0
@@ -56,11 +61,11 @@
                   align-items: center; flex-shrink: 0;
                   position: sticky; top: 0; z-index: 20; background-color: #1F2937; padding-bottom: 0.5rem; padding-top: 0.25rem;">
         <% users_to_display.each_with_index do |user, index| %>
-          <div style="width: <%= css_single_col_width %>;
+          <div style="width: <%= css_header_item_width %>;
                       <%= index > 0 ? "margin-left: #{gutter_rem}rem;" : "" %>
                       text-align: center; font-weight: 500; color: #E5E7EB; font-size:0.875rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
                title="User ID: <%= user.id %> - <%= user.respond_to?(:username) ? user.username : user.email %>">
-            UID: <%= user.id %>
+            <%= render "shared/user_mention", user: user %>
           </div>
         <% end %>
       </div>
@@ -163,7 +168,7 @@
             v
           end
 
-          current_column_left_offset = "calc(#{activity_col_area_start_rem}rem + (#{index} * (#{css_single_col_width} + #{gutter_rem}rem)))"
+          current_column_left_offset = "calc(#{activity_col_area_start_rem}rem + (#{index} * (#{css_activity_column_width} + #{gutter_rem}rem)))"
           block_color = user_colors[index % user_colors.length]
         %>
         <% user_spans.each do |span_data| %>
@@ -171,7 +176,7 @@
           <% next unless props %>
           <div style="position: absolute; background-color: <%= block_color %>; color: #FFFFFF; border-radius: 0.25rem; font-size: 0.75rem; line-height: 1.1; padding: 2px 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
                       left: <%= current_column_left_offset %>;
-                      width: <%= css_single_col_width %>;
+                      width: <%= css_activity_column_width %>;
                       top: <%= props[:final_top_px] %>px;
                       height: <%= props[:height_px] %>px;
                       z-index: 10; overflow: hidden; box-sizing: border-box;"
