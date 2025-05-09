@@ -1,5 +1,5 @@
 class ScanGithubReposJob < ApplicationJob
-  queue_as :latency_1m
+  queue_as :latency_5m
 
   include GoodJob::ActiveJobExtensions::Concurrency
 
