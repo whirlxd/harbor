@@ -70,4 +70,4 @@ class WakatimeServiceTest < Minitest::Test
     assert_equal "", result[:editor]
     assert_equal "failed to parse user agent string", result[:err]
   end
-end 
+end
