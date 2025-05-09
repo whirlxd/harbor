@@ -8,7 +8,7 @@ Rails.application.configure do
   config.good_job.execution_mode = :async
 
   # https://github.com/bensheldon/good_job#configuring-your-queues
-  config.good_job.queues = "real_time:2; latency_10s:8; latency_1m:2; *:1"
+  config.good_job.queues = "real_time:2; latency_10s:8; latency_1m:2; latency_5m:1 literally_whenever:1 *:1"
 
   #  https://github.com/bensheldon/good_job#pgbouncer-compatibility
   GoodJob.active_record_parent_class = "ApplicationDirectRecord"

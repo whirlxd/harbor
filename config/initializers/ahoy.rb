@@ -9,4 +9,4 @@ Ahoy.api = false
 # see https://github.com/ankane/ahoy#geocoding
 Ahoy.geocode = true
 
-Ahoy.job_queue = :ahoy
+Ahoy.job_queue = :literally_whenever
