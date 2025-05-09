@@ -1,5 +1,6 @@
 class EmailAddress < ApplicationRecord
   belongs_to :user
+  has_paper_trail
 
   validates :email, presence: true,
                    uniqueness: true,

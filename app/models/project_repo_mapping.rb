@@ -1,6 +1,8 @@
 class ProjectRepoMapping < ApplicationRecord
   belongs_to :user
 
+  has_paper_trail
+
   validates :project_name, presence: true
   validates :repo_url, presence: true
   validates :project_name, uniqueness: { scope: :user_id }
