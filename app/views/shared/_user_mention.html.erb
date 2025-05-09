@@ -1,4 +1,4 @@
-<div class="user-info <%= current_user == user ? "current-user" : "" %>">
+<div class="user-info <%= current_user == user ? "current-user" : "" %>" title="<%= FlavorText.same_user.sample if user == current_user %>">
   <%= image_tag user.avatar_url,
                 size: "32x32",
                 class: "avatar",
