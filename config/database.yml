@@ -42,6 +42,7 @@ development:
 test:
   primary:
     <<: *default
+    adapter: postgresql
     database: test_db
     username: postgres
     password: postgres
