@@ -13,7 +13,7 @@ class MigrateUserFromHackatimeJob < ApplicationJob
     @user = User.find(user_id)
     # Import from Hackatime
     return unless @user.slack_uid.present?
-    return unless Hackatime::User.exists?(slack_uid: @user.slack_uid)
+    return unless Hackatime::User.exists?(id: @user.slack_uid)
 
     import_api_keys
     import_heartbeats
