@@ -4,10 +4,10 @@ class SetUserCountryCodeJob < ApplicationJob
   def perform(user_id)
     user = User.find_by(id: user_id)
     return unless user
-    return if user.country_code.present?
+    # return if user.country_code.present?
 
     # Get unique IPs from user's heartbeats
-    ips = user.heartbeats.where.not(ip_address: nil).distinct.pluck(:ip_address)
+    ips = user.heartbeats.where.not(ip_address: nil).order(time: :desc).distinct.pluck(:ip_address)
     return if ips.empty?
 
     # Try each IP until we get a valid country code
