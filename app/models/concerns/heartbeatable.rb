@@ -202,9 +202,13 @@ module Heartbeatable
       result
     end
 
-    def daily_durations(start_date: 365.days.ago, end_date: Time.current)
-      # Get the timezone from the first associated user (for scoped queries)
-      timezone = all.first&.user&.timezone || "UTC"
+    def daily_durations(user_timezone:, start_date: 365.days.ago, end_date: Time.current)
+      timezone = user_timezone
+
+      unless TZInfo::Timezone.all_identifiers.include?(timezone)
+        Rails.logger.warn "Invalid timezone provided to daily_durations: #{timezone}. Defaulting to UTC."
+        timezone = "UTC"
+      end
 
       # Create the timezone-aware date truncation expression
       day_trunc = Arel.sql("DATE_TRUNC('day', to_timestamp(time) AT TIME ZONE '#{timezone}')")

@@ -105,10 +105,12 @@ class StaticPagesController < ApplicationController
   def activity_graph
     return unless current_user
 
-    daily_durations = Rails.cache.fetch("user_#{current_user.id}_daily_durations", expires_in: 1.minute) do
-      # Set the timezone for the duration of this request
-      Time.use_zone(current_user.timezone) do
-        current_user.heartbeats.daily_durations.to_h
+    user_tz = current_user.timezone
+    cache_key = "user_#{current_user.id}_daily_durations_#{user_tz}"
+
+    daily_durations = Rails.cache.fetch(cache_key, expires_in: 1.minute) do
+      Time.use_zone(user_tz) do
+        current_user.heartbeats.daily_durations(user_timezone: user_tz).to_h
       end
     end
 
