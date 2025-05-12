@@ -190,36 +190,115 @@ class StaticPagesController < ApplicationController
   end
 
   def timeline
-    Heartbeat.heartbeat_timeout_duration(10.minutes) unless Rails.env.test?
-    users_to_fetch = [
-      current_user,
-      User.find(1), # Example User IDs, adjust as needed
-      User.find(10),
-      User.find(1792),
-      User.find(69),
-      User.find(1476),
-      User.find(805),
-    ].compact
+    # for span calculations
+    timeout_duration = 10.minutes.to_i
 
-    @users_with_timeline_data = users_to_fetch.map do |user|
-      spans = user.heartbeats.today.to_span.map do |s|
-        v = s.is_a?(Hash) ? s.symbolize_keys : s
-        # Fetch associated data within the same map block
-        heartbeats_in_span = user.heartbeats.where('time >= ? AND time < ?', v[:start_time], v[:end_time])
-        
-        v[:files_edited] = heartbeats_in_span.distinct.pluck(:entity).map { |e| e.split('/').last }.compact
-        v[:projects_edited] = heartbeats_in_span.distinct.pluck(:project).compact
-        v[:editors] = heartbeats_in_span.distinct.pluck(:editor).compact
-        v[:languages] = heartbeats_in_span.distinct.pluck(:language).compact
-        v
+    # Step 1: Consolidate User Loading
+    user_ids_to_fetch = [
+      current_user&.id, # Handle potential nil current_user
+      1,
+      10,
+      1792,
+      69,
+      1476,
+      805
+    ].compact.uniq # Remove nils and duplicates
+
+    # Fetch all users in one query and create a hash for easy lookup
+    users_by_id = User.where(id: user_ids_to_fetch).index_by(&:id)
+
+    # Get the user objects in the desired order based on the original array
+    # Filter out users not found in the database
+    users_to_process = user_ids_to_fetch.map { |id| users_by_id[id] }.compact
+
+    # Step 2: Fetch All Relevant Heartbeats in One Go
+    # Determine the time range (start/end of the current day in the app's time zone)
+    # Note: The original `.today` scope might have used user-specific timezones.
+    # This simplified approach uses the application's time zone for the initial fetch.
+    # Timezone adjustments for display happen later or in the view.
+    start_of_day = Time.current.beginning_of_day
+    end_of_day = Time.current.end_of_day
+
+    # Fetch all heartbeats for ALL relevant users within the timeframe ONCE
+    all_heartbeats = Heartbeat
+                      .where(user_id: user_ids_to_fetch, deleted_at: nil)
+                      .where('time >= ? AND time <= ?', start_of_day.to_f, end_of_day.to_f) # Use float timestamps
+                      .select(:id, :user_id, :time, :entity, :project, :editor, :language) # Select needed columns
+                      .order(:user_id, :time) # CRITICAL: Order for processing by user, then time
+                      .to_a # Load into memory
+
+    # Group heartbeats by user ID for easier processing
+    heartbeats_by_user_id = all_heartbeats.group_by(&:user_id)
+
+    # Step 3: Process Heartbeats in Ruby
+    @users_with_timeline_data = []
+
+    users_to_process.each do |user|
+      user_heartbeats = heartbeats_by_user_id[user.id] || []
+      next if user_heartbeats.empty? # Skip users with no heartbeats today
+
+      calculated_spans_with_details = []
+      current_span_heartbeats = []
+
+      user_heartbeats.each_with_index do |heartbeat, index|
+        # Convert float timestamp from DB back to Time object if necessary
+        # heartbeat_time = Time.at(heartbeat.time) # Uncomment if 'time' is stored as float/int
+
+        current_span_heartbeats << heartbeat
+
+        # Check if this is the last heartbeat or if the next one is too far away
+        is_last_heartbeat = (index == user_heartbeats.length - 1)
+        # Ensure time comparison is done correctly (assuming 'time' is numeric timestamp)
+        time_to_next = is_last_heartbeat ? Float::INFINITY : (user_heartbeats[index + 1].time - heartbeat.time)
+
+        # If the gap is too long or it's the last beat, finalize the current span
+        if time_to_next > timeout_duration || is_last_heartbeat
+          if current_span_heartbeats.any?
+            # Use numeric timestamps directly for calculations
+            start_time_numeric = current_span_heartbeats.first.time
+            last_hb_time_numeric = current_span_heartbeats.last.time
+
+            # Calculate duration based on the time range of heartbeats within the span.
+            # Adjust if 'to_span' logic includes the timeout gap.
+            span_duration = last_hb_time_numeric - start_time_numeric
+            span_duration = 0 if span_duration < 0 # Ensure non-negative duration
+
+            # Aggregate details from the heartbeats collected for THIS span
+            files = current_span_heartbeats.map { |h| h.entity&.split('/')&.last }.compact.uniq
+            projects = current_span_heartbeats.map(&:project).compact.uniq
+            editors = current_span_heartbeats.map(&:editor).compact.uniq
+            languages = current_span_heartbeats.map(&:language).compact.uniq
+
+            # Store the span using numeric start_time and duration, as the view likely expects Time objects or handles numeric ones.
+            # Pass numeric times for consistency with how heartbeats are often stored/compared.
+            calculated_spans_with_details << {
+              start_time: start_time_numeric, # Pass numeric timestamp
+              # end_time: last_hb_time_numeric, # Pass numeric end timestamp if needed
+              duration: span_duration, # Pass calculated duration
+              files_edited: files,
+              projects_edited: projects,
+              editors: editors,
+              languages: languages
+            }
+
+            # Start a new span
+            current_span_heartbeats = []
+          end
+        end
+      end # end loop through user_heartbeats
+
+      # Add the user and their calculated spans to the final result
+      if calculated_spans_with_details.any?
+        @users_with_timeline_data << { user: user, spans: calculated_spans_with_details }
       end
-      { user: user, spans: spans }
-    end
 
+    end # end loop through users_to_process
+
+    # Render the partial, passing the processed data
     render partial: "timeline", locals: {
       users_with_timeline_data: @users_with_timeline_data,
-      # Keep primary_user logic tied to the first user for now, or adjust based on desired behavior
-      primary_user: users_to_fetch.first || current_user 
+      # Use the first user from the processed list as primary, or fallback to current_user
+      primary_user: users_to_process.first || current_user
     }
   end
 
