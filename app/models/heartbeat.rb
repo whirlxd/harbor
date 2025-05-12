@@ -91,7 +91,7 @@ class Heartbeat < ApplicationRecord
 
   validates :time, presence: true
 
-  after_create :mirror_to_wakatime
+  # after_create :mirror_to_wakatime
 
   def self.recent_count
     Cache::HeartbeatCountsJob.perform_now[:recent_count]
@@ -132,7 +132,7 @@ class Heartbeat < ApplicationRecord
     end
   end
 
-  def mirror_to_wakatime
-    WakatimeMirror.mirror_heartbeat(self)
-  end
+  # def mirror_to_wakatime
+  #   WakatimeMirror.mirror_heartbeat(self)
+  # end
 end
