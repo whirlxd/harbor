@@ -1,20 +1,19 @@
 <%= turbo_frame_tag "timeline" do %>
-  <%# The controller should pass `users_to_display` (an array of User objects) to this partial %>
-  <%# Example: users_to_display = [current_user, User.find_by(id: 2)] %>
-  <%
-    users_to_display = Array(users_to_display).compact
-    primary_user = users_to_display.first || current_user 
+  <%# The controller should pass `users_with_timeline_data` (an array of hashes {user:, spans:}) and `primary_user` to this partial %>
+  <%# Example: users_with_timeline_data = [{user: user1, spans: [...]}, {user: user2, spans: [...]}] %>
+  <% 
+    users_with_timeline_data = Array(users_with_timeline_data).compact
+    primary_user = primary_user || users_with_timeline_data.first&.dig(:user) || current_user # Use passed primary_user or derive
     primary_user_tz = primary_user&.timezone || (current_user&.timezone || 'UTC')
   %>
   <%
-    Heartbeat.heartbeat_timeout_duration(10.minutes) unless Rails.env.test?
 
     timeline_start_hour = 0
     timeline_end_hour = 23
 
     user_colors = ['#7C3AED', '#10B981', '#3B82F6', '#F59E0B', '#EF4444', '#DB2777', '#6D28D9']
 
-    num_users = users_to_display.count
+    num_users = users_with_timeline_data.count # Use the count from the passed data
     num_users = 1 if num_users == 0
 
     line_left_rem = 4.0
@@ -56,11 +55,12 @@
     </div>
 
     <%# User ID Header Row - Sticky %>
-    <% if users_to_display.any? %>
+    <% if users_with_timeline_data.any? %>
       <div style="display: flex; margin-left: <%= activity_col_area_start_rem %>rem; margin-right: <%= activity_col_area_end_rem %>rem; margin-bottom: 0.5rem; 
                   align-items: center; flex-shrink: 0;
                   position: sticky; top: 0; z-index: 20; background-color: #1F2937; padding-bottom: 0.5rem; padding-top: 0.25rem;">
-        <% users_to_display.each_with_index do |user, index| %>
+        <% users_with_timeline_data.each_with_index do |data, index| %>
+          <% user = data[:user] %>
           <div style="width: <%= css_header_item_width %>;
                       <%= index > 0 ? "margin-left: #{gutter_rem}rem;" : "" %>
                       text-align: center; font-weight: 500; color: #E5E7EB; font-size:0.875rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
@@ -157,16 +157,11 @@
       %>
 
       <%# --- Render Activity Blocks for each user (User's extended version) --- %>
-      <% users_to_display.each_with_index do |user, index| %>
+      <% users_with_timeline_data.each_with_index do |data, index| %>
         <% 
-          user_spans = user.heartbeats.today.to_span.map do |s|
-            v = s.is_a?(Hash) ? s.symbolize_keys : s
-            v[:files_edited] = user.heartbeats.where('time < ?', v[:end_time]).where('time > ?', v[:start_time]).distinct.pluck(:entity).map { |e| e.split('/').last }
-            v[:projects_edited] = user.heartbeats.where('time < ?', v[:end_time]).where('time > ?', v[:start_time]).distinct.pluck(:project)
-            v[:editors] = user.heartbeats.where('time < ?', v[:end_time]).where('time > ?', v[:start_time]).distinct.pluck(:editor).compact
-            v[:languages] = user.heartbeats.where('time < ?', v[:end_time]).where('time > ?', v[:start_time]).distinct.pluck(:language).compact
-            v
-          end
+          user = data[:user]
+          user_spans = data[:spans] # Use pre-fetched spans
+          # The database queries are now done in the controller
 
           current_column_left_offset = "calc(#{activity_col_area_start_rem}rem + (#{index} * (#{css_activity_column_width} + #{gutter_rem}rem)))"
           block_color = user_colors[index % user_colors.length]

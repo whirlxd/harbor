@@ -190,16 +190,36 @@ class StaticPagesController < ApplicationController
   end
 
   def timeline
+    Heartbeat.heartbeat_timeout_duration(10.minutes) unless Rails.env.test?
+    users_to_fetch = [
+      current_user,
+      User.find(1), # Example User IDs, adjust as needed
+      User.find(10),
+      User.find(1792),
+      User.find(69),
+      User.find(1476),
+      User.find(805),
+    ].compact
+
+    @users_with_timeline_data = users_to_fetch.map do |user|
+      spans = user.heartbeats.today.to_span.map do |s|
+        v = s.is_a?(Hash) ? s.symbolize_keys : s
+        # Fetch associated data within the same map block
+        heartbeats_in_span = user.heartbeats.where('time >= ? AND time < ?', v[:start_time], v[:end_time])
+        
+        v[:files_edited] = heartbeats_in_span.distinct.pluck(:entity).map { |e| e.split('/').last }.compact
+        v[:projects_edited] = heartbeats_in_span.distinct.pluck(:project).compact
+        v[:editors] = heartbeats_in_span.distinct.pluck(:editor).compact
+        v[:languages] = heartbeats_in_span.distinct.pluck(:language).compact
+        v
+      end
+      { user: user, spans: spans }
+    end
+
     render partial: "timeline", locals: {
-      users_to_display: [
-        current_user,
-        User.find(1),
-        User.find(10),
-        User.find(1792),
-        User.find(69),
-        User.find(1476),
-        User.find(805),
-      ]
+      users_with_timeline_data: @users_with_timeline_data,
+      # Keep primary_user logic tied to the first user for now, or adjust based on desired behavior
+      primary_user: users_to_fetch.first || current_user 
     }
   end
 
