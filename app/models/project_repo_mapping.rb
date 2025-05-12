@@ -16,8 +16,8 @@ class ProjectRepoMapping < ApplicationRecord
 
   IGNORED_PROJECTS = [
     nil,
-    '',
-    '<<LAST PROJECT>>'
+    "",
+    "<<LAST PROJECT>>"
   ]
 
   private
