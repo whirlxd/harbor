@@ -40,20 +40,6 @@
       <%= Time.current.in_time_zone(primary_user_tz).strftime("%A, %B %-d, %Y") %>
     </div>
 
-    <div style="position: relative; flex-shrink: 0;">
-      <div style="display: flex; align-items: center; margin-bottom: 0.75rem;">
-        <svg style="width: 1.5rem; height: 1.5rem; margin-right: 0.5rem; color: #9CA3AF;" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
-        <span style="font-size: 1.25rem; line-height: 1.75rem; font-weight: 500; color: #D1D5DB;">Activity</span>
-        <span style="margin-left: 0.25rem; color: #6B7280; cursor: pointer;" title="Information about activity tracking">?</span>
-      </div>
-
-      <div style="position: absolute; top: 0; right: 0; margin-top: -0.5rem;">
-        <button style="background-color: #374151; color: #D1D5DB; font-size: 0.875rem; line-height: 1.25rem; padding-top: 0.5rem; padding-bottom: 0.5rem; padding-left: 1rem; padding-right: 1rem; border-radius: 0.375rem; border: none; cursor: pointer;">
-          Uncategorized apps o...
-        </button>
-      </div>
-    </div>
-
     <%# User ID Header Row - Sticky %>
     <% if users_with_timeline_data.any? %>
       <div style="display: flex; margin-left: <%= activity_col_area_start_rem %>rem; margin-right: <%= activity_col_area_end_rem %>rem; margin-bottom: 0.5rem; 
@@ -66,6 +52,7 @@
                       text-align: center; font-weight: 500; color: #E5E7EB; font-size:0.875rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
                title="User ID: <%= user.id %> - <%= user.respond_to?(:username) ? user.username : user.email %>">
             <%= render "shared/user_mention", user: user %>
+            <div style="font-size: 0.75rem; color: #9CA3AF; margin-top: 0.125rem;"><%= user.timezone %></div>
           </div>
         <% end %>
       </div>
