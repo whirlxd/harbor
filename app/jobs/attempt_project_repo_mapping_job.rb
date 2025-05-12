@@ -15,6 +15,7 @@ class AttemptProjectRepoMappingJob < ApplicationJob
     return unless @user.github_uid.present?
     return unless @user.github_username.present?
     return if @user.project_repo_mappings.exists?(project_name: project_name)
+    return if ProjectRepoMapping::IGNORED_PROJECTS.include?(project_name)
 
     # Search for the project on GitHub
     repo_url = search_for_repo(@user.github_username, project_name)

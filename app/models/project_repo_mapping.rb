@@ -14,6 +14,12 @@ class ProjectRepoMapping < ApplicationRecord
 
   validate :repo_url_exists
 
+  IGNORED_PROJECTS = [
+    nil,
+    '',
+    '<<LAST PROJECT>>'
+  ]
+
   private
 
   def repo_url_exists
