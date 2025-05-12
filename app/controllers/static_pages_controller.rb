@@ -80,7 +80,7 @@ class StaticPagesController < ApplicationController
 
     @active_projects = Cache::ActiveProjectsJob.perform_now
 
-    render partial: "leaderboards/mini_leaderboard", locals: { 
+    render partial: "leaderboards/mini_leaderboard", locals: {
       leaderboard: @leaderboard,
       current_user: current_user
     }
