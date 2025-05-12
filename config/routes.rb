@@ -38,6 +38,7 @@ Rails.application.routes.draw do
       get :currently_hacking
       get :filterable_dashboard_content
       get :filterable_dashboard
+      get :mini_leaderboard
       get "🃏", to: "static_pages#🃏", as: :wildcard
       get :streak
     end

@@ -93,8 +93,8 @@
       <% end %>
     </p>
 
-    <% if @leaderboard %>
-      <%= render "leaderboards/mini_leaderboard", leaderboard: @leaderboard, current_user: current_user %>
+    <%= turbo_frame_tag "mini_leaderboard", src: mini_leaderboard_static_pages_path do %>
+      <%= render "leaderboards/mini_leaderboard_loading" %>
     <% end %>
 
     <%= turbo_frame_tag "filterable_dashboard", src: filterable_dashboard_static_pages_path do %>
