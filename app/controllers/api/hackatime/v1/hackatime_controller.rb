@@ -68,7 +68,8 @@ class Api::Hackatime::V1::HackatimeController < ApplicationController
         source_type: source_type,
         ip_address: request.remote_ip,
         editor: parsed_ua[:editor],
-        operating_system: parsed_ua[:os]
+        operating_system: parsed_ua[:os],
+        machine: request.headers["X-Machine"]
       })
       new_heartbeat = Heartbeat.find_or_create_by(attrs)
       queue_project_mapping(heartbeat[:project])
