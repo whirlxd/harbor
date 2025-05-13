@@ -60,12 +60,24 @@
                   position: sticky; top: 0; z-index: 20; background-color: #1F2937; padding-bottom: 0.5rem; padding-top: 0.25rem;">
         <% users_with_timeline_data.each_with_index do |data, index| %>
           <% user = data[:user] %>
+          <% total_coded_time_seconds = data[:total_coded_time] %>
           <div style="width: <%= css_header_item_width %>;
                       <%= index > 0 ? "margin-left: #{gutter_rem}rem;" : "" %>
+                      display: flex; flex-direction: column; align-items: center; justify-content: center; /* For vertical centering of content */
                       text-align: center; font-weight: 500; color: #E5E7EB; font-size:0.875rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
-               title="User ID: <%= user.id %> - <%= user.respond_to?(:username) ? user.username : user.email_addresses.first&.email %>">
+               title="User ID: <%= user.id %> - <%= user.respond_to?(:username) ? user.username : user.email_addresses.first&.email %>
+Total Coded Time: <%= total_coded_time_seconds && total_coded_time_seconds > 0 ? short_time_detailed(total_coded_time_seconds) : '0m' %>">
             <%= render "shared/user_mention", user: user %>
-            <div style="font-size: 0.75rem; color: #9CA3AF; margin-top: 0.125rem;"><%= user.timezone %></div>
+            <% if total_coded_time_seconds && total_coded_time_seconds > 0 %>
+              <div style="font-size: 0.7rem; color: #cbd5e0; margin-top: 0.1rem; line-height: 1;">
+                <%= short_time_simple(total_coded_time_seconds) %> coded
+              </div>
+            <% else %>
+              <div style="font-size: 0.7rem; color: #718096; margin-top: 0.1rem; line-height: 1;">
+                No time coded
+              </div>
+            <% end %>
+            <div style="font-size: 0.75rem; color: #9CA3AF; margin-top: 0.125rem; line-height: 1.1;"><%= user.timezone %></div>
           </div>
         <% end %>
       </div>

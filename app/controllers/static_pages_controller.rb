@@ -190,12 +190,12 @@ class StaticPagesController < ApplicationController
   end
 
   def timeline
-    # for span calculations
-    timeout_duration = 10.minutes.to_i
+    # for span calculations (visual blocks in the timeline)
+    timeout_duration = 10.minutes.to_i # This remains for span display
 
     # Determine the date to display (default to today)
     @date = params[:date] ? Date.parse(params[:date]) : Time.current.to_date
-    
+
     # Calculate next and previous dates
     @next_date = @date + 1.day
     @prev_date = @date - 1.day
@@ -215,27 +215,23 @@ class StaticPagesController < ApplicationController
 
     # Fetch all users in one query and create a hash for easy lookup
     users_by_id = User.where(id: user_ids_to_fetch).index_by(&:id)
-
-    # Get the user objects in the desired order based on the original array
-    # Filter out users not found in the database
     users_to_process = user_ids_to_fetch.map { |id| users_by_id[id] }.compact
 
     # Step 2: Fetch All Relevant Heartbeats in One Go
-    # Determine the time range (start/end of the current day in the app's time zone)
-    # Note: The original `.today` scope might have used user-specific timezones.
-    # This simplified approach uses the application's time zone for the initial fetch.
-    # Timezone adjustments for display happen later or in the view.
     # Use the determined @date
-    start_of_day = @date.beginning_of_day
-    end_of_day = @date.end_of_day
+    # Convert to application's beginning/end of day for consistent timestamp comparison
+    # Assuming application timezone is UTC for these boundary calculations,
+    # or use Time.zone.local_to_utc(@date.beginning_of_day).to_f etc. if app timezone is different
+    # For simplicity and consistency with existing code, using @date directly converted to Time then to_f
+    start_of_day_timestamp = @date.beginning_of_day.to_f
+    end_of_day_timestamp = @date.end_of_day.to_f
 
-    # Fetch all heartbeats for ALL relevant users within the timeframe ONCE
     all_heartbeats = Heartbeat
                       .where(user_id: user_ids_to_fetch, deleted_at: nil)
-                      .where('time >= ? AND time <= ?', start_of_day.to_f, end_of_day.to_f) # Use float timestamps
-                      .select(:id, :user_id, :time, :entity, :project, :editor, :language) # Select needed columns
-                      .order(:user_id, :time) # CRITICAL: Order for processing by user, then time
-                      .to_a # Load into memory
+                      .where('time >= ? AND time <= ?', start_of_day_timestamp, end_of_day_timestamp)
+                      .select(:id, :user_id, :time, :entity, :project, :editor, :language)
+                      .order(:user_id, :time)
+                      .to_a
 
     # Group heartbeats by user ID for easier processing
     heartbeats_by_user_id = all_heartbeats.group_by(&:user_id)
@@ -244,62 +240,59 @@ class StaticPagesController < ApplicationController
     @users_with_timeline_data = []
 
     users_to_process.each do |user|
-      user_heartbeats = heartbeats_by_user_id[user.id] || []
-      next if user_heartbeats.empty? # Skip users with no heartbeats today
+      # Calculate total coded time for the day using 2-minute timeout
+      # This query will use Heartbeat.duration_seconds which defaults to a 2-min timeout
+      user_daily_heartbeats_relation = Heartbeat.where(user_id: user.id, deleted_at: nil)
+                                                .where('time >= ? AND time <= ?', start_of_day_timestamp, end_of_day_timestamp)
+      total_coded_time_seconds = user_daily_heartbeats_relation.duration_seconds
 
+      # Process spans for visual display (uses 10-minute timeout)
+      user_heartbeats_for_spans = heartbeats_by_user_id[user.id] || []
       calculated_spans_with_details = []
-      current_span_heartbeats = []
 
-      user_heartbeats.each_with_index do |heartbeat, index|
-        # Convert float timestamp from DB back to Time object if necessary
-        # heartbeat_time = Time.at(heartbeat.time) # Uncomment if 'time' is stored as float/int
+      if user_heartbeats_for_spans.any?
+        current_span_heartbeats = []
+        user_heartbeats_for_spans.each_with_index do |heartbeat, index|
+          current_span_heartbeats << heartbeat
+          is_last_heartbeat = (index == user_heartbeats_for_spans.length - 1)
+          time_to_next = is_last_heartbeat ? Float::INFINITY : (user_heartbeats_for_spans[index + 1].time - heartbeat.time)
 
-        current_span_heartbeats << heartbeat
+          if time_to_next > timeout_duration || is_last_heartbeat # timeout_duration is 10 minutes here
+            if current_span_heartbeats.any?
+              start_time_numeric = current_span_heartbeats.first.time
+              last_hb_time_numeric = current_span_heartbeats.last.time
+              span_duration = last_hb_time_numeric - start_time_numeric
+              span_duration = 0 if span_duration < 0
 
-        # Check if this is the last heartbeat or if the next one is too far away
-        is_last_heartbeat = (index == user_heartbeats.length - 1)
-        # Ensure time comparison is done correctly (assuming 'time' is numeric timestamp)
-        time_to_next = is_last_heartbeat ? Float::INFINITY : (user_heartbeats[index + 1].time - heartbeat.time)
+              files = current_span_heartbeats.map { |h| h.entity&.split('/')&.last }.compact.uniq
+              projects = current_span_heartbeats.map(&:project).compact.uniq
+              editors = current_span_heartbeats.map(&:editor).compact.uniq
+              languages = current_span_heartbeats.map(&:language).compact.uniq
 
-        # If the gap is too long or it's the last beat, finalize the current span
-        if time_to_next > timeout_duration || is_last_heartbeat
-          if current_span_heartbeats.any?
-            # Use numeric timestamps directly for calculations
-            start_time_numeric = current_span_heartbeats.first.time
-            last_hb_time_numeric = current_span_heartbeats.last.time
-
-            # Calculate duration based on the time range of heartbeats within the span.
-            # Adjust if 'to_span' logic includes the timeout gap.
-            span_duration = last_hb_time_numeric - start_time_numeric
-            span_duration = 0 if span_duration < 0 # Ensure non-negative duration
-
-            # Aggregate details from the heartbeats collected for THIS span
-            files = current_span_heartbeats.map { |h| h.entity&.split('/')&.last }.compact.uniq
-            projects = current_span_heartbeats.map(&:project).compact.uniq
-            editors = current_span_heartbeats.map(&:editor).compact.uniq
-            languages = current_span_heartbeats.map(&:language).compact.uniq
-
-            # Store the span using numeric start_time and duration, as the view likely expects Time objects or handles numeric ones.
-            # Pass numeric times for consistency with how heartbeats are often stored/compared.
-            calculated_spans_with_details << {
-              start_time: start_time_numeric,
-              end_time: last_hb_time_numeric,
-              duration: span_duration,
-              files_edited: files,
-              projects_edited: projects,
-              editors: editors,
-              languages: languages
-            }
-
-            # Start a new span
-            current_span_heartbeats = []
+              calculated_spans_with_details << {
+                start_time: start_time_numeric,
+                # Add end_time to span_data for clarity, even if not strictly used by current calculate_span_properties
+                end_time: last_hb_time_numeric, 
+                duration: span_duration, # This duration is based on first/last HB in span, not the 10-min rule.
+                                         # The 10-min rule is for *segmenting* spans.
+                files_edited: files,
+                projects_edited: projects,
+                editors: editors,
+                languages: languages
+              }
+              current_span_heartbeats = []
+            end
           end
         end
-      end # end loop through user_heartbeats
+      end
 
       # Add the user and their calculated spans to the final result
-      if calculated_spans_with_details.any?
-        @users_with_timeline_data << { user: user, spans: calculated_spans_with_details }
+      if calculated_spans_with_details.any? || total_coded_time_seconds > 0 # Ensure user is added if they have coded time, even with no visual spans
+        @users_with_timeline_data << {
+          user: user,
+          spans: calculated_spans_with_details,
+          total_coded_time: total_coded_time_seconds # Add this new piece of data
+        }
       end
 
     end # end loop through users_to_process
