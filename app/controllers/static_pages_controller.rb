@@ -195,6 +195,10 @@ class StaticPagesController < ApplicationController
 
     # Determine the date to display (default to today)
     @date = params[:date] ? Date.parse(params[:date]) : Time.current.to_date
+    
+    # Calculate next and previous dates
+    @next_date = @date + 1.day
+    @prev_date = @date - 1.day
 
     # Step 1: Consolidate User Loading
     user_ids_to_fetch = [
@@ -278,9 +282,9 @@ class StaticPagesController < ApplicationController
             # Store the span using numeric start_time and duration, as the view likely expects Time objects or handles numeric ones.
             # Pass numeric times for consistency with how heartbeats are often stored/compared.
             calculated_spans_with_details << {
-              start_time: start_time_numeric, # Pass numeric timestamp
-              # end_time: last_hb_time_numeric, # Pass numeric end timestamp if needed
-              duration: span_duration, # Pass calculated duration
+              start_time: start_time_numeric,
+              end_time: last_hb_time_numeric,
+              duration: span_duration,
               files_edited: files,
               projects_edited: projects,
               editors: editors,
@@ -303,9 +307,11 @@ class StaticPagesController < ApplicationController
     # Render the partial, passing the processed data and the date
     render partial: "timeline", locals: {
       users_with_timeline_data: @users_with_timeline_data,
-      # Use the first user from the processed list as primary, or fallback to current_user
       primary_user: users_to_process.first || current_user,
-      date: @date # Pass the date to the partial
+      date: @date,
+      # Pass next_date and prev_date to the partial
+      next_date: @next_date,
+      prev_date: @prev_date
     }
   end
 

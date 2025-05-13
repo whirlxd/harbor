@@ -4,6 +4,10 @@
   <% 
     # Receive the date from the controller, default to today if not passed (though controller should always pass it now)
     date = local_assigns.fetch(:date, Time.current.to_date)
+    # Ensure next_date and prev_date are available from locals
+    next_date = local_assigns.fetch(:next_date, date + 1.day)
+    prev_date = local_assigns.fetch(:prev_date, date - 1.day)
+    
     users_with_timeline_data = Array(users_with_timeline_data).compact
     primary_user = primary_user || users_with_timeline_data.first&.dig(:user) || current_user # Use passed primary_user or derive
     primary_user_tz = primary_user&.timezone || (current_user&.timezone || 'UTC')
@@ -38,9 +42,15 @@
 
   <div style="background-color: #1F2937; color: #FFFFFF; padding: 1rem; border-radius: 0.5rem; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
               display: flex; flex-direction: column; height: calc(100vh - 4rem);">
-    <div style="font-size: 1.125rem; line-height: 1.75rem; font-weight: 600; margin-bottom: 1rem; flex-shrink: 0;">
-      <%# Use the passed date, formatted in the primary user's timezone %>
-      <%= date.in_time_zone(primary_user_tz).strftime("%A, %B %-d, %Y") %>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-shrink: 0;">
+      <div style="font-size: 1.125rem; line-height: 1.75rem; font-weight: 600;">
+        <%= date.in_time_zone(primary_user_tz).strftime("%A, %B %-d, %Y") %>
+      </div>
+      <div style="display: flex; gap: 0.5rem;">
+        <%= link_to "← Prev", timeline_static_pages_path(date: prev_date.to_s), class: "button button-outline", "data-turbo-frame": "timeline" %>
+        <%= link_to "Today", timeline_static_pages_path(date: Time.current.to_date.to_s), class: "button button-outline", "data-turbo-frame": "timeline" %>
+        <%= link_to "Next →", timeline_static_pages_path(date: next_date.to_s), class: "button button-outline", "data-turbo-frame": "timeline" %>
+      </div>
     </div>
 
     <%# User ID Header Row - Sticky %>
@@ -53,7 +63,7 @@
           <div style="width: <%= css_header_item_width %>;
                       <%= index > 0 ? "margin-left: #{gutter_rem}rem;" : "" %>
                       text-align: center; font-weight: 500; color: #E5E7EB; font-size:0.875rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
-               title="User ID: <%= user.id %> - <%= user.respond_to?(:username) ? user.username : user.email %>">
+               title="User ID: <%= user.id %> - <%= user.respond_to?(:username) ? user.username : user.email_addresses.first&.email %>">
             <%= render "shared/user_mention", user: user %>
             <div style="font-size: 0.75rem; color: #9CA3AF; margin-top: 0.125rem;"><%= user.timezone %></div>
           </div>
