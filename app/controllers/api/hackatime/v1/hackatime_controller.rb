@@ -77,7 +77,7 @@ class Api::Hackatime::V1::HackatimeController < ApplicationController
         ip_address: request.remote_ip,
         editor: parsed_ua[:editor],
         operating_system: parsed_ua[:os],
-        machine: request.headers["X-Machine"]
+        machine: request.headers["X-Machine-Name"]
       })
       new_heartbeat = Heartbeat.find_or_create_by(attrs)
       # new_heartbeat.raw_heartbeat_upload = @raw_heartbeat_upload
