@@ -1,7 +1,7 @@
 class Api::Hackatime::V1::HackatimeController < ApplicationController
   before_action :set_user, except: [ :index ]
   skip_before_action :verify_authenticity_token
-  # before_action :set_raw_heartbeat_upload, only: [ :push_heartbeats ]
+  before_action :set_raw_heartbeat_upload, only: [ :push_heartbeats ]
 
   def index
     redirect_to root_path
