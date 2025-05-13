@@ -54,9 +54,21 @@ class Api::Hackatime::V1::HackatimeController < ApplicationController
 
   def set_raw_heartbeat_upload
     @raw_heartbeat_upload = RawHeartbeatUpload.create!(
-      request_headers: request.headers,
-      request_body: params
+      request_headers: headers_to_json,
+      request_body: body_to_json
     )
+  end
+
+  def headers_to_json
+    request.headers
+           .env
+           .select { |key| key.to_s.starts_with?("HTTP_") }
+           .map { |key, value| [ key.sub(/^HTTP_/, ""), value ] }
+           .to_h.to_json
+  end
+
+  def body_to_json
+    params.to_unsafe_h["_json"] || {}
   end
 
   def handle_heartbeat(heartbeat_array)
@@ -80,8 +92,10 @@ class Api::Hackatime::V1::HackatimeController < ApplicationController
         machine: request.headers["X-Machine-Name"]
       })
       new_heartbeat = Heartbeat.find_or_create_by(attrs)
-      # new_heartbeat.raw_heartbeat_upload = @raw_heartbeat_upload
-      # new_heartbeat.save!
+      if @raw_heartbeat_upload.present? && new_heartbeat.persisted?
+        new_heartbeat.raw_heartbeat_upload ||= @raw_heartbeat_upload
+        new_heartbeat.save! if new_heartbeat.changed?
+      end
       queue_project_mapping(heartbeat[:project])
       results << [ new_heartbeat.attributes, 201 ]
     rescue => e
