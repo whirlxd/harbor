@@ -24,7 +24,7 @@ class UsersController < ApplicationController
       if @user.uses_slack_status?
         @user.update_slack_status
       end
-      redirect_to is_own_settings? ? my_settings_path : user_settings_path(@user),
+      redirect_to is_own_settings? ? my_settings_path : settings_user_path(@user),
         notice: "Settings updated successfully"
     else
       flash[:error] = "Failed to update settings"
@@ -96,7 +96,7 @@ class UsersController < ApplicationController
   end
 
   def is_own_settings?
-    @is_own_settings ||= !params["id"].present?
+    @is_own_settings ||= params["id"] == "my" || params["id"]&.blank?
   end
 
   def user_params

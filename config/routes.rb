@@ -60,6 +60,7 @@ Rails.application.routes.draw do
   # Nested under users for admin access
   resources :users, only: [] do
     get "settings", on: :member, to: "users#edit"
+    patch "settings", on: :member, to: "users#update"
     member do
       patch :update_trust_level
     end
