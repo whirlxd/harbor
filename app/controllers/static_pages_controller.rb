@@ -193,6 +193,9 @@ class StaticPagesController < ApplicationController
     # for span calculations
     timeout_duration = 10.minutes.to_i
 
+    # Determine the date to display (default to today)
+    @date = params[:date] ? Date.parse(params[:date]) : Time.current.to_date
+
     # Step 1: Consolidate User Loading
     user_ids_to_fetch = [
       current_user&.id, # Handle potential nil current_user
@@ -201,7 +204,9 @@ class StaticPagesController < ApplicationController
       1792,
       69,
       1476,
-      805
+      805,
+      2003,
+      2011
     ].compact.uniq # Remove nils and duplicates
 
     # Fetch all users in one query and create a hash for easy lookup
@@ -216,8 +221,9 @@ class StaticPagesController < ApplicationController
     # Note: The original `.today` scope might have used user-specific timezones.
     # This simplified approach uses the application's time zone for the initial fetch.
     # Timezone adjustments for display happen later or in the view.
-    start_of_day = Time.current.beginning_of_day
-    end_of_day = Time.current.end_of_day
+    # Use the determined @date
+    start_of_day = @date.beginning_of_day
+    end_of_day = @date.end_of_day
 
     # Fetch all heartbeats for ALL relevant users within the timeframe ONCE
     all_heartbeats = Heartbeat
@@ -294,11 +300,12 @@ class StaticPagesController < ApplicationController
 
     end # end loop through users_to_process
 
-    # Render the partial, passing the processed data
+    # Render the partial, passing the processed data and the date
     render partial: "timeline", locals: {
       users_with_timeline_data: @users_with_timeline_data,
       # Use the first user from the processed list as primary, or fallback to current_user
-      primary_user: users_to_process.first || current_user
+      primary_user: users_to_process.first || current_user,
+      date: @date # Pass the date to the partial
     }
   end
 

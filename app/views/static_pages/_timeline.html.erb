@@ -2,6 +2,8 @@
   <%# The controller should pass `users_with_timeline_data` (an array of hashes {user:, spans:}) and `primary_user` to this partial %>
   <%# Example: users_with_timeline_data = [{user: user1, spans: [...]}, {user: user2, spans: [...]}] %>
   <% 
+    # Receive the date from the controller, default to today if not passed (though controller should always pass it now)
+    date = local_assigns.fetch(:date, Time.current.to_date)
     users_with_timeline_data = Array(users_with_timeline_data).compact
     primary_user = primary_user || users_with_timeline_data.first&.dig(:user) || current_user # Use passed primary_user or derive
     primary_user_tz = primary_user&.timezone || (current_user&.timezone || 'UTC')
@@ -37,7 +39,8 @@
   <div style="background-color: #1F2937; color: #FFFFFF; padding: 1rem; border-radius: 0.5rem; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
               display: flex; flex-direction: column; height: calc(100vh - 4rem);">
     <div style="font-size: 1.125rem; line-height: 1.75rem; font-weight: 600; margin-bottom: 1rem; flex-shrink: 0;">
-      <%= Time.current.in_time_zone(primary_user_tz).strftime("%A, %B %-d, %Y") %>
+      <%# Use the passed date, formatted in the primary user's timezone %>
+      <%= date.in_time_zone(primary_user_tz).strftime("%A, %B %-d, %Y") %>
     </div>
 
     <%# User ID Header Row - Sticky %>
@@ -75,7 +78,9 @@
       <%# Current Time Indicator Line %>
       <%
         current_time_in_zone = Time.current.in_time_zone(primary_user_tz)
-        show_current_time_line = current_time_in_zone.hour >= timeline_start_hour && current_time_in_zone.hour < (timeline_end_hour + 1)
+        # Only show the 'NOW' line if the displayed date is today
+        is_today = date == Time.current.in_time_zone(primary_user_tz).to_date
+        show_current_time_line = is_today && current_time_in_zone.hour >= timeline_start_hour && current_time_in_zone.hour < (timeline_end_hour + 1)
 
         if show_current_time_line
           minutes_from_timeline_display_start_for_now = (current_time_in_zone.hour - timeline_start_hour) * 60 + current_time_in_zone.min
@@ -95,7 +100,9 @@
 
           start_time_in_zone = Time.at(span_data[:start_time]).in_time_zone(span_user_tz)
           end_time_in_zone = Time.at(span_data[:end_time] || (span_data[:start_time] + span_data[:duration])).in_time_zone(span_user_tz)
-          today_start_of_day_for_span_user = Time.current.in_time_zone(span_user_tz).beginning_of_day
+          # Use the `date` variable passed from the controller to determine the start of the day
+          # Ensures consistency across users with different timezones when calculating view boundaries
+          today_start_of_day_for_span_user = date.in_time_zone(span_user_tz).beginning_of_day
 
           view_start_datetime = today_start_of_day_for_span_user.advance(hours: timeline_start_hour)
           view_end_datetime = today_start_of_day_for_span_user.advance(hours: timeline_end_hour + 1)
