@@ -215,6 +215,15 @@ class StaticPagesController < ApplicationController
 
     # Fetch all users in one query and create a hash for easy lookup
     users_by_id = User.where(id: user_ids_to_fetch).index_by(&:id)
+
+    # Step 1.1: Fetch ProjectRepoMappings for all relevant users
+    # Store them in a hash for quick lookup: { user_id => { project_name => mapping_object } }
+    mappings_by_user_project = ProjectRepoMapping.where(user_id: users_by_id.keys)
+                                                 .group_by(&:user_id)
+                                                 .transform_values { |mappings| mappings.index_by(&:project_name) }
+
+    # Get the user objects in the desired order based on the original array
+    # Filter out users not found in the database
     users_to_process = user_ids_to_fetch.map { |id| users_by_id[id] }.compact
 
     # Step 2: Fetch All Relevant Heartbeats in One Go
@@ -264,19 +273,31 @@ class StaticPagesController < ApplicationController
               span_duration = last_hb_time_numeric - start_time_numeric
               span_duration = 0 if span_duration < 0
 
+              # Aggregate details from the heartbeats collected for THIS span
               files = current_span_heartbeats.map { |h| h.entity&.split('/')&.last }.compact.uniq
-              projects = current_span_heartbeats.map(&:project).compact.uniq
+              projects_edited_details_for_span = []
+              # Get unique, non-blank project names from the heartbeats in the current span
+              unique_project_names_in_current_span = current_span_heartbeats.map(&:project).compact.reject(&:blank?).uniq
+              
+              unique_project_names_in_current_span.each do |p_name|
+                repo_mapping = mappings_by_user_project[user.id]&.dig(p_name)
+                projects_edited_details_for_span << {
+                  name: p_name,
+                  repo_url: repo_mapping&.repo_url
+                }
+              end
+
               editors = current_span_heartbeats.map(&:editor).compact.uniq
               languages = current_span_heartbeats.map(&:language).compact.uniq
 
+              # Store the span using numeric start_time and duration, as the view likely expects Time objects or handles numeric ones.
+              # Pass numeric times for consistency with how heartbeats are often stored/compared.
               calculated_spans_with_details << {
                 start_time: start_time_numeric,
-                # Add end_time to span_data for clarity, even if not strictly used by current calculate_span_properties
-                end_time: last_hb_time_numeric, 
-                duration: span_duration, # This duration is based on first/last HB in span, not the 10-min rule.
-                                         # The 10-min rule is for *segmenting* spans.
+                # end_time: last_hb_time_numeric, # Pass numeric end timestamp if needed
+                duration: span_duration, # Pass calculated duration
                 files_edited: files,
-                projects_edited: projects,
+                projects_edited_details: projects_edited_details_for_span, # NEW field
                 editors: editors,
                 languages: languages
               }

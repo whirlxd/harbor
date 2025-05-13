@@ -145,7 +145,11 @@ Total Coded Time: <%= total_coded_time_seconds && total_coded_time_seconds > 0 ?
           
           title_parts = []
           title_parts << "Languages: #{span_data[:languages].join(', ')}" if span_data[:languages]&.any?
-          title_parts << "Projects: #{span_data[:projects_edited].join(', ')}" if span_data[:projects_edited]&.any?
+          # NEW: Add detailed project info to title
+          project_title_segments = span_data[:projects_edited_details].map do |proj_detail|
+            "#{proj_detail[:name]}#{proj_detail[:repo_url] ? ' (GitHub)' : ' (No Repo)'}"
+          end
+          title_parts << "Projects: #{project_title_segments.join('; ')}" if project_title_segments.any?
           title_parts << "Editors: #{span_data[:editors].join(', ')}" if span_data[:editors]&.any?
           
           files_to_show = span_data[:files_edited] || []
@@ -165,7 +169,8 @@ Total Coded Time: <%= total_coded_time_seconds && total_coded_time_seconds > 0 ?
             final_top_px: final_top_px.round(2),
             height_px: height_px.round(2),
             title: new_title_for_span,
-            display_text_line1: span_data[:projects_edited].present? ? span_data[:projects_edited].join(", ") : "Coding",
+            # Pass projects_edited_details for rich display in the block
+            projects_to_display: span_data[:projects_edited_details],
             display_text_line2: span_data[:languages]&.any? ? span_data[:languages].join(", ") : "-",
             display_text_line3: "#{start_time_in_zone.strftime("%-l:%M %p")} - #{end_time_in_zone.strftime("%-l:%M %p")}",
           }
@@ -192,9 +197,33 @@ Total Coded Time: <%= total_coded_time_seconds && total_coded_time_seconds > 0 ?
                       height: <%= props[:height_px] %>px;
                       z-index: 10; overflow: hidden; box-sizing: border-box;"
                title="<%= props[:title] %>">
-            <div style="font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><%= props[:display_text_line1] %></div>
-            <div style="font-size: 0.7rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><%= props[:display_text_line2] %></div>
-            <div style="font-size: 0.7rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #E5E7EB;"><%= props[:display_text_line3] %></div>
+            <%# First line - Projects %>
+            <div style="font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+              <% if props[:projects_to_display]&.any? %>
+                <% props[:projects_to_display].each_with_index do |project_detail, p_idx| %>
+                  <% if project_detail[:repo_url].present? %>
+                    <a href="<%= project_detail[:repo_url] %>" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline;" title="Open <%= project_detail[:name] %> on GitHub"><%= project_detail[:name].truncate(20) %></a>
+                  <% else %>
+                    <span title="<%= project_detail[:name] %> - No GitHub Repo Mapped"><%= project_detail[:name].truncate(20) %> 🚫</span>
+                  <% end %>
+                  <% if p_idx < props[:projects_to_display].length - 1 && props[:height_px] > 20 %>
+                    <%= " / " %>
+                  <% end %>
+                <% end %>
+              <% else %>
+                <span>Coding Activity</span>
+              <% end %>
+            </div>
+            
+            <%# Second line - Languages %>
+            <div style="font-size: 0.7rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+              <%= props[:display_text_line2] %>
+            </div>
+            
+            <%# Third line - Time range %>
+            <div style="font-size: 0.7rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #E5E7EB;">
+              <%= props[:display_text_line3] %>
+            </div>
           </div>
         <% end %>
       <% end %>
