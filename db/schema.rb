@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_12_205858) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_13_184040) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -209,8 +209,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_12_205858) do
     t.integer "ysws_program", default: 0, null: false
     t.datetime "deleted_at"
     t.jsonb "raw_data"
+    t.bigint "raw_heartbeat_upload_id"
     t.index ["category", "time"], name: "index_heartbeats_on_category_and_time"
     t.index ["fields_hash"], name: "index_heartbeats_on_fields_hash_when_not_deleted", unique: true, where: "(deleted_at IS NULL)"
+    t.index ["raw_heartbeat_upload_id"], name: "index_heartbeats_on_raw_heartbeat_upload_id"
     t.index ["user_id", "time"], name: "idx_heartbeats_user_time_active", where: "(deleted_at IS NULL)"
     t.index ["user_id"], name: "index_heartbeats_on_user_id"
   end
@@ -259,6 +261,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_12_205858) do
     t.datetime "updated_at", null: false
     t.index ["user_id", "project_name"], name: "index_project_repo_mappings_on_user_id_and_project_name", unique: true
     t.index ["user_id"], name: "index_project_repo_mappings_on_user_id"
+  end
+
+  create_table "raw_heartbeat_uploads", force: :cascade do |t|
+    t.jsonb "request_headers", null: false
+    t.jsonb "request_body", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "sailors_log_leaderboards", force: :cascade do |t|
@@ -358,6 +367,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_12_205858) do
   add_foreign_key "api_keys", "users"
   add_foreign_key "email_addresses", "users"
   add_foreign_key "email_verification_requests", "users"
+  add_foreign_key "heartbeats", "raw_heartbeat_uploads"
   add_foreign_key "heartbeats", "users"
   add_foreign_key "leaderboard_entries", "leaderboards"
   add_foreign_key "leaderboard_entries", "users"
