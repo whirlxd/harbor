@@ -1,7 +1,7 @@
 class Api::Hackatime::V1::HackatimeController < ApplicationController
   before_action :set_user, except: [ :index ]
   skip_before_action :verify_authenticity_token
-  before_action :set_raw_heartbeat_upload, only: [ :push_heartbeats ]
+  # before_action :set_raw_heartbeat_upload, only: [ :push_heartbeats ]
 
   def index
     redirect_to root_path
@@ -80,8 +80,8 @@ class Api::Hackatime::V1::HackatimeController < ApplicationController
         machine: request.headers["X-Machine"]
       })
       new_heartbeat = Heartbeat.find_or_create_by(attrs)
-      new_heartbeat.raw_heartbeat_upload = @raw_heartbeat_upload
-      new_heartbeat.save!
+      # new_heartbeat.raw_heartbeat_upload = @raw_heartbeat_upload
+      # new_heartbeat.save!
       queue_project_mapping(heartbeat[:project])
       results << [ new_heartbeat.attributes, 201 ]
     rescue => e
