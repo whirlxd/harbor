@@ -6,6 +6,7 @@ RUN apt-get update -qq && \
     build-essential \
     git \
     libpq-dev \
+    libyaml-dev \
     postgresql-client \
     libvips \
     pkg-config \
