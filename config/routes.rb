@@ -17,6 +17,10 @@ Rails.application.routes.draw do
   end
   get "/stop_impersonating", to: "sessions#stop_impersonating", as: :stop_impersonating
 
+  namespace :admin do
+    get 'timeline', to: 'timeline#show', as: :timeline
+  end
+
   if Rails.env.development?
     mount LetterOpenerWeb::Engine, at: "/letter_opener"
   end
@@ -41,6 +45,7 @@ Rails.application.routes.draw do
       get :mini_leaderboard
       get "🃏", to: "static_pages#🃏", as: :wildcard
       get :streak
+      # get :timeline # Removed: Old route for timeline
     end
   end
 

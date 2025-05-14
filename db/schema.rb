@@ -10,9 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_14_150404) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_14_180503) do
+  create_schema "pganalyze"
+
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+  enable_extension "pg_stat_statements"
 
   create_table "ahoy_events", force: :cascade do |t|
     t.bigint "visit_id"
@@ -280,6 +283,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_14_150404) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "repo_host_events", id: :string, force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.jsonb "raw_event_payload", null: false
+    t.integer "provider", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider"], name: "index_repo_host_events_on_provider"
+    t.index ["user_id", "provider", "created_at"], name: "index_repo_host_events_on_user_provider_created_at"
+    t.index ["user_id"], name: "index_repo_host_events_on_user_id"
+  end
+
   create_table "sailors_log_leaderboards", force: :cascade do |t|
     t.string "slack_channel_id"
     t.string "slack_uid"
@@ -384,6 +398,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_14_150404) do
   add_foreign_key "mailing_addresses", "users"
   add_foreign_key "physical_mails", "users"
   add_foreign_key "project_repo_mappings", "users"
+  add_foreign_key "repo_host_events", "users"
   add_foreign_key "sign_in_tokens", "users"
   add_foreign_key "wakatime_mirrors", "users"
 end

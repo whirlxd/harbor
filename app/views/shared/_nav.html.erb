@@ -58,6 +58,11 @@
       <% end %>
     <% end %>
     <% admin_tool(nil, "li") do %>
+      <%= link_to admin_timeline_path, class: "nav-item #{current_page?(admin_timeline_path) ? 'active' : ''}" do %>
+        Admin Timeline
+      <% end %>
+    <% end %>
+    <% admin_tool(nil, "li") do %>
       <%= link_to my_mailing_address_path, class: "nav-item #{current_page?(my_mailing_address_path) ? 'active' : ''}" do %>
         Mailing Address
       <% end %>
