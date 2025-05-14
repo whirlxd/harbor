@@ -15,14 +15,14 @@ class CheckStreakPhysicalMailJob < ApplicationJob
     over_7_day_streaks = streaks.select { |_, streak| streak > 7 }.keys
 
     over_7_day_streaks.each do |user_id|
-      next if PhysicalMail.going_out.exists?(user_id: user_id, mission_type: :first_streak)
+      next if PhysicalMail.going_out.exists?(user_id: user_id, mission_type: :first_time_7_streak)
 
       user = User.find(user_id)
 
       # Create the physical mail record
       PhysicalMail.create!(
         user: user,
-        mission_type: :first_streak,
+        mission_type: :first_time_7_streak,
         status: :pending
       )
     end

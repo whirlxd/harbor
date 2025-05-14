@@ -78,6 +78,7 @@ Rails.application.routes.draw do
   namespace :my do
     resources :project_repo_mappings, param: :project_name, only: [ :edit, :update ]
     resource :mailing_address, only: [ :show, :edit ]
+    get "mailroom", to: "mailroom#index"
   end
 
   get "my/wakatime_setup", to: "users#wakatime_setup"

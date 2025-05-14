@@ -10,19 +10,35 @@ class PhysicalMail < ApplicationRecord
   }
 
   enum :mission_type, {
-    hackatime_first_time_7_streak: 0
+    admin_mail: 0,
+    first_time_7_streak: 1
   }
 
+  def link_to_theseus
+    return nil if theseus_id.nil?
+
+    "https://hack.club/#{theseus_id}"
+  end
+
   def deliver!
-    slug = "hackatime_#{mission_type.to_s.underscore.gsub("_", "-")}"
+    slug = "hackatime-#{mission_type.to_s.gsub("_", "-")}"
 
     flavors = FlavorText.compliment
     flavors.concat(FlavorText.rare_compliment) if rand(10) == 0
 
     # authorization: Bearer <token>
     response = HTTP.auth("Bearer #{ENV["MAIL_HACKCLUB_TOKEN"]}").post("https://mail.hackclub.com/api/v1/letter_queues/#{slug}", json: {
-      recipient_email: user.email,
-      address: user_address,
+      recipient_email: user.email_addresses.first.email,
+      address: {
+        first_name: user.mailing_address.first_name,
+        last_name: user.mailing_address.last_name,
+        line_1: user.mailing_address.line_1,
+        line_2: user.mailing_address.line_2,
+        city: user.mailing_address.city,
+        state: user.mailing_address.state,
+        postal_code: user.mailing_address.zip_code,
+        country: user.mailing_address.country
+      },
       rubber_stamps: flavors.sample,
       idempotency_key: "physical_mail_#{id}",
       metadata: {
@@ -31,7 +47,9 @@ class PhysicalMail < ApplicationRecord
     })
 
     if response.status.success?
-      update(status: :sent)
+      data = JSON.parse(response.body.to_s)
+      puts "Successfully delivered physical mail: #{data["id"]}"
+      update(status: :sent, theseus_id: data["id"])
     else
       update(status: :failed)
       raise "Failed to deliver physical mail: #{response.body}"
@@ -44,6 +62,6 @@ class PhysicalMail < ApplicationRecord
   private
 
   def user_address
-    user.address
+    user.mailing_address
   end
 end
