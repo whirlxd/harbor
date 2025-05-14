@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_13_184040) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_14_150404) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -253,6 +253,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_13_184040) do
     t.index ["user_id"], name: "index_mailing_addresses_on_user_id"
   end
 
+  create_table "physical_mails", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.integer "mission_type", null: false
+    t.integer "status", default: 0, null: false
+    t.string "theseus_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_physical_mails_on_user_id"
+  end
+
   create_table "project_repo_mappings", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "project_name", null: false
@@ -372,6 +382,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_13_184040) do
   add_foreign_key "leaderboard_entries", "leaderboards"
   add_foreign_key "leaderboard_entries", "users"
   add_foreign_key "mailing_addresses", "users"
+  add_foreign_key "physical_mails", "users"
   add_foreign_key "project_repo_mappings", "users"
   add_foreign_key "sign_in_tokens", "users"
   add_foreign_key "wakatime_mirrors", "users"
