@@ -68,6 +68,14 @@
                title="User ID: <%= user.id %> - <%= user.respond_to?(:username) ? user.username : user.email_addresses.first&.email %>
 Total Coded Time: <%= total_coded_time_seconds && total_coded_time_seconds > 0 ? short_time_detailed(total_coded_time_seconds) : '0m' %>">
             <%= render "shared/user_mention", user: user %>
+            
+            <%# Slack DM link - only show for other users with slack_uid %>
+            <% if current_user && user != current_user && user.slack_uid.present? %>
+              <div style="margin-top: 0.25rem;">
+                <%= link_to "💬 DM", "slack://user?team=T0266FRGM&id=#{user.slack_uid}", target: "_blank", style: "font-size: 0.7rem; color: #9CA3AF; text-decoration: underline;" %>
+              </div>
+            <% end %>
+            
             <% if total_coded_time_seconds && total_coded_time_seconds > 0 %>
               <div style="font-size: 0.7rem; color: #cbd5e0; margin-top: 0.1rem; line-height: 1;">
                 <%= short_time_simple(total_coded_time_seconds) %> coded
