@@ -19,6 +19,8 @@ Rails.application.routes.draw do
 
   namespace :admin do
     get 'timeline', to: 'timeline#show', as: :timeline
+    get 'timeline/search_users', to: 'timeline#search_users'
+    get 'timeline/leaderboard_users', to: 'timeline#leaderboard_users'
   end
 
   if Rails.env.development?

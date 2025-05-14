@@ -12,29 +12,31 @@ class Admin::TimelineController < Admin::BaseController
     @next_date = @date + 1.day
     @prev_date = @date - 1.day
 
-    # Step 1: Consolidate User Loading
-    # Note: current_user in an admin controller is the admin user.
-    # The original list of user_ids_to_fetch includes some hardcoded IDs.
-    # This logic is preserved but might need review for an admin-specific timeline.
-    user_ids_to_fetch = [
-      current_user&.id, # Admin's own data (if they are also a tracked user)
-      1, # Example: User.find(1) if it's relevant
-      10, 1792, 69, 1476, 805, 2003, 2011 # Original hardcoded IDs
-    ].compact.uniq
+    # User selection logic
+    raw_user_ids = params[:user_ids].present? ? params[:user_ids].split(',').map(&:to_i).uniq : []
+    
+    # Always include current_user (admin)
+    @selected_user_ids = [current_user.id] + raw_user_ids
+    @selected_user_ids.uniq!
+    
+    user_ids_to_fetch = @selected_user_ids
 
+    # Fetch all valid users in one go
     users_by_id = User.where(id: user_ids_to_fetch).index_by(&:id)
+    # Ensure we only use IDs of users that actually exist
+    valid_user_ids_to_fetch = users_by_id.keys 
 
-    mappings_by_user_project = ProjectRepoMapping.where(user_id: users_by_id.keys)
+    mappings_by_user_project = ProjectRepoMapping.where(user_id: valid_user_ids_to_fetch)
                                                  .group_by(&:user_id)
                                                  .transform_values { |mappings| mappings.index_by(&:project_name) }
 
-    users_to_process = user_ids_to_fetch.map { |id| users_by_id[id] }.compact
+    users_to_process = valid_user_ids_to_fetch.map { |id| users_by_id[id] }.compact
 
     start_of_day_timestamp = @date.beginning_of_day.to_f
     end_of_day_timestamp = @date.end_of_day.to_f
 
     all_heartbeats = Heartbeat
-                      .where(user_id: user_ids_to_fetch, deleted_at: nil)
+                      .where(user_id: valid_user_ids_to_fetch, deleted_at: nil)
                       .where('time >= ? AND time <= ?', start_of_day_timestamp, end_of_day_timestamp)
                       .select(:id, :user_id, :time, :entity, :project, :editor, :language)
                       .order(:user_id, :time)
@@ -42,7 +44,7 @@ class Admin::TimelineController < Admin::BaseController
 
     heartbeats_by_user_id = all_heartbeats.group_by(&:user_id)
 
-    @users_with_timeline_data = []
+    @users_with_timeline_data_unordered = []
 
     users_to_process.each do |user|
       user_daily_heartbeats_relation = Heartbeat.where(user_id: user.id, deleted_at: nil)
@@ -96,17 +98,85 @@ class Admin::TimelineController < Admin::BaseController
         end
       end
 
-      if calculated_spans_with_details.any? || total_coded_time_seconds > 0
-        @users_with_timeline_data << {
-          user: user,
-          spans: calculated_spans_with_details,
-          total_coded_time: total_coded_time_seconds # Actual coded time for the user for the day
-        }
-      end
+      # Add user data, even if no spans/time, if they were explicitly selected
+      @users_with_timeline_data_unordered << {
+        user: user,
+        spans: calculated_spans_with_details,
+        total_coded_time: total_coded_time_seconds # Actual coded time for the user for the day
+      }
     end
+    
+    # Order @users_with_timeline_data according to @selected_user_ids
+    # This ensures that if a user was explicitly selected they appear in the timeline
+    # even if they have no heartbeats for the day.
+    data_map_for_ordering = @users_with_timeline_data_unordered.index_by { |data| data[:user].id }
+    @users_with_timeline_data = @selected_user_ids.map do |id|
+      data_map_for_ordering[id] || (users_by_id[id] ? { user: users_by_id[id], spans: [], total_coded_time: 0 } : nil)
+    end.compact
 
-    @primary_user = users_to_process.first || current_user # current_user is the admin
+    # For Stimulus: provide initial selected users with details
+    @initial_selected_user_objects = User.where(id: @selected_user_ids)
+                                        .select(:id, :username, :slack_username, :github_username, :slack_avatar_url, :github_avatar_url)
+                                        .map { |u| { id: u.id, display_name: u.display_name, avatar_url: u.avatar_url } }
+                                        .sort_by { |u_obj| @selected_user_ids.index(u_obj[:id]) || Float::INFINITY } # Preserve order
+
+    @primary_user = @users_with_timeline_data.first&.[](:user) || current_user
 
     render :show # Renders app/views/admin/timeline/show.html.erb
+  end
+
+  def search_users
+    query_term = params[:query].to_s.downcase
+    users = User.where("LOWER(username) LIKE :query OR LOWER(slack_username) LIKE :query OR EXISTS (SELECT 1 FROM email_addresses WHERE email_addresses.user_id = users.id AND LOWER(email_addresses.email) LIKE :query)", query: "%#{query_term}%")
+                .order(Arel.sql("CASE WHEN LOWER(username) = #{ActiveRecord::Base.connection.quote(query_term)} THEN 0 ELSE 1 END, username ASC")) # Prioritize exact match
+                .limit(20)
+                .select(:id, :username, :slack_username, :github_username, :slack_avatar_url, :github_avatar_url)
+
+    results = users.map do |user|
+      {
+        id: user.id,
+        display_name: user.display_name,
+        avatar_url: user.avatar_url
+      }
+    end
+    render json: results
+  end
+
+  def leaderboard_users
+    period = params[:period]
+    limit = 25
+    
+    leaderboard_period_type = (period == 'last_7_days') ? :last_7_days : :daily
+    start_date = Date.current # Leaderboard job for :last_7_days uses Date.current as start_date
+
+    leaderboard = Leaderboard.where.not(finished_generating_at: nil)
+                             .find_by(start_date: start_date, period_type: leaderboard_period_type, deleted_at: nil)
+
+    user_ids_from_leaderboard = leaderboard ? leaderboard.entries.order(total_seconds: :desc).limit(limit).pluck(:user_id) : []
+    
+    all_ids_to_fetch = user_ids_from_leaderboard.dup
+    all_ids_to_fetch.unshift(current_user.id).uniq!
+
+    users_data = User.where(id: all_ids_to_fetch)
+                     .select(:id, :username, :slack_username, :github_username, :slack_avatar_url, :github_avatar_url)
+                     .index_by(&:id)
+
+    final_user_objects = []
+    # Add admin first
+    if admin_data = users_data[current_user.id]
+      final_user_objects << { id: admin_data.id, display_name: admin_data.display_name, avatar_url: admin_data.avatar_url }
+    end
+
+    # Add leaderboard users, ensuring no duplicates and respecting limit
+    user_ids_from_leaderboard.each do |uid|
+      break if final_user_objects.size >= limit 
+      next if uid == current_user.id 
+      
+      if user_data = users_data[uid]
+        final_user_objects << { id: user_data.id, display_name: user_data.display_name, avatar_url: user_data.avatar_url }
+      end
+    end
+    
+    render json: { users: final_user_objects }
   end
 end 

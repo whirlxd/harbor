@@ -43,21 +43,77 @@
   # Add fixed spacers for the header:
   total_min_scroll_width_px = (activity_col_area_start_rem * 16) + min_header_content_width_px + (activity_col_area_end_rem * 16)
 
-  # No longer using flex-based width calculation for headers
-  # css_header_item_width = "calc((100% - #{(num_users > 1 ? (num_users - 1) * gutter_rem : 0)}rem) / #{num_users})"
+  # Current admin user and selected users for Stimulus
+  current_admin_user = {
+    id: current_user.id,
+    display_name: current_user.display_name,
+    avatar_url: current_user.avatar_url
+  }
+  current_admin_user_json = current_admin_user.to_json
+
+  initial_selected_users_json = @initial_selected_user_objects.to_json
+  current_date_for_form = @date.to_s
 %>
 
 <div style="background-color: #1F2937; color: #FFFFFF; padding: 1rem; border-radius: 0.5rem; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; display: flex; flex-direction: column; height: calc(100vh - 8rem);">
   
+  <!-- User Selector UI -->
+  <div 
+    data-controller="admin-timeline-user-selector"
+    data-admin-timeline-user-selector-current-user-json-value='<%= current_admin_user_json %>'
+    data-admin-timeline-user-selector-initial-selected-users-json-value='<%= initial_selected_users_json %>'
+    data-admin-timeline-user-selector-search-url-value="<%= admin_timeline_search_users_path %>"
+    data-admin-timeline-user-selector-leaderboard-users-url-value="<%= admin_timeline_leaderboard_users_path %>"
+    style="margin-bottom: 1rem; padding: 0.75rem; background-color: #2D3748; border-radius: 0.375rem; flex-shrink: 0;"
+    class="user-selector-compact"
+  >
+    <form id="timeline-filter-form" action="<%= admin_timeline_path %>" method="get" data-turbo-frame="_top">
+      <input type="hidden" name="user_ids" data-admin-timeline-user-selector-target="userIdsInput">
+      <input type="hidden" name="date" value="<%= current_date_for_form %>" data-admin-timeline-user-selector-target="dateInput">
+      
+      <div class="grid">
+        <div style="grid-column: span 7;">
+          <label for="user-search-input" class="visually-hidden">Add User</label>
+          <div style="position: relative;">
+            <input type="text"
+                  id="user-search-input"
+                  placeholder="Add user by name/email..."
+                  data-admin-timeline-user-selector-target="searchInput"
+                  data-action="input->admin-timeline-user-selector#debouncedSearch keydown->admin-timeline-user-selector#handleKeydown focus->admin-timeline-user-selector#search blur->admin-timeline-user-selector#hideResultsDelayed"
+                  autocomplete="off"
+                  style="font-size: 0.875rem; padding: 0.35rem 0.5rem; margin-bottom: 0; width: 100%;">
+            <ul class="list-group position-absolute w-100" 
+                data-admin-timeline-user-selector-target="searchResults"
+                style="z-index: 1050; max-height: 200px; overflow-y: auto; list-style-type: none; padding-left: 0; margin-top: 0; width: 100%; background-color: #1A202C; border: 1px solid #4A5568; border-top: none; border-radius: 0 0 0.25rem 0.25rem; display: none;">
+              <%# Search results will appear here %>
+            </ul>
+          </div>
+        </div>
+
+        <div style="grid-column: span 5; display: flex; align-items: flex-end; justify-content: flex-end; gap: 0.5rem;">
+          <div class="btn-group" role="group" style="display:contents;">
+            <button type="button" class="secondary outline" data-action="admin-timeline-user-selector#applyPreset" data-period="today" style="font-size: 0.8rem; padding: 0.35rem 0.5rem; margin-bottom: 0;">Top Today</button>
+            <button type="button" class="secondary outline" data-action="admin-timeline-user-selector#applyPreset" data-period="last_7_days" style="font-size: 0.8rem; padding: 0.35rem 0.5rem; margin-bottom: 0;">Top 7 Days</button>
+          </div>
+           <button type="submit" class="primary" style="font-size: 0.8rem; padding: 0.35rem 0.75rem; margin-bottom: 0;">View</button>
+        </div>
+      </div>
+      
+      <div class="mt-2" data-admin-timeline-user-selector-target="selectedUsersContainer" style="margin-top: 0.5rem; min-height: 28px;">
+        <%# Selected user pills will appear here %>
+      </div>
+    </form>
+  </div>
+
   <!-- Date Navigation (remains the same) -->
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-shrink: 0;">
     <div style="font-size: 1.125rem; line-height: 1.75rem; font-weight: 600;">
       <%= @date.in_time_zone(primary_user_tz).strftime("%A, %B %-d, %Y") %>
     </div>
     <div style="display: flex; gap: 0.5rem;">
-      <%= link_to "← Prev", admin_timeline_path(date: @prev_date.to_s), class: "button button-outline" %>
-      <%= link_to "Today", admin_timeline_path(date: Time.current.to_date.to_s), class: "button button-outline" %>
-      <%= link_to "Next →", admin_timeline_path(date: @next_date.to_s), class: "button button-outline" %>
+      <%= link_to "← Prev", admin_timeline_path(date: @prev_date.to_s), class: "button button-outline", data: { "date-nav-link": "true" } %>
+      <%= link_to "Today", admin_timeline_path(date: Time.current.to_date.to_s), class: "button button-outline", data: { "date-nav-link": "true" } %>
+      <%= link_to "Next →", admin_timeline_path(date: @next_date.to_s), class: "button button-outline", data: { "date-nav-link": "true" } %>
     </div>
   </div>
 
@@ -238,3 +294,52 @@
     </div> <!-- End .admin-timeline-content-sizer -->
   </div> <!-- End .admin-timeline-view-wrapper -->
 </div> <!-- End Main Page Container --> 
+
+<% content_for :head do %>
+<style>
+  .user-selector-compact .form-label-sm { font-size: 0.75rem; margin-bottom: 0.25rem; }
+  .user-selector-compact input[type="text"] { font-size: 0.875rem; padding: 0.35rem 0.5rem; margin-bottom: 0; }
+  .user-selector-compact button { font-size: 0.8rem; padding: 0.35rem 0.5rem; margin-bottom: 0; }
+  
+  .user-selector-compact .list-group-item {
+    font-size: 0.875rem;
+    padding: 0.4rem 0.75rem; /* Increased padding for easier clicking */
+    cursor: pointer;
+    background-color: #1A202C; /* Dark background for items */
+    color: #E2E8F0; /* Light text color */
+    border-bottom: 1px solid #2D3748; /* Separator */
+  }
+  .user-selector-compact .list-group.position-absolute {
+    top: 100%; left: 0;
+    border: 1px solid #4A5568; border-top: none;
+    border-radius: 0 0 0.25rem 0.25rem;
+    display: none !important; /* Hidden by default */
+  }
+  .user-selector-compact .list-group.active { 
+    display: block !important; 
+  }
+  .user-selector-compact .list-group-item:hover { background-color: #4A5568; }
+  .user-selector-compact .list-group-item.disabled { color: #A0AEC0; background-color: #2D3748; }
+  
+  .user-selector-compact .avatar-xs { width: 20px; height: 20px; border-radius: 50%; vertical-align: middle; }
+  .user-selector-compact .avatar-xxs { width: 16px; height: 16px; border-radius: 50%; vertical-align: middle; }
+  
+  .user-selector-compact .user-pill {
+    padding: 0.3em 0.6em; font-size: 0.8rem;
+    display: inline-flex; align-items: center;
+    border-radius: var(--pico-border-radius);
+    margin-right: 0.25rem; margin-bottom: 0.25rem; /* Ensure pills wrap nicely */
+  }
+  .user-selector-compact .user-pill .btn-close-custom {
+    background: none; border: none; color: inherit;
+    padding: 0 0.25rem; margin-left: 0.4rem;
+    font-size: 1rem; line-height: 1;
+    cursor: pointer; opacity: 0.7;
+  }
+  .user-selector-compact .user-pill .btn-close-custom:hover { opacity: 1; }
+  .visually-hidden {
+    border: 0; clip: rect(0 0 0 0); height: 1px; margin: -1px;
+    overflow: hidden; padding: 0; position: absolute; width: 1px;
+  }
+</style>
+<% end %> 
