@@ -2,7 +2,7 @@ require 'http' # Make sure 'http' gem is available
 
 module RepoHost
   class SyncUserEventsJob < ApplicationJob
-    queue_as :repo_event_syncing # A dedicated queue for these potentially long-running jobs
+    queue_as :literally_whenever
     
     # MAX_API_PAGES_TO_FETCH: Max pages to fetch. GitHub's /users/{username}/events endpoint
     # is limited to 300 events. If per_page=100 (as we request), this is 3 pages.
