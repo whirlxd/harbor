@@ -1,5 +1,5 @@
 class ScanRepoEventsForCommitsJob < ApplicationJob
-  queue_as :low_priority # This can be a less frequent, background task
+  queue_as :literally_whenever
 
   include GoodJob::ActiveJobExtensions::Concurrency
   good_job_control_concurrency_with(
