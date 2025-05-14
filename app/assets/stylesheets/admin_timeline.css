@@ -14,8 +14,7 @@
 }
 
 .admin-timeline-sticky-header {
-  display: flex; /* For layout of spacers + user cells container */
-  align-items: center;
+  /* Changed structure to use simple absolute positioning, no more flex layout */
   position: sticky; /* Sticky to the top of admin-timeline-view-wrapper */
   top: 0;
   z-index: 20; /* Above other content */
@@ -23,26 +22,18 @@
   padding-bottom: 0.5rem;
   padding-top: 0.25rem;
   box-sizing: border-box;
+  /* No padding left/right as we use absolute positioning for the headers */
 }
 
-.admin-timeline-header-spacer { /* For left/right fixed spacing in the header row */
-  flex-shrink: 0; /* Prevent spacer from shrinking */
-  /* width for these spacers is set inline via ERB */
-}
-
-.admin-timeline-user-headers-container { /* Contains the actual user header cells */
-  display: flex;
-  flex-grow: 1; /* Takes up space between spacers */
-}
+/* Removed header spacer and container styles as they're no longer used */
 
 .admin-timeline-user-header-cell {
-  min-width: 186px; /* Crucial: Minimum width for each header cell */
-  /* width (flex-basis) is set inline by ERB using css_header_item_width */
-  /* margin-left for gutter is also set inline by ERB for subsequent cells */
-  flex-grow: 1; /* Allow to grow if there's more space than min-widths sum up to */
-  flex-shrink: 0; /* Important: Prevent shrinking below min-width or calculated ERB width */
+  position: absolute; /* Positioned absolutely within the sticky header container */
+  /* left is set inline per instance - using the EXACT same calculation as activity spans */
+  top: 0; /* All headers start at the top of the container */
+  min-width: 186px; /* Minimum width for each header cell */
+  width: 186px; /* Fixed width set inline to match span columns exactly */
   box-sizing: border-box; /* Include padding and border in width/height */
-  /* Visual styles copied from original ERB (or can be moved here) */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -54,7 +45,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  padding: 0.1rem 0.25rem; /* Added some padding for better appearance */
+  padding: 0.1rem 0.25rem; /* Padding for content */
 }
 
 #timeline-grid-scroll-container { /* Original ID, holds hour rows and activity spans */
@@ -77,8 +68,8 @@
   z-index: 10; /* Above grid lines */
   overflow: hidden; /* Clip content that overflows */
   box-sizing: border-box;
-  min-width: 186px; /* Crucial: Minimum width for each span "column" */
-  /* width, left, top, height are set inline by ERB */
+  min-width: 186px; /* Minimum width for each span "column" */
+  width: 186px; /* Fixed width set inline to match exactly with headers */
 }
 
 .admin-timeline-span-item a { /* Ensure links inside spans are visible and styled */
