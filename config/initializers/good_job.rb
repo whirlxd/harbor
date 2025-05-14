@@ -53,6 +53,11 @@ Rails.application.configure do
       cron: "0 10 * * *",
       class: "ScanGithubReposJob"
     },
+    sync_all_user_repo_events: {
+      cron: "0 */6 * * *", # Every 6 hours (at minute 0 of 0, 6, 12, 18 hours)
+      class: "SyncAllUserRepoEventsJob",
+      description: "Periodically syncs repository events for all eligible users."
+    },
     cleanup_expired_email_verification_requests: {
       cron: "* * * * *",
       class: "CleanupExpiredEmailVerificationRequestsJob"

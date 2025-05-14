@@ -10,9 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_09_191155) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_14_180503) do
+  create_schema "pganalyze"
+
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+  enable_extension "pg_stat_statements"
 
   create_table "ahoy_events", force: :cascade do |t|
     t.bigint "visit_id"
@@ -209,8 +212,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_09_191155) do
     t.integer "ysws_program", default: 0, null: false
     t.datetime "deleted_at"
     t.jsonb "raw_data"
+    t.bigint "raw_heartbeat_upload_id"
     t.index ["category", "time"], name: "index_heartbeats_on_category_and_time"
     t.index ["fields_hash"], name: "index_heartbeats_on_fields_hash_when_not_deleted", unique: true, where: "(deleted_at IS NULL)"
+    t.index ["raw_heartbeat_upload_id"], name: "index_heartbeats_on_raw_heartbeat_upload_id"
     t.index ["user_id", "time"], name: "idx_heartbeats_user_time_active", where: "(deleted_at IS NULL)"
     t.index ["user_id"], name: "index_heartbeats_on_user_id"
   end
@@ -251,6 +256,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_09_191155) do
     t.index ["user_id"], name: "index_mailing_addresses_on_user_id"
   end
 
+  create_table "physical_mails", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.integer "mission_type", null: false
+    t.integer "status", default: 0, null: false
+    t.string "theseus_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_physical_mails_on_user_id"
+  end
+
   create_table "project_repo_mappings", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "project_name", null: false
@@ -259,6 +274,24 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_09_191155) do
     t.datetime "updated_at", null: false
     t.index ["user_id", "project_name"], name: "index_project_repo_mappings_on_user_id_and_project_name", unique: true
     t.index ["user_id"], name: "index_project_repo_mappings_on_user_id"
+  end
+
+  create_table "raw_heartbeat_uploads", force: :cascade do |t|
+    t.jsonb "request_headers", null: false
+    t.jsonb "request_body", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "repo_host_events", id: :string, force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.jsonb "raw_event_payload", null: false
+    t.integer "provider", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider"], name: "index_repo_host_events_on_provider"
+    t.index ["user_id", "provider", "created_at"], name: "index_repo_host_events_on_user_provider_created_at"
+    t.index ["user_id"], name: "index_repo_host_events_on_user_id"
   end
 
   create_table "sailors_log_leaderboards", force: :cascade do |t|
@@ -344,13 +377,28 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_09_191155) do
     t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id"
   end
 
+  create_table "wakatime_mirrors", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "endpoint_url", default: "https://wakatime.com/api/v1", null: false
+    t.string "encrypted_api_key", null: false
+    t.datetime "last_synced_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "endpoint_url"], name: "index_wakatime_mirrors_on_user_id_and_endpoint_url", unique: true
+    t.index ["user_id"], name: "index_wakatime_mirrors_on_user_id"
+  end
+
   add_foreign_key "api_keys", "users"
   add_foreign_key "email_addresses", "users"
   add_foreign_key "email_verification_requests", "users"
+  add_foreign_key "heartbeats", "raw_heartbeat_uploads"
   add_foreign_key "heartbeats", "users"
   add_foreign_key "leaderboard_entries", "leaderboards"
   add_foreign_key "leaderboard_entries", "users"
   add_foreign_key "mailing_addresses", "users"
+  add_foreign_key "physical_mails", "users"
   add_foreign_key "project_repo_mappings", "users"
+  add_foreign_key "repo_host_events", "users"
   add_foreign_key "sign_in_tokens", "users"
+  add_foreign_key "wakatime_mirrors", "users"
 end
