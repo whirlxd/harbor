@@ -58,6 +58,11 @@ Rails.application.configure do
       class: "SyncAllUserRepoEventsJob",
       description: "Periodically syncs repository events for all eligible users."
     },
+    scan_repo_events_for_commits: {
+      cron: "0 */3 * * *", # Every 3 hours at minute 0
+      class: "ScanRepoEventsForCommitsJob",
+      description: "Scans repository host events (PushEvents) and enqueues jobs to process new commits."
+    },
     cleanup_expired_email_verification_requests: {
       cron: "* * * * *",
       class: "CleanupExpiredEmailVerificationRequestsJob"

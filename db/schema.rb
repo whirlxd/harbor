@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_14_180503) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_14_212714) do
   create_schema "pganalyze"
 
   # These are extensions that must be enabled in order to support this database
@@ -70,6 +70,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_14_180503) do
     t.index ["user_id", "name"], name: "index_api_keys_on_user_id_and_name", unique: true
     t.index ["user_id", "token"], name: "index_api_keys_on_user_id_and_token", unique: true
     t.index ["user_id"], name: "index_api_keys_on_user_id"
+  end
+
+  create_table "commits", primary_key: "sha", id: :string, force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.jsonb "github_raw"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_commits_on_user_id"
   end
 
   create_table "email_addresses", force: :cascade do |t|
@@ -389,6 +397,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_14_180503) do
   end
 
   add_foreign_key "api_keys", "users"
+  add_foreign_key "commits", "users"
   add_foreign_key "email_addresses", "users"
   add_foreign_key "email_verification_requests", "users"
   add_foreign_key "heartbeats", "raw_heartbeat_uploads"
