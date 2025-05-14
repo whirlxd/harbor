@@ -5,16 +5,6 @@ class StaticPagesController < ApplicationController
   ]
 
   def index
-    @leaderboard = Leaderboard.where.associated(:entries)
-                              .where(start_date: Date.current)
-                              .where(deleted_at: nil)
-                              .where(period_type: :daily)
-                              .distinct
-                              .first
-
-    # Get active projects for the mini leaderboard
-    @active_projects = Cache::ActiveProjectsJob.perform_now
-
     if current_user
       flavor_texts = FlavorText.motto + FlavorText.conditional_mottos(current_user)
       flavor_texts += FlavorText.rare_motto if Random.rand(10) < 1
@@ -78,6 +68,22 @@ class StaticPagesController < ApplicationController
 
       @home_stats = Cache::HomeStatsJob.perform_now
     end
+  end
+
+  def mini_leaderboard
+    @leaderboard = Leaderboard.where.associated(:entries)
+                              .where(start_date: Date.current)
+                              .where(deleted_at: nil)
+                              .where(period_type: :daily)
+                              .distinct
+                              .first
+
+    @active_projects = Cache::ActiveProjectsJob.perform_now
+
+    render partial: "leaderboards/mini_leaderboard", locals: {
+      leaderboard: @leaderboard,
+      current_user: current_user
+    }
   end
 
   def project_durations

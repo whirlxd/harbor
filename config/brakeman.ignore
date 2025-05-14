@@ -3,6 +3,29 @@
     {
       "warning_type": "SQL Injection",
       "warning_code": 0,
+      "fingerprint": "06ca3650eaeb8d28e062c1c6dcbeab95fb2ccd0c5bb49165ad469bcb6b791d3e",
+      "check_name": "SQL",
+      "message": "Possible SQL injection",
+      "file": "app/models/concerns/heartbeatable.rb",
+      "line": 214,
+      "link": "https://brakemanscanner.org/docs/warning_types/sql_injection/",
+      "code": "Arel.sql(\"DATE_TRUNC('day', to_timestamp(time) AT TIME ZONE '#{(user_timezone or \"UTC\")}')\")",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "Heartbeatable",
+        "method": "daily_durations"
+      },
+      "user_input": "user_timezone",
+      "confidence": "Medium",
+      "cwe_id": [
+        89
+      ],
+      "note": ""
+    },
+    {
+      "warning_type": "SQL Injection",
+      "warning_code": 0,
       "fingerprint": "db41fbf90d0feb7b7c1c11545d498447162cf5e54e091d2ddcfcaba28b2513f6",
       "check_name": "SQL",
       "message": "Possible SQL injection",

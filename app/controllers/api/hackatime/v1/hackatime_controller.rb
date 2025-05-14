@@ -1,6 +1,7 @@
 class Api::Hackatime::V1::HackatimeController < ApplicationController
   before_action :set_user, except: [ :index ]
   skip_before_action :verify_authenticity_token
+  before_action :set_raw_heartbeat_upload, only: [ :push_heartbeats ]
 
   def index
     redirect_to root_path
@@ -28,7 +29,7 @@ class Api::Hackatime::V1::HackatimeController < ApplicationController
       # {
       #   ...heartbeat_data
       # }
-      heartbeat_array = [ heartbeat_params ]
+      heartbeat_array = Array(heartbeat_params)
       new_heartbeat = handle_heartbeat(heartbeat_array)&.first&.first
       render json: new_heartbeat, status: :accepted
     end
@@ -51,6 +52,25 @@ class Api::Hackatime::V1::HackatimeController < ApplicationController
 
   private
 
+  def set_raw_heartbeat_upload
+    @raw_heartbeat_upload = RawHeartbeatUpload.create!(
+      request_headers: headers_to_json,
+      request_body: body_to_json
+    )
+  end
+
+  def headers_to_json
+    request.headers
+           .env
+           .select { |key| key.to_s.starts_with?("HTTP_") }
+           .map { |key, value| [ key.sub(/^HTTP_/, ""), value ] }
+           .to_h.to_json
+  end
+
+  def body_to_json
+    params.to_unsafe_h["_json"] || {}
+  end
+
   def handle_heartbeat(heartbeat_array)
     results = []
     heartbeat_array.each do |heartbeat|
@@ -68,9 +88,14 @@ class Api::Hackatime::V1::HackatimeController < ApplicationController
         source_type: source_type,
         ip_address: request.remote_ip,
         editor: parsed_ua[:editor],
-        operating_system: parsed_ua[:os]
+        operating_system: parsed_ua[:os],
+        machine: request.headers["X-Machine-Name"]
       })
       new_heartbeat = Heartbeat.find_or_create_by(attrs)
+      if @raw_heartbeat_upload.present? && new_heartbeat.persisted?
+        new_heartbeat.raw_heartbeat_upload ||= @raw_heartbeat_upload
+        new_heartbeat.save! if new_heartbeat.changed?
+      end
       queue_project_mapping(heartbeat[:project])
       results << [ new_heartbeat.attributes, 201 ]
     rescue => e

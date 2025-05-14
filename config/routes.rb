@@ -42,6 +42,7 @@ Rails.application.routes.draw do
       get :currently_hacking
       get :filterable_dashboard_content
       get :filterable_dashboard
+      get :mini_leaderboard
       get "🃏", to: "static_pages#🃏", as: :wildcard
       get :streak
       # get :timeline # Removed: Old route for timeline
@@ -64,9 +65,12 @@ Rails.application.routes.draw do
   # Nested under users for admin access
   resources :users, only: [] do
     get "settings", on: :member, to: "users#edit"
+    patch "settings", on: :member, to: "users#update"
     member do
       patch :update_trust_level
     end
+    resource :wakatime_mirrors, only: [ :create ]
+    resources :wakatime_mirrors, only: [ :destroy ]
   end
 
   get "my/projects", to: "my/project_repo_mappings#index", as: :my_projects
@@ -79,6 +83,7 @@ Rails.application.routes.draw do
   namespace :my do
     resources :project_repo_mappings, param: :project_name, only: [ :edit, :update ]
     resource :mailing_address, only: [ :show, :edit ]
+    get "mailroom", to: "mailroom#index"
   end
 
   get "my/wakatime_setup", to: "users#wakatime_setup"

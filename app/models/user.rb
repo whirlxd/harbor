@@ -19,6 +19,7 @@ class User < ApplicationRecord
   has_many :sign_in_tokens, dependent: :destroy
   has_many :project_repo_mappings
   has_one :mailing_address, dependent: :destroy
+  has_many :physical_mails
 
   has_many :hackatime_heartbeats,
     foreign_key: :user_id,
@@ -37,8 +38,17 @@ class User < ApplicationRecord
     primary_key: :slack_uid,
     class_name: "SailorsLog"
 
+  has_many :wakatime_mirrors, dependent: :destroy
+
   def streak_days
     @streak_days ||= heartbeats.daily_streaks_for_users([ id ]).values.first
+  end
+
+  if Rails.env.development?
+    def self.slow_find_by_email(email)
+      # This is an n+1 query, but provided for developer convenience
+      EmailAddress.find_by(email: email)&.user
+    end
   end
 
   def streak_days_formatted
@@ -65,6 +75,13 @@ class User < ApplicationRecord
     ).where(
       "job_class = ?", "MigrateUserFromHackatimeJob"
     ).order(created_at: :desc).limit(10).all
+  end
+
+  def in_progress_migration_jobs?
+    GoodJob::Job.where(job_class: "MigrateUserFromHackatimeJob")
+                .where("serialized_params->>'arguments' = ?", [ id ].to_json)
+                .where(finished_at: nil)
+                .exists?
   end
 
   def set_neighborhood_channel
