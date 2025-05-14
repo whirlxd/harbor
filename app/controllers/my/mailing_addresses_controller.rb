@@ -5,6 +5,7 @@ module My
 
       # Generate OTC if it doesn't exist
       if params[:from_fillout]
+        sleep 1 # unfortunate hack to make sure the job runs after airtable gets the data
         FetchMailingAddressJob.perform_now(@user.id)
       else
         @user.update_column(:mailing_address_otc, SecureRandom.hex(8))
