@@ -105,6 +105,14 @@ Rails.application.configure do
       cron: "* * * * *",
       class: "Cache::HeartbeatCountsJob",
       kwargs: { force_reload: true }
+    },
+    check_streak_physical_mail: {
+      cron: "0 * * * *", # Run before AttemptToDeliverPhysicalMailJob
+      class: "CheckStreakPhysicalMailJob"
+    },
+    attempt_to_deliver_physical_mail: {
+      cron: "5 * * * *", # Run after physical mail is created
+      class: "AttemptToDeliverPhysicalMailJob"
     }
   }
 end

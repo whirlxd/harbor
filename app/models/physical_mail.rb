@@ -14,6 +14,12 @@ class PhysicalMail < ApplicationRecord
     first_time_7_streak: 1
   }
 
+  scope :pending_delivery, -> {
+    where(status: :pending)
+      .joins(:user)
+      .joins("INNER JOIN mailing_addresses ON mailing_addresses.user_id = users.id")
+  }
+
   def link_to_theseus
     return nil if theseus_id.nil?
 
@@ -27,10 +33,14 @@ class PhysicalMail < ApplicationRecord
   end
 
   def deliver!
+    return if status == :sent || theseus_id.present?
+
     slug = "hackatime-#{mission_type.to_s.gsub("_", "-")}"
 
     flavors = FlavorText.compliment
     flavors.concat(FlavorText.rare_compliment) if rand(10) == 0
+
+    return nil unless user.mailing_address.present?
 
     # authorization: Bearer <token>
     response = HTTP.auth("Bearer #{ENV["MAIL_HACKCLUB_TOKEN"]}").post("https://mail.hackclub.com/api/v1/letter_queues/#{slug}", json: {
