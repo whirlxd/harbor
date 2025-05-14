@@ -20,6 +20,12 @@ class PhysicalMail < ApplicationRecord
     "https://hack.club/#{theseus_id}"
   end
 
+  def humanized_mission_type
+    return "Your first 7-day streak" if first_time_7_streak?
+
+    mission_type.titleize
+  end
+
   def deliver!
     slug = "hackatime-#{mission_type.to_s.gsub("_", "-")}"
 
