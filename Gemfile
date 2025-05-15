@@ -18,8 +18,6 @@ gem "turbo-rails"
 gem "stimulus-rails"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
-# Avo Community
-gem "avo", ">= 3.2.1"
 # PaperTrail for auditing
 gem "paper_trail"
 # Handle CORS (Cross-Origin Resource Sharing)
@@ -121,5 +119,3 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
-
-gem "avo-record_link_field", "~> 0.0.2"
