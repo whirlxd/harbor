@@ -8,6 +8,8 @@ class ScanRepoEventsForCommitsJob < ApplicationJob
     drop: true # If another instance is running or queued, drop this one
   )
 
+  COMMITS_BATCH_SIZE = 1000 # Number of commits to check for existence in the DB at a time
+
   def perform
     Rails.logger.info "[ScanRepoEventsForCommitsJob] Starting scan of RepoHostEvents for new commits."
 
@@ -16,6 +18,7 @@ class ScanRepoEventsForCommitsJob < ApplicationJob
     # you could use that. For now, we'll use a time window and rely on Commit.exists?
     # to avoid re-processing.
     time_window_start = 90.days.ago
+    potential_commits_buffer = []
 
     # Process events in batches to manage memory
     # Filter for GitHub PushEvents initially
@@ -25,50 +28,86 @@ class ScanRepoEventsForCommitsJob < ApplicationJob
       .where("created_at >= ?", time_window_start) # Focus on recent events
       .order(created_at: :desc) # Process newer events first, potentially stopping earlier
       .find_each(batch_size: 100) do |event|
-      process_event(event)
+      
+      user = event.user
+      unless user
+        Rails.logger.warn "[ScanRepoEventsForCommitsJob] Event ID #{event.id} has no associated user. Skipping."
+        next
+      end
+
+      payload = event.raw_event_payload
+      # Safely access nested commit data from the JSON payload
+      commits_data = payload.dig("payload", "commits")
+
+      unless commits_data.is_a?(Array) && commits_data.any?
+        # Rails.logger.debug "[ScanRepoEventsForCommitsJob] Event ID #{event.id} (User ##{user.id}) is a PushEvent but has no commits. Skipping."
+        next
+      end
+
+      commits_data.each do |commit_info|
+        commit_sha = commit_info["sha"]
+        # The 'url' in the PushEvent's commit object is the API URL for that commit
+        commit_api_url = commit_info["url"]
+
+        if commit_sha.blank? || commit_api_url.blank?
+          Rails.logger.warn "[ScanRepoEventsForCommitsJob] Event ID #{event.id} (User ##{user.id}) has a commit with missing SHA or API URL. Info: #{commit_info.inspect}"
+          next
+        end
+
+        potential_commits_buffer << {
+          sha: commit_sha,
+          api_url: commit_api_url,
+          user_id: user.id,
+          provider: event.provider.to_s
+        }
+      end
+
+      # If the buffer is full, process it
+      if potential_commits_buffer.size >= COMMITS_BATCH_SIZE
+        process_commits_buffer(potential_commits_buffer)
+        potential_commits_buffer.clear
+      end
+    rescue JSON::ParserError => e
+      Rails.logger.error "[ScanRepoEventsForCommitsJob] Failed to parse raw_event_payload for Event ID #{event.id}: #{e.message}"
+    rescue => e # Catch other potential errors during event processing
+      Rails.logger.error "[ScanRepoEventsForCommitsJob] Error processing Event ID #{event.id}: #{e.message}\n#{e.backtrace.take(5).join("\n")}"
     end
+
+    # Process any remaining commits in the buffer
+    process_commits_buffer(potential_commits_buffer) unless potential_commits_buffer.empty?
 
     Rails.logger.info "[ScanRepoEventsForCommitsJob] Finished scan."
   end
 
   private
 
-  def process_event(event)
-    user = event.user
-    unless user
-      Rails.logger.warn "[ScanRepoEventsForCommitsJob] Event ID #{event.id} has no associated user. Skipping."
-      return
-    end
+  def process_commits_buffer(commits_to_check)
+    return if commits_to_check.empty?
 
-    payload = event.raw_event_payload
-    # Safely access nested commit data from the JSON payload
-    commits_data = payload.dig("payload", "commits")
-
-    unless commits_data.is_a?(Array) && commits_data.any?
-      # Rails.logger.debug "[ScanRepoEventsForCommitsJob] Event ID #{event.id} (User ##{user.id}) is a PushEvent but has no commits. Skipping."
-      return
-    end
-
-    commits_data.each do |commit_info|
-      commit_sha = commit_info["sha"]
-      # The 'url' in the PushEvent's commit object is the API URL for that commit
-      commit_api_url = commit_info["url"]
-
-      if commit_sha.blank? || commit_api_url.blank?
-        Rails.logger.warn "[ScanRepoEventsForCommitsJob] Event ID #{event.id} (User ##{user.id}) has a commit with missing SHA or API URL. Info: #{commit_info.inspect}"
-        next
-      end
-
-      # Main check: Only enqueue if the commit SHA is not already in the Commit table.
-      # This is crucial for idempotency and efficiency.
-      unless Commit.exists?(sha: commit_sha)
-        Rails.logger.info "[ScanRepoEventsForCommitsJob] Enqueuing ProcessCommitJob for SHA #{commit_sha}, User ##{user.id}, Provider #{event.provider}."
-        ProcessCommitJob.perform_later(user.id, commit_sha, commit_api_url, event.provider.to_s)
+    # Extract all SHAs from the buffer
+    shas_to_check = commits_to_check.map { |c| c[:sha] }.uniq
+    
+    # Find which SHAs already exist in the database with a single query
+    existing_shas = Commit.where(sha: shas_to_check).pluck(:sha).to_set
+    
+    processed_count = 0
+    enqueued_count = 0
+    
+    # Process each commit in the buffer
+    commits_to_check.each do |commit_details|
+      processed_count += 1
+      unless existing_shas.include?(commit_details[:sha])
+        Rails.logger.info "[ScanRepoEventsForCommitsJob] Enqueuing ProcessCommitJob for SHA #{commit_details[:sha]}, User ##{commit_details[:user_id]}, Provider #{commit_details[:provider]}."
+        ProcessCommitJob.perform_later(
+          commit_details[:user_id],
+          commit_details[:sha],
+          commit_details[:api_url],
+          commit_details[:provider]
+        )
+        enqueued_count += 1
       end
     end
-  rescue JSON::ParserError => e
-    Rails.logger.error "[ScanRepoEventsForCommitsJob] Failed to parse raw_event_payload for Event ID #{event.id}: #{e.message}"
-  rescue => e # Catch other potential errors during event processing
-    Rails.logger.error "[ScanRepoEventsForCommitsJob] Error processing Event ID #{event.id}: #{e.message}\n#{e.backtrace.take(5).join("\n")}"
+    
+    Rails.logger.info "[ScanRepoEventsForCommitsJob] Processed buffer of #{processed_count} potential commits. Enqueued #{enqueued_count} new ProcessCommitJob(s)."
   end
 end
