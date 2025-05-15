@@ -3,7 +3,7 @@ class SyncAllUserRepoEventsJob < ApplicationJob
 
   def perform
     Rails.logger.info "Kicking off SyncAllUserRepoEventsJob"
-    
+
     # Identify users:
     # 1. Authenticated with GitHub (have an access token and username)
     # 2. Have had heartbeats in the last 6 hours
@@ -28,4 +28,4 @@ class SyncAllUserRepoEventsJob < ApplicationJob
     end
     Rails.logger.info "Successfully enqueued batch for GitHub event sync."
   end
-end 
+end

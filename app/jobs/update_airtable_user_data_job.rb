@@ -6,7 +6,7 @@ class UpdateAirtableUserDataJob < ApplicationJob
   def perform
     users_with_heartbeats.includes(:email_addresses).find_in_batches(batch_size: 100) do |batch|
       records = []
-      
+
       # Efficiently calculate total coding seconds for all users in this batch
       user_ids_in_batch = batch.map(&:id)
       total_coding_seconds_per_user = Heartbeat
@@ -15,18 +15,18 @@ class UpdateAirtableUserDataJob < ApplicationJob
                                         .with_valid_timestamps
                                         .group(:user_id) # Group by user
                                         .duration_seconds # Returns a hash { user_id => seconds }
-      
+
       batch.each do |user|
         first_heartbeat_time = user.heartbeats.with_valid_timestamps.order(time: :asc).limit(1).pluck(:time).first
         first_direct_heartbeat_time = user.heartbeats.direct_entry.with_valid_timestamps.order(time: :asc).limit(1).pluck(:time).first
         first_test_heartbeat_time = user.heartbeats.test_entry.with_valid_timestamps.order(time: :asc).limit(1).pluck(:time).first
         created_at = user.created_at.to_i
         next if first_heartbeat_time.nil? || first_heartbeat_time > Time.now.to_f
-        
+
         # Get the pre-calculated total coding seconds for this user
         user_total_coding_seconds = total_coding_seconds_per_user[user.id] || 0
         total_minutes_logged = (user_total_coding_seconds / 60).to_i
-        
+
         user.email_addresses.map do |email_address|
           records << Table.new({
             email: email_address.email,
@@ -38,7 +38,7 @@ class UpdateAirtableUserDataJob < ApplicationJob
           })
         end
       end
-      
+
       # Only attempt to upsert if there are records to process
       Table.batch_upsert(records, "email") if records.any?
     end

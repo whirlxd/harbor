@@ -19,6 +19,6 @@ class CreateRepoHostEvents < ActiveRecord::Migration[8.0]
     # Add an index for efficiently finding the latest event for a user/provider,
     # and for the "stop fetching if event exists" logic.
     # The primary key `id` is already unique and indexed.
-    add_index :repo_host_events, [:user_id, :provider, :created_at], name: 'index_repo_host_events_on_user_provider_created_at'
+    add_index :repo_host_events, [ :user_id, :provider, :created_at ], name: 'index_repo_host_events_on_user_provider_created_at'
   end
 end

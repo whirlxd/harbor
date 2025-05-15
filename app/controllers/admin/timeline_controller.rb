@@ -13,18 +13,18 @@ class Admin::TimelineController < Admin::BaseController
     @prev_date = @date - 1.day
 
     # User selection logic
-    raw_user_ids = params[:user_ids].present? ? params[:user_ids].split(',').map(&:to_i).uniq : []
-    
+    raw_user_ids = params[:user_ids].present? ? params[:user_ids].split(",").map(&:to_i).uniq : []
+
     # Always include current_user (admin)
-    @selected_user_ids = [current_user.id] + raw_user_ids
+    @selected_user_ids = [ current_user.id ] + raw_user_ids
     @selected_user_ids.uniq!
-    
+
     user_ids_to_fetch = @selected_user_ids
 
     # Fetch all valid users in one go
     users_by_id = User.where(id: user_ids_to_fetch).index_by(&:id)
     # Ensure we only use IDs of users that actually exist
-    valid_user_ids_to_fetch = users_by_id.keys 
+    valid_user_ids_to_fetch = users_by_id.keys
 
     mappings_by_user_project = ProjectRepoMapping.where(user_id: valid_user_ids_to_fetch)
                                                  .group_by(&:user_id)
@@ -37,7 +37,7 @@ class Admin::TimelineController < Admin::BaseController
 
     all_heartbeats = Heartbeat
                       .where(user_id: valid_user_ids_to_fetch, deleted_at: nil)
-                      .where('time >= ? AND time <= ?', start_of_day_timestamp, end_of_day_timestamp)
+                      .where("time >= ? AND time <= ?", start_of_day_timestamp, end_of_day_timestamp)
                       .select(:id, :user_id, :time, :entity, :project, :editor, :language)
                       .order(:user_id, :time)
                       .to_a
@@ -48,7 +48,7 @@ class Admin::TimelineController < Admin::BaseController
 
     users_to_process.each do |user|
       user_daily_heartbeats_relation = Heartbeat.where(user_id: user.id, deleted_at: nil)
-                                                .where('time >= ? AND time <= ?', start_of_day_timestamp, end_of_day_timestamp)
+                                                .where("time >= ? AND time <= ?", start_of_day_timestamp, end_of_day_timestamp)
       total_coded_time_seconds = user_daily_heartbeats_relation.duration_seconds
 
       user_heartbeats_for_spans = heartbeats_by_user_id[user.id] || []
@@ -68,7 +68,7 @@ class Admin::TimelineController < Admin::BaseController
               span_duration = last_hb_time_numeric - start_time_numeric # This is span length, not necessarily active coding time within span
               span_duration = 0 if span_duration < 0
 
-              files = current_span_heartbeats.map { |h| h.entity&.split('/')&.last }.compact.uniq
+              files = current_span_heartbeats.map { |h| h.entity&.split("/")&.last }.compact.uniq
               projects_edited_details_for_span = []
               unique_project_names_in_current_span = current_span_heartbeats.map(&:project).compact.reject(&:blank?).uniq
 
@@ -105,7 +105,7 @@ class Admin::TimelineController < Admin::BaseController
         total_coded_time: total_coded_time_seconds # Actual coded time for the user for the day
       }
     end
-    
+
     # Order @users_with_timeline_data according to @selected_user_ids
     # This ensures that if a user was explicitly selected they appear in the timeline
     # even if they have no heartbeats for the day.
@@ -145,15 +145,15 @@ class Admin::TimelineController < Admin::BaseController
   def leaderboard_users
     period = params[:period]
     limit = 25
-    
-    leaderboard_period_type = (period == 'last_7_days') ? :last_7_days : :daily
+
+    leaderboard_period_type = (period == "last_7_days") ? :last_7_days : :daily
     start_date = Date.current # Leaderboard job for :last_7_days uses Date.current as start_date
 
     leaderboard = Leaderboard.where.not(finished_generating_at: nil)
                              .find_by(start_date: start_date, period_type: leaderboard_period_type, deleted_at: nil)
 
     user_ids_from_leaderboard = leaderboard ? leaderboard.entries.order(total_seconds: :desc).limit(limit).pluck(:user_id) : []
-    
+
     all_ids_to_fetch = user_ids_from_leaderboard.dup
     all_ids_to_fetch.unshift(current_user.id).uniq!
 
@@ -169,14 +169,14 @@ class Admin::TimelineController < Admin::BaseController
 
     # Add leaderboard users, ensuring no duplicates and respecting limit
     user_ids_from_leaderboard.each do |uid|
-      break if final_user_objects.size >= limit 
-      next if uid == current_user.id 
-      
+      break if final_user_objects.size >= limit
+      next if uid == current_user.id
+
       if user_data = users_data[uid]
         final_user_objects << { id: user_data.id, display_name: user_data.display_name, avatar_url: user_data.avatar_url }
       end
     end
-    
+
     render json: { users: final_user_objects }
   end
-end 
+end

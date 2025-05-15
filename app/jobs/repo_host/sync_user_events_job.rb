@@ -1,20 +1,20 @@
-require 'http' # Make sure 'http' gem is available
+require "http" # Make sure 'http' gem is available
 
 module RepoHost
   class SyncUserEventsJob < ApplicationJob
     queue_as :literally_whenever
-    
+
     # MAX_API_PAGES_TO_FETCH: Max pages to fetch. GitHub's /users/{username}/events endpoint
     # is limited to 300 events. If per_page=100 (as we request), this is 3 pages.
     # If GitHub defaults to per_page=30, this would be 10 pages.
     # This constant acts as a safeguard.
-    MAX_API_PAGES_TO_FETCH = 10 
+    MAX_API_PAGES_TO_FETCH = 10
     EVENTS_PER_PAGE = 100
 
     discard_on ActiveJob::DeserializationError # Standard GoodJob practice
 
     # Retry with exponential backoff for transient network issues or temporary API errors
-    retry_on StandardError, wait: -> (executions) { [executions * 5, 60].min.seconds }, attempts: 3 
+    retry_on StandardError, wait: ->(executions) { [ executions * 5, 60 ].min.seconds }, attempts: 3
 
     def perform(user_id:, provider:)
       @user = User.find_by(id: user_id)
@@ -65,61 +65,61 @@ module RepoHost
 
         api_url = "#{base_api_url}&page=#{current_page}"
         Rails.logger.debug "Fetching GitHub events for User ##{@user.id}, Page #{current_page}, URL: #{api_url}"
-        
+
         begin
           response = http_client_for_github.get(api_url)
         rescue HTTP::Error => e
           Rails.logger.error "RepoHost::SyncUserEventsJob: HTTP Error for User ##{@user.id} on page #{current_page}: #{e.message}"
-          break 
+          break
         end
 
         unless response.status.success?
           handle_github_api_error(response, current_page)
-          break 
+          break
         end
 
         fetched_events_json = response.parse
         Rails.logger.info "RepoHost::SyncUserEventsJob: User ##{@user.id}, Page #{current_page}: API returned #{fetched_events_json.size} events."
-        break if fetched_events_json.empty? 
+        break if fetched_events_json.empty?
 
         events_to_create_on_this_page = []
         stop_fetching_for_this_user = false
 
         fetched_events_json.each do |gh_event_data|
-          original_event_id_str = gh_event_data['id'].to_s
+          original_event_id_str = gh_event_data["id"].to_s
           repo_host_event_id = RepoHostEvent.construct_event_id(@provider_sym, original_event_id_str)
-          event_occurred_at = Time.zone.parse(gh_event_data['created_at'])
+          event_occurred_at = Time.zone.parse(gh_event_data["created_at"])
 
           if latest_stored_event_db_created_at && event_occurred_at <= latest_stored_event_db_created_at
             if RepoHostEvent.exists?(id: repo_host_event_id, user_id: @user.id)
               Rails.logger.info "RepoHost::SyncUserEventsJob: Event ID #{repo_host_event_id} (occurred at #{event_occurred_at}) already exists for User ##{@user.id}. Stopping pagination."
               stop_fetching_for_this_user = true
-              break 
+              break
             end
           end
-          
+
           events_to_create_on_this_page << {
             id: repo_host_event_id,
             user_id: @user.id,
             raw_event_payload: gh_event_data,
             provider: RepoHostEvent.providers[@provider_sym],
-            created_at: event_occurred_at, 
-            updated_at: Time.current       
+            created_at: event_occurred_at,
+            updated_at: Time.current
           }
-        end 
+        end
 
         if events_to_create_on_this_page.any?
           result = RepoHostEvent.import(
             events_to_create_on_this_page,
-            on_duplicate_key_ignore: { conflict_target: [:id] }, 
-            validate: false 
+            on_duplicate_key_ignore: { conflict_target: [ :id ] },
+            validate: false
           )
           newly_created_event_count_total += result.num_inserts
           Rails.logger.info "RepoHost::SyncUserEventsJob: For User ##{@user.id}, page #{current_page}: Processed #{events_to_create_on_this_page.size} events, imported #{result.num_inserts} new events."
         else
           Rails.logger.info "RepoHost::SyncUserEventsJob: For User ##{@user.id}, page #{current_page}: No new events to import."
         end
-        
+
         break if stop_fetching_for_this_user
 
         # Manual pagination: increment page number for next request
@@ -147,8 +147,8 @@ module RepoHost
       when 401 # Unauthorized
         Rails.logger.warn "GitHub token for User ##{@user.id} is likely invalid or expired. Sync aborted."
       when 403 # Forbidden
-        if response.headers['X-RateLimit-Remaining'].to_i == 0
-          reset_time = Time.at(response.headers['X-RateLimit-Reset'].to_i)
+        if response.headers["X-RateLimit-Remaining"].to_i == 0
+          reset_time = Time.at(response.headers["X-RateLimit-Reset"].to_i)
           Rails.logger.warn "GitHub API rate limit exceeded for User ##{@user.id}. Resets at #{reset_time}. Sync aborted."
         else
           Rails.logger.warn "GitHub API permission issue for User ##{@user.id} (e.g. fine-grained token scopes). Sync aborted."
@@ -162,4 +162,4 @@ module RepoHost
       end
     end
   end
-end 
+end

@@ -21,11 +21,10 @@ class ScanRepoEventsForCommitsJob < ApplicationJob
     # Filter for GitHub PushEvents initially
     RepoHostEvent
       .where(provider: RepoHostEvent.providers[:github])
-      .where("raw_event_payload->>'type' = ?", 'PushEvent') # Efficiently query JSONB
+      .where("raw_event_payload->>'type' = ?", "PushEvent") # Efficiently query JSONB
       .where("created_at >= ?", time_window_start) # Focus on recent events
       .order(created_at: :desc) # Process newer events first, potentially stopping earlier
       .find_each(batch_size: 100) do |event|
-      
       process_event(event)
     end
 
@@ -43,7 +42,7 @@ class ScanRepoEventsForCommitsJob < ApplicationJob
 
     payload = event.raw_event_payload
     # Safely access nested commit data from the JSON payload
-    commits_data = payload.dig('payload', 'commits')
+    commits_data = payload.dig("payload", "commits")
 
     unless commits_data.is_a?(Array) && commits_data.any?
       # Rails.logger.debug "[ScanRepoEventsForCommitsJob] Event ID #{event.id} (User ##{user.id}) is a PushEvent but has no commits. Skipping."
@@ -51,15 +50,15 @@ class ScanRepoEventsForCommitsJob < ApplicationJob
     end
 
     commits_data.each do |commit_info|
-      commit_sha = commit_info['sha']
+      commit_sha = commit_info["sha"]
       # The 'url' in the PushEvent's commit object is the API URL for that commit
-      commit_api_url = commit_info['url'] 
+      commit_api_url = commit_info["url"]
 
       if commit_sha.blank? || commit_api_url.blank?
         Rails.logger.warn "[ScanRepoEventsForCommitsJob] Event ID #{event.id} (User ##{user.id}) has a commit with missing SHA or API URL. Info: #{commit_info.inspect}"
         next
       end
-      
+
       # Main check: Only enqueue if the commit SHA is not already in the Commit table.
       # This is crucial for idempotency and efficiency.
       unless Commit.exists?(sha: commit_sha)

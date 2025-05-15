@@ -8,4 +8,4 @@ class Admin::BaseController < ApplicationController
       redirect_to root_path, alert: "You are not authorized to access this page."
     end
   end
-end 
+end

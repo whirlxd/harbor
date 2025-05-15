@@ -13,9 +13,9 @@ class RepoHostEvent < ApplicationRecord
   validates :created_at, presence: true # This is the event's occurrence time from the provider
 
   # Ensure ID starts with a recognized provider prefix
-  validates :id, format: { 
+  validates :id, format: {
     with: /\A(gh|gl)_.+\z/, # Allow gh_ or gl_ prefixes
-    message: "must start with a provider prefix (e.g., gh_ or gl_)" 
+    message: "must start with a provider prefix (e.g., gh_ or gl_)"
   }
 
   # Helper scope
@@ -26,11 +26,11 @@ class RepoHostEvent < ApplicationRecord
   # Helper to construct the prefixed ID
   def self.construct_event_id(provider_name, original_event_id)
     prefix = case provider_name.to_sym
-             when :github then "gh_"
-             when :gitlab then "gl_" # Example for future
-             else
+    when :github then "gh_"
+    when :gitlab then "gl_" # Example for future
+    else
                raise ArgumentError, "Unknown provider: #{provider_name}"
-             end
+    end
     "#{prefix}#{original_event_id}"
   end
 end

@@ -1,5 +1,5 @@
-require 'http'
-require 'json'
+require "http"
+require "json"
 
 class ProcessCommitJob < ApplicationJob
   queue_as :literally_whenever
@@ -26,7 +26,7 @@ class ProcessCommitJob < ApplicationJob
       # and the commit record already exists (e.g., adding gitlab_raw to an existing commit)
       return
     end
-    
+
     Rails.logger.info "[ProcessCommitJob] Processing commit #{commit_sha} for User ##{user_id} via #{provider_sym} from URL: #{commit_api_url}"
 
     case provider_sym
@@ -57,19 +57,19 @@ class ProcessCommitJob < ApplicationJob
 
       if response.status.success?
         commit_data_json = response.parse
-        
-        api_commit_sha = commit_data_json['sha']
+
+        api_commit_sha = commit_data_json["sha"]
         unless api_commit_sha == commit_sha
           Rails.logger.error "[ProcessCommitJob] SHA mismatch for User ##{user.id}. Expected #{commit_sha}, API returned #{api_commit_sha}. URL: #{commit_api_url}"
           return # Critical data integrity issue
         end
 
-        committer_date_str = commit_data_json.dig('commit', 'committer', 'date')
+        committer_date_str = commit_data_json.dig("commit", "committer", "date")
         unless committer_date_str
           Rails.logger.error "[ProcessCommitJob] Committer date not found in API response for commit #{commit_sha}. Data: #{commit_data_json.inspect}"
           return
         end
-        
+
         begin
           # API dates are typically ISO8601 (UTC). Time.zone.parse respects the application's zone.
           # It's good practice to store in UTC, which parse will do correctly for ISO8601.
@@ -91,11 +91,11 @@ class ProcessCommitJob < ApplicationJob
       elsif response.status.code == 404
         Rails.logger.warn "[ProcessCommitJob] Commit #{commit_sha} not found (404) at #{commit_api_url} for User ##{user.id}."
       elsif response.status.code == 403 # Forbidden, could be rate limit or permissions
-        if response.headers['X-RateLimit-Remaining'].to_i == 0
-          reset_time = Time.at(response.headers['X-RateLimit-Reset'].to_i)
-          delay_seconds = [(reset_time - Time.current).ceil, 5].max # at least 5s delay
+        if response.headers["X-RateLimit-Remaining"].to_i == 0
+          reset_time = Time.at(response.headers["X-RateLimit-Reset"].to_i)
+          delay_seconds = [ (reset_time - Time.current).ceil, 5 ].max # at least 5s delay
           Rails.logger.warn "[ProcessCommitJob] GitHub API rate limit exceeded for User ##{user.id}. Retrying in #{delay_seconds}s. URL: #{commit_api_url}"
-          self.class.set(wait: delay_seconds.seconds).perform_later(user.id, commit_sha, commit_api_url, 'github')
+          self.class.set(wait: delay_seconds.seconds).perform_later(user.id, commit_sha, commit_api_url, "github")
         else
           Rails.logger.error "[ProcessCommitJob] GitHub API forbidden (403) for User ##{user.id}. URL: #{commit_api_url}. Response: #{response.body.to_s.truncate(500)}"
         end
