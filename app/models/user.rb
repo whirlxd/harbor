@@ -393,6 +393,11 @@ class User < ApplicationRecord
     sign_in_tokens.valid.find_by(token: token)
   end
 
+  # New method for GitHub profile URL
+  def github_profile_url
+    "https://github.com/#{github_username}" if github_username.present?
+  end
+
   private
 
   def invalidate_activity_graph_cache

@@ -140,7 +140,7 @@
               <div class="admin-timeline-user-header-cell" 
                    style="width: <%= min_column_width_px %>px; position: absolute; left: <%= header_left_px %>px;"
                    title="User ID: <%= user.id %> - <%= user.respond_to?(:username) && user.username.present? ? user.username : user.email_addresses.first&.email %> | Total Coded: <%= total_coded_time_seconds && total_coded_time_seconds > 0 ? short_time_detailed(total_coded_time_seconds) : '0m' %> | TZ: <%= user.timezone %>">
-                <%= render "shared/user_mention", user: user %>
+                <%= render "shared/user_mention", user: user, show: [:github_profile_link] %>
                 <% if current_user && user != current_user && user.slack_uid.present? %>
                   <div style="margin-top: 0.25rem;">
                     <%= link_to "💬 DM", "slack://user?team=T0266FRGM&id=#{user.slack_uid}", target: "_blank", style: "font-size: 0.7rem; color: #9CA3AF; text-decoration: underline;" %>
