@@ -12,7 +12,8 @@ class SessionsController < ApplicationController
 
     if params[:error].present?
       Rails.logger.error "Slack OAuth error: #{params[:error]}"
-      redirect_to root_path, alert: "Failed to authenticate with Slack"
+      uuid = Honeybadger.notify("Slack OAuth error: #{params[:error]}")
+      redirect_to root_path, alert: "Failed to authenticate with Slack. Error ID: #{uuid}"
       return
     end
 
@@ -64,7 +65,8 @@ class SessionsController < ApplicationController
 
     if params[:error].present?
       Rails.logger.error "GitHub OAuth error: #{params[:error]}"
-      redirect_to my_settings_path, alert: "Failed to authenticate with GitHub"
+      uuid = Honeybadger.notify("GitHub OAuth error: #{params[:error]}")
+      redirect_to my_settings_path, alert: "Failed to authenticate with GitHub. Error ID: #{uuid}"
       return
     end
 

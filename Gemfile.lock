@@ -213,6 +213,9 @@ GEM
     groupdate (6.6.0)
       activesupport (>= 7.1)
     hashie (5.0.0)
+    honeybadger (5.28.0)
+      logger
+      ostruct
     http (5.2.0)
       addressable (~> 2.8)
       base64 (~> 0.1)
@@ -554,6 +557,7 @@ DEPENDENCIES
   flamegraph
   geocoder
   good_job
+  honeybadger
   http
   importmap-rails
   jbuilder

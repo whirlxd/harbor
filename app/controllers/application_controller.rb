@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::Base
   before_action :set_paper_trail_whodunnit
+  before_action :honeybadger_context, if: :current_user
   before_action :initialize_cache_counters
   before_action :try_rack_mini_profiler_enable
   after_action :track_action
@@ -16,6 +17,14 @@ class ApplicationController < ActionController::Base
   helper_method :current_user, :user_signed_in?, :active_users_graph_data
 
   private
+
+  def honeybadger_context
+    Honeybadger.context(
+      user_id: current_user.id,
+      user_agent: request.user_agent,
+      ip_address: request.remote_ip,
+    )
+  end
 
   def track_action
     ahoy.track "Ran action", request.path_parameters

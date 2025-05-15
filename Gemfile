@@ -39,6 +39,8 @@ gem "solid_cable"
 gem "stackprof"
 gem "sentry-ruby"
 gem "sentry-rails"
+# Trying out sentry alternative
+gem "honeybadger"
 
 gem "good_job"
 
