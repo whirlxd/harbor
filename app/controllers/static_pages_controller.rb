@@ -220,7 +220,6 @@ class StaticPagesController < ApplicationController
         filters.each do |filter|
           group_by_time = current_user.heartbeats.group(filter).duration_seconds
           result[filter] = group_by_time.sort_by { |k, v| v }
-                                        .map { |k, _| %i[language category project].include?(filter) ? k : k.capitalize }
                                         .reverse.map(&:first)
                                         .compact_blank
 
