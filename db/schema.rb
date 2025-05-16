@@ -10,9 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_14_212714) do
   create_schema "pganalyze"
 
+ActiveRecord::Schema[8.0].define(version: 2025_05_16_140014) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_stat_statements"
@@ -262,6 +262,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_14_212714) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_mailing_addresses_on_user_id"
+  end
+
+  create_table "neighborhood_posts", force: :cascade do |t|
+    t.string "airtable_id", null: false
+    t.jsonb "airtable_fields"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["airtable_id"], name: "index_neighborhood_posts_on_airtable_id", unique: true
   end
 
   create_table "physical_mails", force: :cascade do |t|
