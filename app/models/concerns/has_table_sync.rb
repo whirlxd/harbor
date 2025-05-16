@@ -1,8 +1,10 @@
 module HasTableSync
   extend ActiveSupport::Concern
 
-  validates :airtable_fields, presence: true
-  validates :airtable_id, presence: true, uniqueness: true
+  included do
+    validates :airtable_fields, presence: true
+    validates :airtable_id, presence: true, uniqueness: true
+  end
 
   class_methods do
     def has_table_sync(pat:, base:, table:)
