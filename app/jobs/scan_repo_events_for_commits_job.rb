@@ -28,7 +28,6 @@ class ScanRepoEventsForCommitsJob < ApplicationJob
       .where("created_at >= ?", time_window_start) # Focus on recent events
       .order(created_at: :desc) # Process newer events first, potentially stopping earlier
       .find_each(batch_size: 100) do |event|
-      
       user = event.user
       unless user
         Rails.logger.warn "[ScanRepoEventsForCommitsJob] Event ID #{event.id} has no associated user. Skipping."
@@ -86,13 +85,13 @@ class ScanRepoEventsForCommitsJob < ApplicationJob
 
     # Extract all SHAs from the buffer
     shas_to_check = commits_to_check.map { |c| c[:sha] }.uniq
-    
+
     # Find which SHAs already exist in the database with a single query
     existing_shas = Commit.where(sha: shas_to_check).pluck(:sha).to_set
-    
+
     processed_count = 0
     enqueued_count = 0
-    
+
     # Process each commit in the buffer
     commits_to_check.each do |commit_details|
       processed_count += 1
@@ -107,7 +106,7 @@ class ScanRepoEventsForCommitsJob < ApplicationJob
         enqueued_count += 1
       end
     end
-    
+
     Rails.logger.info "[ScanRepoEventsForCommitsJob] Processed buffer of #{processed_count} potential commits. Enqueued #{enqueued_count} new ProcessCommitJob(s)."
   end
 end
