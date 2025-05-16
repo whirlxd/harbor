@@ -15,11 +15,9 @@ module HasTableSync
       @table = Norairrecord.table(pat, base, table)
 
       def pull_all_from_airtable!
-        records = @table.all
+        records = @table.all.map { |record| { airtable_id: record.id, airtable_fields: record.fields } }
 
-        records.each do |record|
-          find_or_initialize_by(airtable_id: record.id).update(airtable_fields: record.fields)
-        end
+        upsert_all(records, unique_by: :airtable_id)
       end
     end
   end
