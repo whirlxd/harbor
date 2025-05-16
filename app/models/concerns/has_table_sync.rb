@@ -4,6 +4,10 @@ module HasTableSync
   included do
     validates :airtable_fields, presence: true
     validates :airtable_id, presence: true, uniqueness: true
+
+    def airtable_url
+      "https://airtable.com/#{self.class.table_sync_base}/#{self.class.table_sync_table}/#{airtable_id}"
+    end
   end
 
   class_methods do
@@ -19,6 +23,16 @@ module HasTableSync
 
         upsert_all(records, unique_by: :airtable_id)
       end
+    end
+
+    def table_sync_pat
+      @table_sync_pat
+    end
+    def table_sync_base
+      @table_sync_base
+    end
+    def table_sync_table
+      @table_sync_table
     end
   end
 end
