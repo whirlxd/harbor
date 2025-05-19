@@ -8,10 +8,17 @@ class Admin::TimelineController < Admin::BaseController
     @review_item = Neighborhood::Post.find_by(airtable_id: params["post_id"]) if params["post_id"].present?
     # all posts from user
     @posts_from_user = Neighborhood::Post.where(airtable_fields: { slackId: @review_item.airtable_fields["slackId"] }) if @review_item.present?
+
+    # Define primary_user_tz early for use in timezone conversions
+    primary_user_tz = current_user&.timezone || "UTC"
+
     if @review_item.present?
       puts "review item found"
       puts @review_item.airtable_fields
-      @date = @review_item.airtable_fields["createdAt"].to_date
+      created_at = Time.parse(@review_item.airtable_fields["createdAt"])
+      user_tz = @review_item_user&.timezone || primary_user_tz
+      created_at_in_user_tz = created_at.in_time_zone(user_tz)
+      @date = created_at_in_user_tz.to_date
 
       @slack_uid = @review_item.airtable_fields["slackId"]&.first
       @review_item_user = User.find_by(slack_uid: @slack_uid) if @slack_uid.present?
@@ -158,14 +165,32 @@ class Admin::TimelineController < Admin::BaseController
     slack_uids = User.where(id: @selected_user_ids).pluck(:slack_uid).compact
     uids_sql_array = slack_uids.map { |uid| ActiveRecord::Base.connection.quote(uid) }.join(", ")
     date_str = @date.to_s
+
+    # Get posts from selected users that intersect with the current date
+    # A post is active on a date if it was created after that date AND its last post was before that date
     posts_for_timeline = Neighborhood::Post.where(
       "airtable_fields -> 'slackId' ?| array[#{uids_sql_array}]"
-    ).where("DATE(airtable_fields ->> 'createdAt') = ?", date_str)
+    ).where(
+      "DATE(airtable_fields ->> 'createdAt') >= ? AND " \
+      "DATE(airtable_fields ->> 'lastPost') <= ?",
+      date_str, date_str
+    )
 
     @timeline_post_markers = posts_for_timeline.map do |post|
+      user = User.find_by(slack_uid: post.airtable_fields["slackId"]&.first)
+      next unless user
+
+      # Parse the createdAt time and convert to user's timezone
+      created_at = Time.parse(post.airtable_fields["createdAt"])
+      user_tz = user.timezone || primary_user_tz
+      created_at_in_user_tz = created_at.in_time_zone(user_tz)
+
+      # Cap the timestamp at the end of the current day in user's timezone
+      timestamp = [ created_at_in_user_tz.to_f, @date.end_of_day.in_time_zone(user_tz).to_f ].min
+
       {
-        user_id: User.find_by(slack_uid: post.airtable_fields["slackId"]&.first)&.id,
-        timestamp: Time.parse(post.airtable_fields["createdAt"]).to_f,
+        user_id: user.id,
+        timestamp: timestamp,
         description: post.airtable_fields["description"],
         demo_video: post.airtable_fields["demoVideo"],
         photobooth_video: post.airtable_fields["photoboothVideo"],
