@@ -39,6 +39,13 @@ class Admin::TimelineController < Admin::BaseController
     # User selection logic
     raw_user_ids = params[:user_ids].present? ? params[:user_ids].split(",").map(&:to_i).uniq : []
 
+    # Handle slack_uids parameter
+    if params[:slack_uids].present?
+      slack_uids = params[:slack_uids].split(",")
+      users_from_slack_uids = User.where(slack_uid: slack_uids)
+      raw_user_ids += users_from_slack_uids.pluck(:id)
+    end
+
     # Always include current_user (admin)
     @selected_user_ids = [ current_user.id ] + raw_user_ids
     @selected_user_ids << @review_item_user.id if @review_item_user.present?
