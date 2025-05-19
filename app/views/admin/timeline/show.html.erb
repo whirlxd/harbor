@@ -223,7 +223,7 @@
             if files_to_show.any?
               max_files_in_tooltip = 5
               files_display_string = files_to_show.take(max_files_in_tooltip).join(', ')
-              files_display_string += ", ..." if files_to_show.length > max_files_in_tooltip
+              files_display_string += ", +#{files_to_show.length - max_files_in_tooltip} more" if files_to_show.length > max_files_in_tooltip
               title_parts << "Files: #{files_display_string}"
             end
             title_parts << "Duration: #{Time.at(span_data[:duration]).utc.strftime('%Hh %Mm %Ss')}"
