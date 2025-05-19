@@ -163,7 +163,7 @@
       <% end %>
 
       <!-- Timeline Grid and Spans Section -->
-      <div id="timeline-grid-scroll-container">
+      <div id="timeline-grid-scroll-container" style="overflow: hidden;">
         <%# Hour markers and lines (background grid) %>
         <% (timeline_start_hour..timeline_end_hour).each do |hour| %>
           <div class="admin-timeline-hour-row" style="height: <%= pixels_per_hour %>px;">
