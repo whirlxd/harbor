@@ -2,14 +2,10 @@ class SetUserCountryCodeJob < ApplicationJob
   queue_as :literally_whenever
 
   def perform(user_id)
-    user = User.find_by(id: user_id)
-    return unless user
-
-    ips = user.heartbeats
-              .where.not(ip_address: nil)
-              .select(:ip_address)
-              .distinct
-              .pluck(:ip_address)
+    ips = Heartbeat.where(user_id: user_id)
+                   .where.not(ip_address: nil)
+                   .distinct
+                   .pluck(:ip_address)
     return if ips.empty?
 
     ips.each do |ip|
