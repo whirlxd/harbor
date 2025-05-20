@@ -124,7 +124,7 @@ Rails.application.configure do
       class: "Neighborhood::SyncFromAirtableJob"
     },
     geocode_users_without_country: {
-      cron: "*/10 * * * *",
+      cron: "7 * * * *",
       class: "GeocodeUsersWithoutCountryJob"
     }
   }
