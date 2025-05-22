@@ -4,8 +4,15 @@ Rails.application.configure do
   config.good_job.cleanup_interval_jobs = 1000
   config.good_job.cleanup_interval_seconds = 3600
 
-  config.good_job.enable_cron = true
-  config.good_job.execution_mode = :async
+  if Rails.env.development?
+    config.good_job.enable_listening = false
+    config.good_job.poll_interval = -1 # Disable polling
+    config.good_job.execution_mode = :inline # Run jobs inline in development
+  else
+    config.good_job.execution_mode = :async
+  end
+
+  config.good_job.enable_cron = Rails.env.production?
 
   # https://github.com/bensheldon/good_job#configuring-your-queues
   config.good_job.queues = "latency_10s:8; latency_5m,latency_10s:6; literally_whenever,*,latency_5m,latency_10s:10"
