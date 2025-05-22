@@ -8,6 +8,14 @@ module HasTableSync
     def airtable_url
       "https://airtable.com/#{self.class.table_sync_base}/#{self.class.table_sync_table}/#{airtable_id}"
     end
+
+    def pull_from_airtable!
+      record = self.class.table.find(airtable_id)
+      return unless record
+
+      self.airtable_fields = record.fields
+      save! if changed?
+    end
   end
 
   class_methods do
@@ -33,6 +41,9 @@ module HasTableSync
     end
     def table_sync_table
       @table_sync_table
+    end
+    def table
+      @table
     end
   end
 end
