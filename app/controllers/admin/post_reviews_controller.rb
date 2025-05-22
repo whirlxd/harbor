@@ -72,7 +72,7 @@ class Admin::PostReviewsController < Admin::BaseController
     end
 
     @detailed_spans = []
-    timeout_duration = 20.minutes.to_i
+    timeout_duration = 10.minutes.to_i
     if all_heartbeats_for_user_in_review_window.any?
       current_span_heartbeats = []
 
