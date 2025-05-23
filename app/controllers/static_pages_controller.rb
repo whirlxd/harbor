@@ -225,10 +225,19 @@ class StaticPagesController < ApplicationController
           result[filter] = group_by_time.sort_by { |k, v| v }
                                         .reverse.map(&:first)
                                         .compact_blank
+                                        .map { |k| %i[operating_system editor].include?(filter) ? k.capitalize : k }
+                                        .uniq
 
           if params[filter].present?
             filter_arr = params[filter].split(",")
-            filtered_heartbeats = filtered_heartbeats.where(filter => filter_arr)
+            if %i[operating_system editor].include?(filter)
+              # search for both lowercase and capitalized versions
+              normalized_arr = filter_arr.flat_map { |v| [ v.downcase, v.capitalize ] }.uniq
+              filtered_heartbeats = filtered_heartbeats.where(filter => normalized_arr)
+            else
+              filtered_heartbeats = filtered_heartbeats.where(filter => filter_arr)
+            end
+
 
             result["singular_#{filter}"] = filter_arr.length == 1
           end
@@ -260,17 +269,25 @@ class StaticPagesController < ApplicationController
 
         # Prepare pie chart data
         %i[language editor operating_system category].each do |filter|
-          result["#{filter}_stats"] = filtered_heartbeats
+          # If the filter is editor or operating_system, normalize and sum the durations
+          stats = filtered_heartbeats
             .group(filter)
             .duration_seconds
-            .sort_by { |_, duration| -duration }
-            .first(10)
-            .map do |k, v|
-              label = k.presence || "Unknown"
-              label = label.capitalize unless %i[language category].include?(filter)
-              [ label, v ]
+            .each_with_object({}) do |(raw_key, duration), agg|
+              key = raw_key.to_s.presence || "Unknown"
+              key = key.downcase if %i[editor operating_system].include?(filter)
+              agg[key] = (agg[key] || 0) + duration
             end
-            .to_h unless result["singular_#{filter}"]
+
+          result["#{filter}_stats"] =
+            stats
+              .sort_by { |_, duration| -duration }
+              .first(10)
+              .map { |k, v|
+                label = %i[language category].include?(filter) ? k : k.capitalize
+                [ label, v ]
+              }
+              .to_h unless result["singular_#{filter}"]
         end
         # result[:language_stats] = filtered_heartbeats
         #   .group(:language)
