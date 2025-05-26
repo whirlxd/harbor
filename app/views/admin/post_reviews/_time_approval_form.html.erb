@@ -25,8 +25,23 @@ document.addEventListener('turbo:load', function() {
   const form = document.querySelector('.approval-form');
   const approvedSecondsInput = document.getElementById('approved-seconds');
   const selectedSecondsEl = document.getElementById('selected-seconds');
+  const selectedDurationEl = document.getElementById('selected-duration');
   const approveAllBtn = document.querySelector('.approve-all-btn');
   const approveSelectedBtn = document.querySelector('.approve-selected-btn');
+
+  // Update selected time summary when checkboxes change
+  document.querySelectorAll('.span-selector-checkbox').forEach(checkbox => {
+    checkbox.addEventListener('change', updateSelectedTimeSummary);
+  });
+
+  function updateSelectedTimeSummary() {
+    let selectedSeconds = 0;
+    document.querySelectorAll('.span-selector-checkbox:checked').forEach(checkbox => {
+      selectedSeconds += parseInt(checkbox.dataset.durationSeconds, 10) || 0;
+    });
+    selectedSecondsEl.textContent = selectedSeconds;
+    selectedDurationEl.textContent = shortTimeSimple(selectedSeconds);
+  }
 
   // Update approved seconds when form is submitted
   form.addEventListener('submit', function(e) {
@@ -36,5 +51,15 @@ document.addEventListener('turbo:load', function() {
       approvedSecondsInput.value = selectedSecondsEl.textContent;
     }
   });
+
+  // Helper function to format time
+  function shortTimeSimple(seconds) {
+    if (seconds < 60) return seconds + 's';
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return minutes + 'm';
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+    return hours + 'h' + (remainingMinutes > 0 ? ' ' + remainingMinutes + 'm' : '');
+  }
 });
 </script> 
