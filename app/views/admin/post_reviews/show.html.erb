@@ -356,12 +356,7 @@
   </div>
 </div>
 
-    <span id="selected-duration">0s</span> / <span id="total-post-duration"><%= short_time_detailed(@total_post_hackatime_seconds) %></span>
-  </div>
-  <div class="seconds">
-    <span id="selected-seconds">0</span> / <span id="total-seconds"><%= @total_post_hackatime_seconds %></span> seconds
-  </div>
-</div>
+<%= render "time_approval_form" %>
 
 <script>
 document.addEventListener('turbo:load', function() {
@@ -371,39 +366,11 @@ document.addEventListener('turbo:load', function() {
   const dayHeaderStickyWrapper = document.getElementById('dayHeaderStickyWrapper');
   const cursorLine = document.getElementById('cursor-line');
   const cursorTimeDisplay = document.getElementById('cursor-time-display');
-  const selectedDurationEl = document.getElementById('selected-duration');
-  const totalPostDurationEl = document.getElementById('total-post-duration');
 
   const pixelsPerHour = <%= pixels_per_hour %>;
   const pixelsPerMinute = <%= pixels_per_minute %>;
   const timelineStartHour = <%= timeline_start_hour %>;
   const headerHeight = <%= header_height_px %>;
-  const totalPostSeconds = <%= @total_post_hackatime_seconds %>;
-
-  function formatSecondsToHhMmSs(totalSeconds) {
-    if (isNaN(totalSeconds) || totalSeconds < 0) return "0s";
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-    let parts = [];
-    if (hours > 0) parts.push(hours + "h");
-    if (minutes > 0) parts.push(minutes + "m");
-    if (seconds > 0 || parts.length === 0) parts.push(seconds + "s"); // Show seconds if only unit or total is 0
-    return parts.join(" ") || "0s";
-  }
-
-  function updateSelectedTimeSummary() {
-    let currentSelectedSeconds = 0;
-    document.querySelectorAll('.span-selector-checkbox:checked').forEach(checkbox => {
-      currentSelectedSeconds += parseInt(checkbox.dataset.durationSeconds, 10) || 0;
-    });
-    selectedDurationEl.textContent = formatSecondsToHhMmSs(currentSelectedSeconds);
-    document.getElementById('selected-seconds').textContent = currentSelectedSeconds;
-  }
-  
-  totalPostDurationEl.textContent = formatSecondsToHhMmSs(totalPostSeconds);
-  document.getElementById('total-seconds').textContent = totalPostSeconds;
-  updateSelectedTimeSummary(); // Initial call
 
   if (timelineViewport && hourLabelsColumn && daysContainer && cursorLine && cursorTimeDisplay && dayHeaderStickyWrapper) {
     timelineViewport.addEventListener('scroll', function() {
@@ -441,13 +408,6 @@ document.addEventListener('turbo:load', function() {
     daysContainer.addEventListener('mouseleave', function() {
       cursorLine.style.display = 'none';
       cursorTimeDisplay.style.display = 'none';
-    });
-
-    // Listener for checkboxes
-    daysContainer.addEventListener('change', function(event) {
-      if (event.target.classList.contains('span-selector-checkbox')) {
-        updateSelectedTimeSummary();
-      }
     });
   }
 });

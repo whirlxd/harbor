@@ -1,5 +1,12 @@
 <%# Time Approval Form %>
-<div id="time-approval-form" class="time-approval-form" style="position: fixed; bottom: 100px; right: 20px; background-color: rgba(30, 41, 59, 0.9); color: #E2E8F0; padding: 0.75rem 1rem; border-radius: 0.375rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); z-index: 1000; font-size: 0.9rem; min-width: 180px; text-align: center;">
+<div id="time-approval-form" class="time-approval-form" style="position: fixed; bottom: 20px; right: 20px; background-color: rgba(30, 41, 59, 0.9); color: #E2E8F0; padding: 0.75rem 1rem; border-radius: 0.375rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); z-index: 1000; font-size: 0.9rem; min-width: 180px; text-align: center;">
+  <div style="margin-bottom: 0.5rem;">
+    <span id="selected-duration">0s</span> / <span id="total-post-duration"><%= short_time_detailed(@total_post_hackatime_seconds) %></span>
+  </div>
+  <div class="seconds" style="font-size: 0.75rem; color: #94A3B8; margin-bottom: 0.75rem;">
+    <span id="selected-seconds">0</span> / <span id="total-seconds"><%= @total_post_hackatime_seconds %></span> seconds
+  </div>
+
   <%= form_with url: admin_post_review_path(post_id: @post.airtable_id), method: :patch, class: "approval-form", data: { turbo: true, turbo_method: :patch } do |f| %>
     <div style="margin-bottom: 0.75rem;">
       <%= f.text_area :comment, placeholder: "Optional comment...", class: "w-full p-2 rounded bg-slate-700 text-slate-200", style: "width: 100%; margin-bottom: 0.5rem; background-color: #1E293B; color: #E2E8F0; border: 1px solid #475569; border-radius: 0.25rem; padding: 0.5rem;" %>
@@ -17,6 +24,7 @@
 document.addEventListener('turbo:load', function() {
   const form = document.querySelector('.approval-form');
   const approvedSecondsInput = document.getElementById('approved-seconds');
+  const selectedSecondsEl = document.getElementById('selected-seconds');
   const approveAllBtn = document.querySelector('.approve-all-btn');
   const approveSelectedBtn = document.querySelector('.approve-selected-btn');
 
@@ -25,11 +33,7 @@ document.addEventListener('turbo:load', function() {
     if (e.submitter === approveAllBtn) {
       approvedSecondsInput.value = <%= @total_post_hackatime_seconds %>;
     } else if (e.submitter === approveSelectedBtn) {
-      let selectedSeconds = 0;
-      document.querySelectorAll('.span-selector-checkbox:checked').forEach(checkbox => {
-        selectedSeconds += parseInt(checkbox.dataset.durationSeconds, 10) || 0;
-      });
-      approvedSecondsInput.value = selectedSeconds;
+      approvedSecondsInput.value = selectedSecondsEl.textContent;
     }
   });
 });
