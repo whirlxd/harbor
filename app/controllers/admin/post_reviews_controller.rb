@@ -71,22 +71,24 @@ class Admin::PostReviewsController < Admin::BaseController
 
     @recommended_project_names = @post.app.projects.map(&:airtable_fields).map { |p| p["name"] }.compact.uniq.sort
 
-    if params[:projects].present?
-      selected_projects = params[:projects].split(",")
-      all_heartbeats_for_user_in_review_window = all_heartbeats_for_user_in_review_window.select do |hb|
-        selected_projects.include?(hb.project)
-      end
+    @selected_projects = if params[:projects].present?
+      params[:projects].split(",")
     else
-      all_heartbeats_for_user_in_review_window = all_heartbeats_for_user_in_review_window.select do |hb|
-        @recommended_project_names.include?(hb.project)
-      end
+      @recommended_project_names
     end
 
-    if params[:extensions].present?
-      selected_extensions = params[:extensions].split(",")
-      all_heartbeats_for_user_in_review_window = all_heartbeats_for_user_in_review_window.select do |hb|
-        hb.entity.present? && selected_extensions.include?(File.extname(hb.entity).delete("."))
-      end
+    @selected_extensions = if params[:extensions].present?
+      params[:extensions].split(",")
+    else
+      @unique_file_extensions
+    end
+
+    all_heartbeats_for_user_in_review_window = all_heartbeats_for_user_in_review_window.select do |hb|
+      @selected_projects.include?(hb.project)
+    end
+
+    all_heartbeats_for_user_in_review_window = all_heartbeats_for_user_in_review_window.select do |hb|
+      hb.entity.present? && @selected_extensions.include?(File.extname(hb.entity).delete("."))
     end
 
     @detailed_spans = []

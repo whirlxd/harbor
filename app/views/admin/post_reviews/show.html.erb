@@ -201,7 +201,7 @@
       <form id="project-filter-form" style="display: flex; flex-direction: column; gap: 1rem;">
         <div class="project-filters" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
           <% @unique_project_names.each do |project_name| %>
-            <% is_selected = params[:projects].present? ? params[:projects].split(',').include?(project_name) : @recommended_project_names.include?(project_name) %>
+            <% is_selected = @selected_projects.include?(project_name) %>
             <% is_recommended = @recommended_project_names.include?(project_name) %>
             <label class="project-filter-label <%= 'recommended' if is_recommended %>" 
                    style="display: flex; align-items: center; background: <%= is_recommended ? '#1F2937' : '#374151' %>; padding: 0.25rem 0.5rem; border-radius: 0.25rem; cursor: pointer; border: 1px solid <%= is_recommended ? '#60A5FA' : 'transparent' %>;">
@@ -228,7 +228,7 @@
       <form id="extension-filter-form" style="display: flex; flex-direction: column; gap: 1rem;">
         <div class="extension-filters" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
           <% @unique_file_extensions.each do |extension| %>
-            <% is_selected = params[:extensions].present? ? params[:extensions].split(',').include?(extension) : false %>
+            <% is_selected = @selected_extensions.include?(extension) %>
             <label class="extension-filter-label" 
                    style="display: flex; align-items: center; background: #374151; padding: 0.25rem 0.5rem; border-radius: 0.25rem; cursor: pointer; border: 1px solid transparent;">
               <input type="checkbox" 
@@ -431,18 +431,6 @@ document.addEventListener('turbo:load', function() {
     daysContainer.addEventListener('mouseleave', function() {
       cursorLine.style.display = 'none';
       cursorTimeDisplay.style.display = 'none';
-    });
-  }
-
-  const url = new URL(window.location.href);
-  if (!url.searchParams.has('extensions')) {
-    document.querySelectorAll('.extension-filter-checkbox').forEach(cb => {
-      cb.checked = true;
-    });
-  }
-  if (!url.searchParams.has('projects')) {
-    document.querySelectorAll('.project-filter-checkbox').forEach(cb => {
-      cb.checked = true;
     });
   }
 });
