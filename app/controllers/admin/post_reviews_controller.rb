@@ -61,6 +61,14 @@ class Admin::PostReviewsController < Admin::BaseController
       .uniq
       .sort
 
+    @unique_file_extensions = all_heartbeats_for_user_in_review_window
+      .map(&:entity)
+      .compact
+      .map { |entity| File.extname(entity).delete(".") }
+      .reject(&:blank?)
+      .uniq
+      .sort
+
     @recommended_project_names = @post.app.projects.map(&:airtable_fields).map { |p| p["name"] }.compact.uniq.sort
 
     if params[:projects].present?
@@ -71,6 +79,13 @@ class Admin::PostReviewsController < Admin::BaseController
     else
       all_heartbeats_for_user_in_review_window = all_heartbeats_for_user_in_review_window.select do |hb|
         @recommended_project_names.include?(hb.project)
+      end
+    end
+
+    if params[:extensions].present?
+      selected_extensions = params[:extensions].split(",")
+      all_heartbeats_for_user_in_review_window = all_heartbeats_for_user_in_review_window.select do |hb|
+        hb.entity.present? && selected_extensions.include?(File.extname(hb.entity).delete("."))
       end
     end
 
