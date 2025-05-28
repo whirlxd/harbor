@@ -182,13 +182,18 @@
       <img src="/images/editor-icons/xcode-128.png" alt="Xcode" style="width: 48px; height: 48px; margin: 0 auto; display: block;">
       <div style="text-align: center; margin-top: 0.5rem; font-size: 0.9rem;">Xcode</div>
     </a>
+    
+    <a href="<%= doc_path('editors/godot') %>" class="editor-card" style="text-decoration: none; color: inherit;">
+      <img src="/images/editor-icons/godot-128.png" alt="Godot" style="width: 48px; height: 48px; margin: 0 auto; display: block;">
+      <div style="text-align: center; margin-top: 0.5rem; font-size: 0.9rem;">Godot</div>
+    </a>
   </div>
   
   <details style="margin: 1rem 0;">
-    <summary style="cursor: pointer; font-weight: 500;">View all 76 supported editors</summary>
+    <summary style="cursor: pointer; font-weight: 500;">View all 77 supported editors</summary>
     <div id="all-editors" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 0.8rem; margin: 1rem 0; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
       <% 
-        # All 76 editors - alphabetically sorted
+        # All 77 editors - alphabetically sorted
         all_editors = [
           ['Android Studio', 'android-studio'], ['AppCode', 'appcode'], ['Aptana', 'aptana'], ['Arduino IDE', 'arduino-ide'],
           ['Azure Data Studio', 'azure-data-studio'], ['Blender', 'blender'], ['Brackets', 'brackets'], ['Brave', 'brave'],
@@ -197,7 +202,7 @@
           ['DataGrip', 'datagrip'], ['DataSpell', 'dataspell'], ['DBeaver', 'dbeaver'], ['Delphi', 'delphi'],
           ['Discord', 'discord'], ['Eclipse', 'eclipse'], ['Edge', 'edge'], ['Emacs', 'emacs'],
           ['Eric', 'eric'], ['Excel', 'excel'], ['Figma', 'figma'], ['Firefox', 'firefox'],
-          ['Gedit', 'gedit'], ['GoLand', 'goland'], ['HBuilder X', 'hbuilder-x'], ['IDA Pro', 'ida-pro'],
+          ['Gedit', 'gedit'], ['Godot', 'godot'], ['GoLand', 'goland'], ['HBuilder X', 'hbuilder-x'], ['IDA Pro', 'ida-pro'],
           ['IntelliJ IDEA', 'intellij-idea'], ['Jupyter', 'jupyter'], ['Kakoune', 'kakoune'], ['Kate', 'kate'],
           ['Komodo', 'komodo'], ['Micro', 'micro'], ['MPS', 'mps'], ['Neovim', 'neovim'],
           ['NetBeans', 'netbeans'], ['Notepad++', 'notepad++'], ['Nova', 'nova'], ['Obsidian', 'obsidian'],
