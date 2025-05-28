@@ -1,29 +1,37 @@
-# IntelliJ IDEA Setup Guide
+# How to Track Time in IntelliJ IDEA
 
 ![IntelliJ IDEA](/images/editor-icons/intellij-idea-128.png)
 
-Follow these steps to start tracking your coding time in IntelliJ IDEA with Hackatime.
+Let's set up IntelliJ IDEA to count how much time you spend coding in Java!
 
-## Step 1: Log into Hackatime
+## Step 1: Make a Hackatime Account
 
-Make sure you have a [Hackatime account](https://hackatime.hackclub.com) and are logged in.
+Go to [Hackatime](https://hackatime.hackclub.com) and make an account. Then log in.
 
-## Step 2: Run the Setup Script
+## Step 2: Get Your Settings Ready
 
-Visit the [setup page](https://hackatime.hackclub.com/my/wakatime_setup) to automatically configure your API key and endpoint. This ensures everything works perfectly with Hackatime.
+Click this link to the [setup page](https://hackatime.hackclub.com/my/wakatime_setup). It will set up your account so it works with IntelliJ IDEA.
 
-## Step 3: Install IntelliJ IDEA Plugin
+## Step 3: Add the Plugin to IntelliJ IDEA
 
-Follow the detailed plugin installation instructions on the [WakaTime IntelliJ IDEA page](https://wakatime.com/intellij-idea).
+1. Open IntelliJ IDEA
+2. Go to **File** → **Settings** (on Mac: **IntelliJ IDEA** → **Preferences**)
+3. Click **Plugins** on the left
+4. Click the **Marketplace** tab at the top
+5. Type "WakaTime" in the search box
+6. Click **Install** next to WakaTime
+7. Click **Restart IDE** when it asks
 
-The WakaTime plugin will automatically use your Hackatime configuration after running the setup script.
+That's it! The plugin will use your settings from Step 2.
 
-## Troubleshooting
+## If Something Goes Wrong
 
-- **Not seeing your time?** Make sure you completed the [setup page](https://hackatime.hackclub.com/my/wakatime_setup) first
-- **Plugin not working?** Try restarting IntelliJ IDEA after installation
-- **Still stuck?** Ask for help in [Hack Club Slack](https://hackclub.slack.com) (#hackatime-dev channel)
+**Can't see your time?** Go back to the [setup page](https://hackatime.hackclub.com/my/wakatime_setup) and try again.
 
-## Next Steps
+**Plugin not working?** Close IntelliJ IDEA and open it again.
 
-Once configured, your coding time will automatically appear on your [Hackatime dashboard](https://hackatime.hackclub.com). Happy coding!
+**Still having trouble?** Ask for help in [Hack Club Slack](https://hackclub.slack.com) - look for the #hackatime-dev channel.
+
+## What Happens Next
+
+Start coding! Your time will show up on your [Hackatime page](https://hackatime.hackclub.com) in a few minutes.

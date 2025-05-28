@@ -1,29 +1,45 @@
-# Vim Setup Guide
+# How to Track Time in Vim
 
 ![Vim](/images/editor-icons/vim-128.png)
 
-Follow these steps to start tracking your coding time in Vim with Hackatime.
+Let's set up Vim to count how much time you spend coding!
 
-## Step 1: Log into Hackatime
+## Step 1: Make a Hackatime Account
 
-Make sure you have a [Hackatime account](https://hackatime.hackclub.com) and are logged in.
+Go to [Hackatime](https://hackatime.hackclub.com) and make an account. Then log in.
 
-## Step 2: Run the Setup Script
+## Step 2: Get Your Settings Ready
 
-Visit the [setup page](https://hackatime.hackclub.com/my/wakatime_setup) to automatically configure your API key and endpoint. This ensures everything works perfectly with Hackatime.
+Click this link to the [setup page](https://hackatime.hackclub.com/my/wakatime_setup). It will set up your account so it works with Vim.
 
-## Step 3: Install Vim Plugin
+## Step 3: Add the Plugin to Vim
 
-Follow the detailed plugin installation instructions on the [WakaTime Vim page](https://wakatime.com/vim).
+### Easy Way (with vim-plug)
+1. Add this line to your `.vimrc` file:
+   ```
+   Plug 'wakatime/vim-wakatime'
+   ```
+2. Save the file and restart Vim
+3. Type `:PlugInstall` in Vim and press Enter
 
-The WakaTime plugin will automatically use your Hackatime configuration after running the setup script.
+### Simple Way (copy and paste)
+Copy and paste this into your terminal:
+```bash
+echo "Plugin 'wakatime/vim-wakatime'" >> ~/.vimrc && vim +PluginInstall
+```
 
-## Troubleshooting
+That's it! The plugin will use your settings from Step 2.
 
-- **Not seeing your time?** Make sure you completed the [setup page](https://hackatime.hackclub.com/my/wakatime_setup) first
-- **Plugin not working?** Try restarting Vim after installation
-- **Still stuck?** Ask for help in [Hack Club Slack](https://hackclub.slack.com) (#hackatime-dev channel)
+## If Something Goes Wrong
 
-## Next Steps
+**Can't see your time?** Go back to the [setup page](https://hackatime.hackclub.com/my/wakatime_setup) and try again.
 
-Once configured, your coding time will automatically appear on your [Hackatime dashboard](https://hackatime.hackclub.com). Happy coding!
+**Plugin not working?** Close Vim and open it again.
+
+**Don't know how to edit .vimrc?** Type `:e ~/.vimrc` in Vim to open it.
+
+**Still having trouble?** Ask for help in [Hack Club Slack](https://hackclub.slack.com) - look for the #hackatime-dev channel.
+
+## What Happens Next
+
+Start coding! Your time will show up on your [Hackatime page](https://hackatime.hackclub.com) in a few minutes.

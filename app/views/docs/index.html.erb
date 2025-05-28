@@ -46,19 +46,19 @@
     <div>
       <strong>Popular Ones:</strong>
       <ul style="margin-top: 0.5rem;">
-        <li>VS Code</li>
-        <li>PyCharm</li>
-        <li>Vim</li>
-        <li>Sublime Text</li>
+        <li><%= link_to "VS Code", doc_path("editors/vs-code") %></li>
+        <li><%= link_to "PyCharm", doc_path("editors/pycharm") %></li>
+        <li><%= link_to "Vim", doc_path("editors/vim") %></li>
+        <li><%= link_to "Sublime Text", doc_path("editors/sublime-text") %></li>
       </ul>
     </div>
     <div>
       <strong>Lots More:</strong>
       <ul style="margin-top: 0.5rem;">
-        <li>Atom, Brackets</li>
+        <li><%= link_to "Atom", doc_path("editors/atom") %>, <%= link_to "Brackets", doc_path("editors/brackets") %></li>
         <li>All JetBrains apps</li>
-        <li>Command Line</li>
-        <li><a href="https://wakatime.com/plugins" target="_blank">40+ others</a></li>
+        <li><%= link_to "Command Line", doc_path("editors/terminal") %></li>
+        <li><a href="#supported-editors" onclick="document.getElementById('all-editors').parentElement.open = true; document.getElementById('all-editors').scrollIntoView({behavior: 'smooth'});">70+ others</a></li>
       </ul>
     </div>
   </div>

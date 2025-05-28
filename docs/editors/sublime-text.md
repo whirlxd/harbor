@@ -1,29 +1,38 @@
-# Sublime Text Setup Guide
+# How to Track Time in Sublime Text
 
 ![Sublime Text](/images/editor-icons/sublime-text-128.png)
 
-Follow these steps to start tracking your coding time in Sublime Text with Hackatime.
+Let's set up Sublime Text to count how much time you spend coding!
 
-## Step 1: Log into Hackatime
+## Step 1: Make a Hackatime Account
 
-Make sure you have a [Hackatime account](https://hackatime.hackclub.com) and are logged in.
+Go to [Hackatime](https://hackatime.hackclub.com) and make an account. Then log in.
 
-## Step 2: Run the Setup Script
+## Step 2: Get Your Settings Ready
 
-Visit the [setup page](https://hackatime.hackclub.com/my/wakatime_setup) to automatically configure your API key and endpoint. This ensures everything works perfectly with Hackatime.
+Click this link to the [setup page](https://hackatime.hackclub.com/my/wakatime_setup). It will set up your account so it works with Sublime Text.
 
-## Step 3: Install Sublime Text Plugin
+## Step 3: Add the Plugin to Sublime Text
 
-Follow the detailed plugin installation instructions on the [WakaTime Sublime Text page](https://wakatime.com/sublime-text).
+1. Open Sublime Text
+2. Go to **Tools** → **Command Palette** (or press **Ctrl+Shift+P** on Windows, **Cmd+Shift+P** on Mac)
+3. Type "install" and choose **Package Control: Install Package**
+4. Wait a moment, then type "WakaTime"
+5. Click on **WakaTime** to install it
+6. It will ask for your API key - just press Enter (it uses your settings from Step 2)
 
-The WakaTime plugin will automatically use your Hackatime configuration after running the setup script.
+That's it! The plugin will use your settings from Step 2.
 
-## Troubleshooting
+## If Something Goes Wrong
 
-- **Not seeing your time?** Make sure you completed the [setup page](https://hackatime.hackclub.com/my/wakatime_setup) first
-- **Plugin not working?** Try restarting Sublime Text after installation
-- **Still stuck?** Ask for help in [Hack Club Slack](https://hackclub.slack.com) (#hackatime-dev channel)
+**Can't see your time?** Go back to the [setup page](https://hackatime.hackclub.com/my/wakatime_setup) and try again.
 
-## Next Steps
+**Plugin not working?** Close Sublime Text and open it again.
 
-Once configured, your coding time will automatically appear on your [Hackatime dashboard](https://hackatime.hackclub.com). Happy coding!
+**Don't have Package Control?** Go to [packagecontrol.io](https://packagecontrol.io/installation) to install it first.
+
+**Still having trouble?** Ask for help in [Hack Club Slack](https://hackclub.slack.com) - look for the #hackatime-dev channel.
+
+## What Happens Next
+
+Start coding! Your time will show up on your [Hackatime page](https://hackatime.hackclub.com) in a few minutes.
