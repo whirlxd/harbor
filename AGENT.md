@@ -18,5 +18,7 @@
 - **Models**: Inherit `ApplicationRecord`, extensive use of concerns/enums/scopes
 - **Error Handling**: `rescue => e` + `Rails.logger.error`, graceful degradation in jobs
 - **Imports**: Use `include` for concerns, `helper_method` for view access
-- **API**: Namespace under `api/v1/`, structured JSON responses
-- **Testing**: Minitest with fixtures, parallel execution enabled
+- **API**: Namespace under `api/v1/`, structured JSON responses with status codes
+- **Jobs**: GoodJob with 4 priority queues, inherit from `ApplicationJob`, concurrency control for cache jobs
+- **Auth**: `ensure_authenticated!` for APIs, token via `Authorization` header or `?api_key=`
+- **CSS**: Pico CSS framework + Uchu colors, component-specific CSS files, no Tailwind
