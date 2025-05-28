@@ -1,45 +1,29 @@
-# API Endpoints
+# All the API Commands
 
-Hackatime provides both WakaTime-compatible and native API endpoints for accessing your coding data.
+Here are all the ways you can get data from Hackatime with code.
 
-## Authentication
+## How to Log In
 
-All API requests require authentication via:
-- **Header**: `Authorization: Bearer YOUR_API_KEY`
-- **Query Parameter**: `?api_key=YOUR_API_KEY`
+All requests need your API key:
+- **Best way**: `Authorization: Bearer YOUR_API_KEY` in the header
+- **Other way**: Add `?api_key=YOUR_API_KEY` to the URL
 
-Get your API key from your [Hackatime dashboard settings](https://hackatime.hackclub.com/my/wakatime_setup).
+Get your API key from [Hackatime settings](https://hackatime.hackclub.com/my/settings).
 
-## WakaTime-Compatible Endpoints
+## For WakaTime Tools
 
-These endpoints are compatible with existing WakaTime tools and libraries.
+These work with existing WakaTime apps and libraries.
 
-### Push Heartbeats
-```
-POST /api/hackatime/v1/users/current/heartbeats
-```
 
-Send coding activity data (what editor plugins use automatically).
 
-**Request Body** (JSON):
-```json
-[{
-  "type": "file",
-  "time": 1640995200,
-  "entity": "example.py", 
-  "language": "Python",
-  "project": "my-project"
-}]
-```
-
-### Status Bar Data
+### Get Today's Time
 ```
 GET /api/hackatime/v1/users/{user_id}/statusbar/today
 ```
 
-Get today's coding time for status bar displays.
+Shows how much you've coded today.
 
-**Example Response**:
+**What you get back**:
 ```json
 {
   "data": {
@@ -51,25 +35,25 @@ Get today's coding time for status bar displays.
 }
 ```
 
-### Dashboard Redirect
+## Hackatime-Only Commands
+
+These are special to Hackatime.
+
+### Your Coding Stats
 ```
-GET /api/hackatime/v1/
+GET /api/v1/stats
 ```
 
-Redirects to the main dashboard.
+Get how much you've coded overall.
 
-## Native Hackatime API
-
-Enhanced endpoints with additional features.
-
-### User Statistics
+### Someone Else's Stats
 ```
 GET /api/v1/users/{username}/stats
 ```
 
-Get comprehensive coding statistics for a user.
+See someone else's public coding stats.
 
-**Example Response**:
+**What you get back**:
 ```json
 {
   "user": "username",
@@ -84,93 +68,61 @@ Get comprehensive coding statistics for a user.
 }
 ```
 
-### Heartbeat Spans
-```
-GET /api/v1/users/{username}/heartbeats/spans
-```
-
-Get time spans of coding activity.
-
-### My Heartbeats
+### Your Raw Activity Data
 ```
 GET /api/v1/my/heartbeats
 GET /api/v1/my/heartbeats/most_recent
 ```
 
-Access your own heartbeat data.
+Get the raw data about when you coded.
 
-**Query Parameters**:
-- `start` - Start date (ISO 8601)
-- `end` - End date (ISO 8601)
-- `limit` - Number of results (default: 100)
+**Options you can add**:
+- `start` - Start date
+- `end` - End date  
+- `limit` - How many results (max 100)
 
-### Global Statistics
-```
-GET /api/v1/stats
-```
-
-Get platform-wide statistics (requires authentication).
-
-### User Lookup
+### Find Users
 ```
 GET /api/v1/users/lookup_email/{email}
 GET /api/v1/users/lookup_slack_uid/{slack_uid}
 ```
 
-Look up users by email or Slack UID.
+Find users by their email or Slack ID.
 
-## Example Usage
+## Try These Examples
 
-### Get Your Recent Activity
+### See Your Recent Activity
 ```bash
 curl -H "Authorization: Bearer YOUR_API_KEY" \
   "https://hackatime.hackclub.com/api/v1/my/heartbeats?limit=10"
 ```
 
-### Send a Test Heartbeat
-```bash
-curl -X POST \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '[{"type":"file","time":1640995200,"entity":"test.py","language":"Python"}]' \
-  "https://hackatime.hackclub.com/api/hackatime/v1/users/current/heartbeats"
-```
 
-### Get Today's Coding Time
+
+### Get Today's Time
 ```bash
 curl -H "Authorization: Bearer YOUR_API_KEY" \
   "https://hackatime.hackclub.com/api/hackatime/v1/users/current/statusbar/today"
 ```
 
-## Rate Limits
+## Limits
 
-- **Heartbeats**: 30-second rate limit between heartbeats (configurable in `~/.wakatime.cfg`)
-- **API Requests**: Reasonable usage expected; no hard limits currently enforced
+- **Heartbeats**: WakaTime plugins wait 30 seconds between sends
+- **API Requests**: No hard limits, but don't go crazy
 
-## Error Responses
+## When Things Go Wrong
 
-All errors return appropriate HTTP status codes with JSON error messages:
+Errors look like this:
 
 ```json
 {
-  "error": "Invalid API key",
-  "message": "The provided API key is invalid or expired"
+  "error": "Invalid API key"
 }
 ```
 
-Common status codes:
-- `401` - Invalid or missing API key
-- `404` - Resource not found
-- `429` - Rate limit exceeded
-- `500` - Server error
+Common problems:
+- `401` - Bad or missing API key
+- `404` - That thing doesn't exist
+- `500` - Something broke on our end
 
-## Libraries & SDKs
 
-Since Hackatime is WakaTime-compatible, you can use existing WakaTime libraries:
-
-- **Python**: `wakatime-python`
-- **JavaScript**: `wakatime-client`
-- **Go**: `go-wakatime`
-- **Ruby**: `wakatime-ruby`
-
-Just configure them to use `https://hackatime.hackclub.com` as the base URL.

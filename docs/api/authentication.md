@@ -1,102 +1,93 @@
-# Authentication
+# How to Log In With Code
 
-Learn how to authenticate with the Hackatime API.
+Here's how to use your API key to access Hackatime data with code.
 
-## API Key
+## Get Your API Key
 
-All API requests require authentication using your personal API key.
+Every API request needs your personal API key.
 
-### Getting Your API Key
+### Finding Your API Key
 
-1. Log in to [Hackatime](/)
-2. Go to [Settings](/my/settings)
-3. Copy your API key from the settings page
+1. Log in to [Hackatime](https://hackatime.hackclub.com)
+2. Go to [Settings](https://hackatime.hackclub.com/my/settings)
+3. Copy your API key from the page
 
 ### Using Your API Key
 
-Include your API key in the Authorization header:
+Put your API key in the Authorization header:
 
 ```bash
 curl -H "Authorization: Bearer YOUR_API_KEY" \
      https://hackatime.hackclub.com/api/v1/stats
 ```
 
-## Alternative Authentication Methods
+## Other Ways to Send Your Key
 
-### Query Parameter
+### In the URL
 
-You can also pass your API key as a query parameter:
+You can also put your API key in the URL:
 
 ```bash
 curl "https://hackatime.hackclub.com/api/v1/stats?api_key=YOUR_API_KEY"
 ```
 
-**Note**: Using the Authorization header is recommended for security.
+**Note**: The Authorization header way is safer.
 
-## Testing Authentication
+## Test Your Key
 
-Test your API key with a simple request:
+Try your API key with this simple request:
 
 ```bash
 curl -H "Authorization: Bearer YOUR_API_KEY" \
      https://hackatime.hackclub.com/api/v1/stats
 ```
 
-A successful response will look like:
+If it works, you'll get something like:
 
 ```json
 {
-  "data": {
-    "total_seconds": 12345,
-    "languages": [...],
-    "editors": [...]
-  },
-  "success": true
+  "total_seconds": 12345,
+  "languages": [...],
+  "projects": [...]
 }
 ```
 
-## Error Responses
+## What Happens When Something Goes Wrong
 
-### Invalid API Key
+### Wrong API Key
 
 ```json
 {
-  "error": "Invalid API key",
-  "success": false
+  "error": "Invalid API key"
 }
 ```
 
-### Missing API Key
+### No API Key
 
 ```json
 {
-  "error": "API key required",
-  "success": false
+  "error": "API key required"
 }
 ```
 
-## Rate Limiting
+## Rate Limits
 
-* **Authenticated requests**: 100 per minute
-* **Unauthenticated requests**: 10 per minute
+We don't enforce hard limits right now, but be reasonable:
+* Don't make thousands of requests per minute
+* The WakaTime plugin automatically limits heartbeats to every 30 seconds
 
-Rate limit headers are included in responses:
-* `X-RateLimit-Limit`: Your rate limit
-* `X-RateLimit-Remaining`: Requests remaining
-* `X-RateLimit-Reset`: Unix timestamp when limit resets
+## Keep Your Key Safe
 
-## Security Best Practices
-
-* **Never commit API keys** to version control
-* **Use environment variables** to store API keys
-* **Rotate keys regularly** if they may be compromised
-* **Use HTTPS** for all API requests
+* **Never put API keys in your code** that others can see
+* **Use environment variables** to store your API key
+* **Only use HTTPS** (never HTTP) for API requests
+* **Get a new key** if you think yours was stolen
 
 ## Need Help?
 
-If you're having authentication issues, check:
-1. Your API key is correct
-2. You're using the right API endpoint
-3. Your request headers are properly formatted
+Having trouble with your API key? Check:
+1. You copied the whole key correctly
+2. You're using the right website URL
+3. Your request looks like the examples above
 
-Still stuck? Reach out in [Hack Club Slack](https://hackclub.slack.com)!
+Still stuck? Ask for help in [Hack Club Slack](https://hackclub.slack.com) (#hackatime-dev channel)!

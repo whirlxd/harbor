@@ -1,49 +1,48 @@
-# API Overview
+# How to Use Our Code API
 
-The Hackatime API is compatible with WakaTime's API, allowing you to access your coding time data programmatically.
+The Hackatime API lets you get your coding data with code. It works just like WakaTime's API.
 
 ## Quick Start
 
-Get your API key from your Hackatime dashboard settings, then make requests to:
+1. Get your API key from [Hackatime settings](https://hackatime.hackclub.com/my/settings)
+2. Make requests to: `https://hackatime.hackclub.com/api/v1/`
 
-```
-https://hackatime.hackclub.com/api/v1/
-```
+## How to Log In With Code
 
-## Authentication
+Put your API key in your requests like this:
 
-Include your API key in requests using either method:
-
-**Authorization Header** (recommended):
+**Best way (Authorization Header)**:
 ```
 Authorization: Bearer YOUR_API_KEY
 ```
 
-**Query Parameter**:
+**Other way (in the URL)**:
 ```
 ?api_key=YOUR_API_KEY
 ```
 
-## Basic Example
+## Try It Out
 
 Get your coding stats:
 
 ```bash
 curl -H "Authorization: Bearer YOUR_API_KEY" \
-  https://hackatime.hackclub.com/api/v1/users/current/stats
+  https://hackatime.hackclub.com/api/v1/stats
 ```
 
-## WakaTime Compatibility
+## Works With WakaTime Tools
 
-Since Hackatime is compatible with WakaTime's API, you can:
-- Use existing WakaTime libraries and SDKs
-- Point WakaTime tools to `https://hackatime.hackclub.com`
-- Import/export data between services
+Since Hackatime works like WakaTime's API, you can:
+- Use any WakaTime code libraries
+- Point WakaTime tools to Hackatime
+- Move data between WakaTime and Hackatime
 
-## Common Endpoints
+## Popular Endpoints
 
-- **User Stats**: `/api/v1/users/current/stats` - Your coding statistics
-- **Heartbeats**: `/api/v1/users/current/heartbeats` - Raw activity data
-- **Leaderboard**: `/api/v1/leaders` - Community leaderboard data
+- **Your Stats**: `/api/v1/stats` - How much you've coded
+- **Your Heartbeats**: `/api/v1/my/heartbeats` - Raw coding activity
+- **User Stats**: `/api/v1/users/{username}/stats` - Someone else's public stats
 
-For detailed endpoint documentation, refer to the [WakaTime API docs](https://wakatime.com/developers) - most endpoints work identically with Hackatime.
+## More Details
+
+Want to see all the API commands? Check out our [complete API list](./endpoints). Most things work exactly like [WakaTime's API](https://wakatime.com/developers).

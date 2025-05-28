@@ -10,7 +10,6 @@ Hackatime is a **free and open source** alternative to WakaTime that automatical
 
 Visit [hackatime.hackclub.com](https://hackatime.hackclub.com) and sign up using:
 - Your Hack Club Slack account (recommended)
-- GitHub account  
 - Email address
 
 ## Step 2: Run Automated Setup
@@ -79,7 +78,7 @@ Check that it's working:
 
 **Need help?**
 - Visit the [Hackatime Setup Page](https://hackatime.hackclub.com/my/wakatime_setup) for guided troubleshooting
-- Join [Hack Club Slack](https://hackclub.slack.com) (#hackatime channel)
+- Join [Hack Club Slack](https://hackclub.slack.com) (#hackatime-dev channel)
 - [Create an issue](https://github.com/hackclub/hackatime/issues) on GitHub
 
 **Migrating from WakaTime?**

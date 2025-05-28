@@ -1,76 +1,74 @@
-# Configuration
+# Advanced Setup Stuff
 
-Customize your Hackatime setup to get the most accurate time tracking.
+Want to make Hackatime work better for you? Here are some extra things you can set up.
 
-## Project Mapping
+## Connect Your GitHub Projects
 
-Map your local project folders to GitHub repositories for better insights:
+Link your coding projects to GitHub so they show up better on leaderboards:
 
-1. Go to [Projects](/my/projects)
-2. Click on a project name
-3. Enter the GitHub repository URL
-4. Save your changes
+1. First, authenticate with GitHub by going to [Projects](https://hackatime.hackclub.com/my/projects) and clicking "Sign in with GitHub"
+2. This will automatically link your GitHub projects to your coding activity
+3. If you need to override a project link, go to [Projects](https://hackatime.hackclub.com/my/projects) → click the pencil emoji (✏️) next to a project → set the GitHub URL
 
-This helps link your coding time to specific repositories and enables features like:
-* Repository links in leaderboards
-* Better project organization
-* Integration with GitHub stats
+This helps because:
+* Your projects show up with links on leaderboards
+* Other people can see what you're building
+* Your GitHub activity connects to your coding time
 
-## Time Zone
+## Set Your Time Zone
 
-Set your correct time zone in [Settings](/my/settings) to ensure accurate daily/weekly statistics.
+Make sure your daily stats are right by setting your time zone:
 
-## Privacy Settings
+1. Go to [Settings](https://hackatime.hackclub.com/my/settings)
+2. Pick your time zone from the list
+3. Save it
 
-### What Gets Tracked
+## What We Track (And What We Don't)
 
-Hackatime tracks:
-* **File names and paths** (for project detection)
-* **Programming languages**
-* **Editors used**
-* **Time spent coding**
+### What Hackatime Sees
 
-### What Doesn't Get Tracked
+Hackatime only tracks:
+* **File names** (like `main.py` or `index.html`)
+* **What language you're coding in** (like Python or JavaScript)
+* **What editor you use** (like VS Code or Vim)
+* **How long you code**
+
+### What Hackatime Never Sees
 
 Hackatime **never** tracks:
-* File contents or code
-* Keystrokes
-* Screenshots
-* Passwords or sensitive data
+* What you type in your code
+* Your passwords
+* Screenshots of your screen
+* Anything you type on your keyboard
 
-## WakaTime Configuration
+## Hide Files You Don't Want Tracked
 
-You can also configure the WakaTime plugin directly:
-
-### Exclude Files
-
-Create a `.wakatime-project` file in your project root:
+You can tell WakaTime to ignore certain files. Make a file called `.wakatime-project` in your project folder:
 
 ```
 [settings]
-debug = false
-hidefilenames = false
 exclude = 
-    ^/var/
-    \.log$
     /node_modules/
     /vendor/
+    *.log
+    /temp/
 ```
 
-### Include Only Specific Files
+This will ignore:
+* `node_modules` and `vendor` folders
+* Any `.log` files
+* The `temp` folder
+
+## Only Track Certain Projects
+
+If you only want to track projects that have a `.wakatime-project` file:
 
 ```
 [settings]
 include_only_with_project_file = true
 ```
 
-## API Configuration
-
-For advanced users, you can configure the API endpoint in your WakaTime settings:
-
-* **API URL**: `https://hackatime.hackclub.com/api/hackatime/v1`
-* **Timeout**: 30 seconds (default)
 
 ## Need Help?
 
-If you need assistance with configuration, reach out in [Hack Club Slack](https://hackclub.slack.com) or check our [troubleshooting guide](/docs/getting-started/troubleshooting).
+Having trouble with setup? Ask for help in [Hack Club Slack](https://hackclub.slack.com) (#hackatime-dev channel)!

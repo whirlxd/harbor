@@ -1,34 +1,38 @@
-# Installation
+# Add Plugins to Your Editor
 
-Follow these steps to set up time tracking with Hackatime.
+Here's how to add WakaTime plugins to your code editor so Hackatime can track your coding time.
 
-## Prerequisites
+## What You Need
 
-Before you begin, make sure you have:
-* A code editor (VS Code, IntelliJ, Vim, etc.)
+Before you start, make sure you have:
+* A code editor (like VS Code, PyCharm, Vim, etc.)
 * A [Hackatime account](/)
 
-## Install the WakaTime Plugin
+## Step 1: Do the Automated Setup
 
-Hackatime uses the WakaTime ecosystem for time tracking. Install the appropriate plugin for your editor:
+**First, use the [setup page](https://hackatime.hackclub.com/my/wakatime_setup)!** It automatically sets up your API key and endpoint so everything works perfectly.
 
-### Visual Studio Code
+## Step 2: Add WakaTime Plugin
+
+After doing the automated setup, install the WakaTime plugin for your editor:
+
+### VS Code
 
 1. Open VS Code
-2. Go to Extensions (Ctrl+Shift+X)
-3. Search for "WakaTime"
+2. Click the Extensions button (or press Ctrl+Shift+X)
+3. Type "WakaTime" in the search box
 4. Click Install
 
-### IntelliJ IDEA / PyCharm / WebStorm
+### PyCharm / IntelliJ
 
-1. Go to File → Settings (or IntelliJ IDEA → Preferences on macOS)
-2. Select Plugins
-3. Search for "WakaTime"
-4. Install and restart your IDE
+1. Go to File → Settings (on Mac: IntelliJ IDEA → Preferences)
+2. Click Plugins
+3. Type "WakaTime" in the search box
+4. Install and restart your app
 
-### Vim/Neovim
+### Vim
 
-For Vim users, install vim-wakatime:
+Copy and paste this into your terminal:
 
 ```bash
 git clone https://github.com/wakatime/vim-wakatime.git ~/.vim/bundle/vim-wakatime
@@ -36,24 +40,25 @@ git clone https://github.com/wakatime/vim-wakatime.git ~/.vim/bundle/vim-wakatim
 
 ### Sublime Text
 
-1. Open Package Control (Ctrl+Shift+P)
+1. Press Ctrl+Shift+P (or Cmd+Shift+P on Mac)
 2. Type "Install Package"
-3. Search for "WakaTime"
-4. Install the package
+3. Type "WakaTime"
+4. Install it
 
-## Configure Your API Key
+### Other Editors
 
-1. Get your API key from your [Hackatime settings](/my/settings)
-2. When prompted by the plugin, enter:
-   * **API Key**: Your Hackatime API key
-   * **API URL**: `https://hackatime.hackclub.com/api/hackatime/v1`
+Visit [wakatime.com/plugins](https://wakatime.com/plugins) to find plugins for 40+ other editors.
 
-## Verify Installation
+## Already Have the Plugin Installed?
 
-After setup, your coding time should automatically start being tracked. Check your [dashboard](/) to see your stats!
+If you already have a WakaTime plugin, just run the [setup page](https://hackatime.hackclub.com/my/wakatime_setup) to switch it to Hackatime. It will automatically update your settings.
 
-## Troubleshooting
+## Check If It's Working
 
-* **Not seeing data?** Make sure your API URL is correctly set
-* **Plugin not working?** Try restarting your editor
-* **Need help?** Reach out in the [Hack Club Slack](https://hackclub.slack.com)
+After setup, start coding! Your time will show up on your [Hackatime dashboard](https://hackatime.hackclub.com) in a few minutes.
+
+## Need Help?
+
+* **Not seeing your time?** Make sure the API URL is set correctly
+* **Plugin not working?** Try closing and opening your editor again
+* **Still stuck?** Ask for help in [Hack Club Slack](https://hackclub.slack.com) (#hackatime-dev channel)
