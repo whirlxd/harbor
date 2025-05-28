@@ -1,16 +1,16 @@
 # AGENT.md - Rails Hackatime/Harbor Project
 
-## Commands
-- **Tests**: `rails test` (all), `rails test test/models/user_test.rb` (single file), `rails test test/models/user_test.rb -n test_method_name` (single test)
-- **Lint**: `bundle exec rubocop` (check), `bundle exec rubocop -A` (auto-fix)
-- **Console**: `rails c` (interactive console)
-- **Server**: `rails s -b 0.0.0.0` (development server)
-- **Database**: `rails db:migrate`, `rails db:create`, `rails db:schema:load`, `rails db:seed`
-- **Security**: `bundle exec brakeman` (security audit)
+## Commands (via Docker Compose)
+- **Tests**: `docker compose run web rails test` (all), `docker compose run web rails test test/models/user_test.rb` (single file), `docker compose run web rails test test/models/user_test.rb -n test_method_name` (single test) - Note: Limited test coverage
+- **Lint**: `docker compose run web bundle exec rubocop` (check), `docker compose run web bundle exec rubocop -A` (auto-fix)
+- **Console**: `docker compose run web rails c` (interactive console)
+- **Server**: `docker compose run --service-ports web rails s -b 0.0.0.0` (development server)
+- **Database**: `docker compose run web rails db:migrate`, `docker compose run web rails db:create`, `docker compose run web rails db:schema:load`, `docker compose run web rails db:seed`
+- **Security**: `docker compose run web bundle exec brakeman` (security audit)
 
 ## Docker Development
-- Start: `docker compose run --service-ports web /bin/bash`
-- Setup DB: `bin/rails db:create db:schema:load db:seed`
+- **Interactive shell**: `docker compose run --service-ports web /bin/bash`
+- **Initial setup**: `docker compose run web bin/rails db:create db:schema:load db:seed`
 
 ## Code Style (rubocop-rails-omakase)
 - **Naming**: snake_case files/methods/vars, PascalCase classes, 2-space indent
