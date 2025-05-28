@@ -142,4 +142,42 @@ class DocsController < ApplicationController
   def render_not_found
     render file: "#{Rails.root}/public/404.html", status: :not_found, layout: false
   end
+  
+  # Make these helper methods available to views
+  helper_method :generate_doc_description, :generate_doc_keywords
+  
+  def generate_doc_description(content, title)
+    # Extract first paragraph or use title
+    lines = content.lines.map(&:strip).reject(&:empty?)
+    first_paragraph = lines.find { |line| !line.start_with?("#") && line.length > 20 }
+    
+    if first_paragraph
+      # Clean up markdown and truncate
+      description = first_paragraph.gsub(/\[([^\]]*)\]\([^)]*\)/, '\1') # Remove markdown links
+                                 .gsub(/[*_`]/, '') # Remove formatting
+                                 .strip
+      description.length > 155 ? "#{description[0..155]}..." : description
+    else
+      "#{title} - Complete documentation for Hackatime, the free and open source WakaTime alternative"
+    end
+  end
+  
+  def generate_doc_keywords(doc_path, title)
+    base_keywords = %w[hackatime wakatime alternative time tracking coding documentation]
+    
+    # Add path-specific keywords
+    path_keywords = case doc_path
+    when /getting-started/
+      %w[setup installation quick start guide tutorial]
+    when /api/
+      %w[api rest endpoints authentication]
+    when /editors/
+      editor_name = doc_path.split('/').last
+      ["#{editor_name} plugin", "#{editor_name} integration", "#{editor_name} setup"]
+    else
+      [title.downcase.split.join(' ')]
+    end
+    
+    (base_keywords + path_keywords).uniq.join(', ')
+  end
 end

@@ -1,10 +1,10 @@
-# Quick Start Guide
+# Hackatime Quick Start Guide - Free WakaTime Alternative
 
-Get up and running with Hackatime in under 5 minutes! 
+Get up and running with Hackatime in under 5 minutes! Start tracking your coding time across 40+ editors with our free, open source WakaTime alternative.
 
 ## What is Hackatime?
 
-Hackatime is a **free and open source** alternative to WakaTime that automatically tracks your coding time. It works with **every WakaTime editor plugin** by simply configuring your `~/.wakatime.cfg` file to point to Hackatime's servers.
+**Hackatime** is a **free and open source** alternative to WakaTime that automatically tracks your coding time across all your favorite editors and IDEs. It works with **every existing WakaTime editor plugin** by simply configuring your `~/.wakatime.cfg` file to point to Hackatime's servers instead of WakaTime's.
 
 ## Step 1: Create Your Account
 
@@ -82,4 +82,18 @@ Check that it's working:
 - [Create an issue](https://github.com/hackclub/hackatime/issues) on GitHub
 
 **Migrating from WakaTime?**
-Just change your `~/.wakatime.cfg` file to point to Hackatime - all your existing plugins will work immediately!
+Just run the automated setup script on the [Hackatime Setup Page](https://hackatime.hackclub.com/my/wakatime_setup) - it will automatically update your `~/.wakatime.cfg` file and all your existing plugins will work immediately!
+
+---
+
+## Frequently Asked Questions
+
+**Is Hackatime really free?** Yes! Hackatime is completely free with no premium features or paywalls. It's open source and maintained by Hack Club.
+
+**Which editors work with Hackatime?** All [70+ editors](../#supported-editors) that support WakaTime work with Hackatime, including [VS Code](../editors/vs-code), [IntelliJ IDEA](../editors/intellij-idea), [Sublime Text](../editors/sublime-text), [Vim](../editors/vim), [Neovim](../editors/neovim), [PyCharm](../editors/pycharm), and many more.
+
+**How is Hackatime different from WakaTime?** Hackatime is free, open source, privacy-focused, and includes unique features like leaderboards for Hack Club members.
+
+**Can I import my existing WakaTime data?** Currently, data import is not supported, but you can start fresh with Hackatime while keeping your WakaTime account.
+
+**Is my code data secure?** Hackatime only tracks metadata (file names, languages, project names) - never your actual code content. All data is encrypted in transit.

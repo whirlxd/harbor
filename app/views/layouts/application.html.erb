@@ -5,6 +5,27 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="<%= content_for(:meta_description) || 'Hackatime - Free and open source time tracking alternative to WakaTime. Track your coding time across 40+ editors and languages.' %>">
+    <meta name="keywords" content="<%= content_for(:meta_keywords) || 'hackatime, wakatime alternative, time tracking, coding time, programming analytics, free wakatime, open source time tracker' %>">
+    <meta name="author" content="Hack Club">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="<%= content_for(:canonical_url) || request.original_url %>">
+    
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="<%= content_for(:og_title) || content_for(:title) || 'Hackatime' %>">
+    <meta property="og:description" content="<%= content_for(:og_description) || content_for(:meta_description) || 'Free and open source time tracking alternative to WakaTime' %>">
+    <meta property="og:url" content="<%= content_for(:og_url) || request.original_url %>">
+    <meta property="og:type" content="<%= content_for(:og_type) || 'website' %>">
+    <meta property="og:image" content="<%= content_for(:og_image) || asset_url('favicon.png') %>">
+    <meta property="og:site_name" content="Hackatime">
+    
+    <!-- Twitter Card Tags -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="<%= content_for(:twitter_title) || content_for(:title) || 'Hackatime' %>">
+    <meta name="twitter:description" content="<%= content_for(:twitter_description) || content_for(:meta_description) || 'Free and open source time tracking alternative to WakaTime' %>">
+    <meta name="twitter:image" content="<%= content_for(:twitter_image) || asset_url('favicon.png') %>">
 
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
