@@ -1,0 +1,30 @@
+<% content_for :title, @title %>
+<% content_for :meta_description, "#{@title} - Hackatime Documentation" %>
+
+<div class="container">
+  <p class="super">
+    <% @breadcrumbs.each_with_index do |crumb, index| %>
+      <% if index == @breadcrumbs.length - 1 %>
+        <span><%= crumb[:name] %></span>
+      <% else %>
+        <% if crumb[:is_link] && crumb[:path] %>
+          <%= link_to crumb[:name], crumb[:path] %>
+        <% else %>
+          <span><%= crumb[:name] %></span>
+        <% end %>
+        <span> / </span>
+      <% end %>
+    <% end %>
+  </p>
+
+  <div class="docs-content">
+    <%= raw @rendered_content %>
+  </div>
+
+  <p class="flavor">
+    Found an issue with this page? 
+    <a href="https://github.com/hackclub/hackatime/edit/main/docs/<%= @doc_path %>.md" target="_blank">
+      Edit it on GitHub
+    </a> - we'd love your help making the docs better!
+  </p>
+</div>

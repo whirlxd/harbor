@@ -1,5 +1,18 @@
-# See https://www.robotstxt.org/robotstxt.html for documentation on how to use the robots.txt file
+# Hackatime robots.txt - Allow search engines to index our public documentation
+# See https://www.robotstxt.org/robotstxt.html for documentation
 
 User-agent: *
+# Allow all documentation to be indexed
+Allow: /docs
+
+# Block private user data from indexing
 Disallow: /leaderboards
+Disallow: /my/
+Disallow: /admin/
+Disallow: /api/
+Disallow: /auth/
+Disallow: /users/*/projects
+
+# Crawl-delay to be respectful of server resources
+Crawl-delay: 1
 

@@ -1,0 +1,53 @@
+<% content_for :title, "Documentation" %>
+<% content_for :meta_description, "Complete documentation for Hackatime - learn how to track your coding time and use our API." %>
+
+<div class="container">
+  <p class="super">
+    Need help getting started?
+  </p>
+  <h1 class="title">
+    Learn How to Use <span class="primary-color">Hackatime</span>
+  </h1>
+  <p class="flavor">
+    Documentation for tracking your coding time and building with our API
+  </p>
+
+  <p>
+    Hackatime helps you automatically track the time you spend coding on different projects. 
+    Whether you're just getting started or building integrations with our API, 
+    you'll find everything you need here.
+  </p>
+
+  <h3>Getting Started</h3>
+  <p>
+    New to Hackatime? Here's how to get up and running:
+  </p>
+  <ul>
+    <li><%= link_to "Quick Start Guide", doc_path("getting-started/quick-start") %> - Get tracking in 5 minutes</li>
+    <li><%= link_to "Installation", doc_path("getting-started/installation") %> - Install plugins for your editor</li>
+    <li><%= link_to "Configuration", doc_path("getting-started/configuration") %> - Set up project mapping and preferences</li>
+  </ul>
+
+  <h3>API Reference</h3>
+  <p>
+    Build your own tools and integrations:
+  </p>
+  <ul>
+    <li><%= link_to "API Overview", doc_path("api/overview") %> - Introduction to our API</li>
+    <li><%= link_to "Authentication", doc_path("api/authentication") %> - How to authenticate requests</li>
+    <li><%= link_to "Endpoints", doc_path("api/endpoints") %> - Complete endpoint reference</li>
+  </ul>
+
+  <p>
+    Need help? Jump into <a href="https://hackclub.slack.com" target="_blank">Hack Club Slack</a> 
+    or <a href="https://github.com/hackclub/hackatime/issues" target="_blank">create an issue on GitHub</a>.
+    The community is always happy to help!
+  </p>
+
+  <p class="flavor">
+    Found an issue with this page? 
+    <a href="https://github.com/hackclub/hackatime/edit/main/app/views/docs/index.html.erb" target="_blank">
+      Edit it on GitHub
+    </a> - we'd love your help making the docs better!
+  </p>
+</div>

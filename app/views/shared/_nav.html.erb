@@ -41,6 +41,11 @@
         <% end %>
       </li>
       <li>
+        <%= link_to docs_path, class: "nav-item #{current_page?(docs_path) || request.path.start_with?('/docs') ? 'active' : ''}" do %>
+          Docs
+        <% end %>
+      </li>
+      <li>
         <%= link_to signout_path, class: "nav-item", data: { turbo_method: :delete } do %>
           Logout
         <% end %>
