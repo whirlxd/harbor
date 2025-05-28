@@ -6,14 +6,14 @@ class DocsController < ApplicationController
   end
   
   def show
-    @doc_path = params[:path] || "index"
+    @doc_path = sanitize_path(params[:path] || "index")
     @breadcrumbs = build_breadcrumbs(@doc_path)
     
-    file_path = Rails.root.join("docs", "#{@doc_path}.md")
+    file_path = safe_docs_path("#{@doc_path}.md")
     
     unless File.exist?(file_path)
       # Try with index.md in the directory
-      dir_path = Rails.root.join("docs", @doc_path, "index.md")
+      dir_path = safe_docs_path(@doc_path, "index.md")
       if File.exist?(dir_path)
         file_path = dir_path
       else
@@ -21,7 +21,7 @@ class DocsController < ApplicationController
       end
     end
     
-    @content = File.read(file_path)
+    @content = read_docs_file(file_path)
     @title = extract_title(@content) || @doc_path.humanize
     @rendered_content = render_markdown(@content)
   rescue => e
@@ -30,6 +30,42 @@ class DocsController < ApplicationController
   end
   
   private
+  
+  def sanitize_path(path)
+    # Remove any directory traversal attempts and normalize path
+    return "index" if path.blank?
+    
+    # Remove leading/trailing slashes and dangerous characters
+    clean_path = path.to_s.gsub(/\A\/+|\/+\z/, "").gsub(/\.\./, "")
+    
+    # Only allow alphanumeric characters, hyphens, underscores, and forward slashes
+    clean_path = clean_path.gsub(/[^a-zA-Z0-9\-_\/]/, "")
+    
+    # Ensure we don't have empty path
+    clean_path.present? ? clean_path : "index"
+  end
+  
+  def safe_docs_path(*parts)
+    # Build a safe path within the docs directory
+    docs_root = Rails.root.join("docs")
+    full_path = docs_root.join(*parts)
+    
+    # Ensure the path is within the docs directory
+    unless full_path.to_s.start_with?(docs_root.to_s)
+      raise ArgumentError, "Path traversal attempted"
+    end
+    
+    full_path
+  end
+  
+  def read_docs_file(file_path)
+    # Safely read a file from the docs directory
+    unless file_path.to_s.start_with?(Rails.root.join("docs").to_s)
+      raise ArgumentError, "File not in docs directory"
+    end
+    
+    File.read(file_path)
+  end
   
   def docs_structure
     docs_dir = Rails.root.join("docs")
@@ -60,8 +96,8 @@ class DocsController < ApplicationController
       current_path = current_path.empty? ? part : "#{current_path}/#{part}"
       
       # Check if this path exists as a file
-      file_exists = File.exist?(Rails.root.join("docs", "#{current_path}.md")) ||
-                   File.exist?(Rails.root.join("docs", current_path, "index.md"))
+      file_exists = File.exist?(safe_docs_path("#{current_path}.md")) ||
+                   File.exist?(safe_docs_path(current_path, "index.md"))
       
       # Only make it a link if the file exists, or if it's the current page (last item)
       if file_exists || index == parts.length - 1
