@@ -1,48 +1,86 @@
 # Quick Start Guide
 
-Get up and running with Hackatime in just a few minutes!
+Get up and running with Hackatime in under 5 minutes! 
+
+## What is Hackatime?
+
+Hackatime is a **free and open source** alternative to WakaTime that automatically tracks your coding time. It works with **every WakaTime editor plugin** by simply configuring your `~/.wakatime.cfg` file to point to Hackatime's servers.
 
 ## Step 1: Create Your Account
 
 Visit [hackatime.hackclub.com](https://hackatime.hackclub.com) and sign up using:
 - Your Hack Club Slack account (recommended)
-- GitHub account
+- GitHub account  
 - Email address
 
-## Step 2: Get Your API Key
+## Step 2: Run Automated Setup
 
-1. After signing in, go to your dashboard
-2. Click on "Setup Tracking" or visit your settings
-3. Copy your unique API key - you'll need this for the next step
+🚀 **Visit the [Hackatime Setup Page](https://hackatime.hackclub.com/my/wakatime_setup)** - this will:
+
+1. Auto-detect your operating system
+2. Provide a copy-paste command that configures everything
+3. Create your `~/.wakatime.cfg` file pointing to Hackatime
+4. Send a test heartbeat to verify setup
+5. Show you when it's working!
+
+The setup page handles all configuration automatically - no manual editing required!
 
 ## Step 3: Install WakaTime Plugin
 
-Hackatime works with all WakaTime plugins. Choose your editor:
+Hackatime works with **any WakaTime plugin**. Install for your editor:
 
-**VS Code**: 
-1. Open Extensions (Ctrl/Cmd + Shift + X)
-2. Search for "WakaTime"
-3. Install and restart VS Code
-
-**Other Editors**:
+### Popular Editors:
+- **VS Code**: Search "WakaTime" in Extensions marketplace
 - **IntelliJ/PyCharm**: Settings → Plugins → Install "WakaTime"
-- **Vim/Neovim**: Install vim-wakatime plugin
+- **Vim/Neovim**: Install `vim-wakatime` plugin
 - **Sublime Text**: Install via Package Control
-- **Atom**: Install wakatime package
+- **Atom**: Install `wakatime` package
 
-## Step 4: Configure the Plugin
+### All Other Editors:
+Visit [wakatime.com/plugins](https://wakatime.com/plugins) for 40+ supported editors.
 
-1. The plugin will prompt you for your API key on first use
-2. Paste your Hackatime API key from Step 2
-3. The plugin will automatically configure itself for Hackatime
+## Step 4: Configure Plugin to Use Hackatime
+
+**If you used the setup page**: Your `~/.wakatime.cfg` is already configured! The WakaTime plugin will automatically use Hackatime.
+
+**Manual configuration**: Edit `~/.wakatime.cfg`:
+```ini
+[settings]
+api_url = https://hackatime.hackclub.com/api/hackatime/v1
+api_key = YOUR_API_KEY_HERE
+heartbeat_rate_limit_seconds = 30
+```
 
 ## Step 5: Start Coding!
 
-That's it! Just start coding normally and your time will be automatically tracked. Visit your Hackatime dashboard to see your coding stats, language breakdowns, and compare with other Hack Club members on the leaderboard.
+That's it! Open your editor and start coding. Your time will be automatically tracked and appear on your [Hackatime dashboard](https://hackatime.hackclub.com).
+
+## Verification
+
+Check that it's working:
+1. Code for a few minutes in your editor
+2. Visit your [dashboard](https://hackatime.hackclub.com) 
+3. You should see your coding activity appear
+
+## Features You Get
+
+- ⏱️ **Automatic time tracking** - no manual timers
+- 📊 **Language & project insights** - see what you code most
+- 🏆 **Leaderboards** - compare with other Hack Club members  
+- 🔒 **Privacy-first** - only metadata tracked, never your actual code
+- 🆓 **Completely free** - no premium features or paywalls
 
 ## Troubleshooting
 
-If you're having issues, make sure:
-- Your API key is correctly configured
-- Your editor plugin is the latest version
-- Check the Hack Club Slack #hackatime channel for help
+**Not seeing activity?**
+1. Re-run the [setup page](https://hackatime.hackclub.com/my/wakatime_setup) to verify configuration
+2. Check that your WakaTime plugin is enabled in your editor
+3. Make sure you're actively coding (not just viewing files)
+
+**Need help?**
+- Visit the [Hackatime Setup Page](https://hackatime.hackclub.com/my/wakatime_setup) for guided troubleshooting
+- Join [Hack Club Slack](https://hackclub.slack.com) (#hackatime channel)
+- [Create an issue](https://github.com/hackclub/hackatime/issues) on GitHub
+
+**Migrating from WakaTime?**
+Just change your `~/.wakatime.cfg` file to point to Hackatime - all your existing plugins will work immediately!

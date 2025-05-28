@@ -3,51 +3,108 @@
 
 <div class="container">
   <p class="super">
-    Need help getting started?
+    Free & Open Source WakaTime Alternative
   </p>
   <h1 class="title">
-    Learn How to Use <span class="primary-color">Hackatime</span>
+    Welcome to <span class="primary-color">Hackatime</span>
   </h1>
   <p class="flavor">
-    Documentation for tracking your coding time and building with our API
+    Tracks your coding time - made by <a href="https://hackclub.com" target="_blank">Hack Club</a>
   </p>
 
   <p>
-    Hackatime helps you automatically track the time you spend coding on different projects. 
-    Whether you're just getting started or building integrations with our API, 
-    you'll find everything you need here.
+    Hackatime is a free tool from Hack Club. It shows you how much time you spend coding. You can see what other Hack Clubbers are building too!
   </p>
 
-  <h3>Getting Started</h3>
   <p>
-    New to Hackatime? Here's how to get up and running:
+    <strong>Why we made this:</strong> The more time you spend making things, the better you get at building cool projects!
   </p>
+
+  <p>
+    Hackatime is totally free. Anyone can see the code. It's like <a href="https://wakatime.com" target="_blank">WakaTime</a> but for Hack Club members.
+  </p>
+
+
+
+
+  <h3>🎯 How to Start</h3>
+  <ol>
+    <li><strong>Make an account</strong> at <a href="<%= root_url %>">hackatime.hackclub.com</a></li>
+    <li><strong>Do the setup</strong>: Go to our <a href="<%= my_wakatime_setup_path %>">setup page</a></li>
+    <li><strong>Add a plugin</strong>: Put WakaTime in your code editor</li>
+    <li><strong>Start coding</strong>: It tracks your time by itself!</li>
+  </ol>
+
+  <p style="background: #f0f8ff; padding: 1rem; border-radius: 8px; border-left: 4px solid var(--primary);">
+    <strong>💡 Tip:</strong> The <a href="<%= my_wakatime_setup_path %>">setup page</a> does everything for you. No hard stuff to figure out!
+  </p>
+
+  <h3>🔌 What Code Editors Work</h3>
+  <p>
+    Hackatime works with <strong>any editor</strong> that has <a href="https://wakatime.com" target="_blank">WakaTime</a>. Just add the WakaTime plugin to your editor:
+  </p>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1rem 0;">
+    <div>
+      <strong>Popular Ones:</strong>
+      <ul style="margin-top: 0.5rem;">
+        <li>VS Code</li>
+        <li>PyCharm</li>
+        <li>Vim</li>
+        <li>Sublime Text</li>
+      </ul>
+    </div>
+    <div>
+      <strong>Lots More:</strong>
+      <ul style="margin-top: 0.5rem;">
+        <li>Atom, Brackets</li>
+        <li>All JetBrains apps</li>
+        <li>Command Line</li>
+        <li><a href="https://wakatime.com/plugins" target="_blank">40+ others</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>📚 Help Pages</h3>
+
+  <h4>Getting Started</h4>
   <ul>
-    <li><%= link_to "Quick Start Guide", doc_path("getting-started/quick-start") %> - Get tracking in 5 minutes</li>
-    <li><%= link_to "Installation", doc_path("getting-started/installation") %> - Install plugins for your editor</li>
-    <li><%= link_to "Configuration", doc_path("getting-started/configuration") %> - Set up project mapping and preferences</li>
+    <li><%= link_to "Quick Start Guide", doc_path("getting-started/quick-start") %> - Start in 5 minutes</li>
+    <li><%= link_to "Installation", doc_path("getting-started/installation") %> - Add plugins to your editor</li>
+    <li><%= link_to "Configuration", doc_path("getting-started/configuration") %> - Advanced setup stuff</li>
   </ul>
 
-  <h3>API Reference</h3>
-  <p>
-    Build your own tools and integrations:
-  </p>
+  <h4>For Coders</h4>
   <ul>
-    <li><%= link_to "API Overview", doc_path("api/overview") %> - Introduction to our API</li>
-    <li><%= link_to "Authentication", doc_path("api/authentication") %> - How to authenticate requests</li>
-    <li><%= link_to "Endpoints", doc_path("api/endpoints") %> - Complete endpoint reference</li>
+    <li><%= link_to "API Overview", doc_path("api/overview") %> - How to use our code API</li>
+    <li><%= link_to "Authentication", doc_path("api/authentication") %> - How to log in with code</li>
+    <li><%= link_to "Endpoints", doc_path("api/endpoints") %> - All the API commands</li>
   </ul>
 
+  <h3>🔒 Safe & Free</h3>
+  <ul>
+    <li><strong>Open Source</strong>: You can see all the code on <a href="https://github.com/hackclub/hackatime" target="_blank">GitHub</a></li>
+    <li><strong>Private</strong>: We only see how long you code, not what you type</li>
+    <li><strong>Community Made</strong>: Built by Hack Club members</li>
+    <li><strong>Free</strong>: Free! You can donate to Hack Club at <a href="https://hackclub.com/donate" target="_blank">hackclub.com/donate</a></li>
+  </ul>
+
+  <h3>🆘 Need Help?</h3>
   <p>
-    Need help? Jump into <a href="https://hackclub.slack.com" target="_blank">Hack Club Slack</a> 
-    or <a href="https://github.com/hackclub/hackatime/issues" target="_blank">create an issue on GitHub</a>.
-    The community is always happy to help!
+    <strong>Not seeing your time?</strong> Go to the <a href="<%= my_wakatime_setup_path %>">setup page</a> 
+    to check if everything is working.
   </p>
+  <p>
+    <strong>Have questions?</strong> Ask in the <a href="https://hackclub.slack.com" target="_blank">Hack Club Slack</a> 
+    (#hackatime channel) or <a href="https://github.com/hackclub/hackatime/issues" target="_blank">ask on GitHub</a>.
+  </p>
+
+  <hr style="margin: 2rem 0;">
 
   <p class="flavor">
-    Found an issue with this page? 
-    <a href="https://github.com/hackclub/hackatime/edit/main/app/views/docs/index.html.erb" target="_blank">
-      Edit it on GitHub
-    </a> - we'd love your help making the docs better!
+    Found an issue with the docs? 
+    <a href="https://github.com/hackclub/hackatime" target="_blank">
+      Edit on GitHub
+    </a> - we'd love your help making them better!
   </p>
 </div>
