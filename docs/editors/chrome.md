@@ -2,7 +2,7 @@
 
 ![Chrome](/images/editor-icons/chrome-128.png)
 
-Follow these steps to start tracking your coding time in Chrome with Hackatime.
+Follow these steps to start tracking your web development activity in Chrome with Hackatime.
 
 ## Step 1: Log into Hackatime
 
@@ -26,4 +26,4 @@ The WakaTime plugin will automatically use your Hackatime configuration after ru
 
 ## Next Steps
 
-Once configured, your coding time will automatically appear on your [Hackatime dashboard](https://hackatime.hackclub.com). Happy coding!
+Once configured, your activity time will automatically appear on your [Hackatime dashboard](https://hackatime.hackclub.com). Happy browsing and developing!
