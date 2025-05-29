@@ -212,9 +212,9 @@ class StaticPagesController < ApplicationController
     @meta_description = "Track your coding time easily with Hackatime. See how long you spend programming in different languages. Free alternative to WakaTime. Join thousands of high schoolers!"
     @meta_keywords = "coding time tracker, programming stats, wakatime alternative, free time tracking, code statistics, high school programming, coding analytics"
     @og_title = "Hackatime - Free Coding Time Tracker"
-    @og_description = "Track your coding time easily with Hackatime. See how long you spend programming. Free and better than WakaTime!"
+    @og_description = "Track your coding time easily with Hackatime. See how long you spend programming. Free and open source!"
     @twitter_title = "Hackatime - Free Coding Time Tracker"
-    @twitter_description = "Track your coding time easily with Hackatime. See how long you spend programming. Free and better than WakaTime!"
+    @twitter_description = "Track your coding time easily with Hackatime. See how long you spend programming. Free and open source!"
   end
 
   def filterable_dashboard_data
