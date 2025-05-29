@@ -38,8 +38,8 @@ class DocsController < ApplicationController
     # Remove leading/trailing slashes and dangerous characters
     clean_path = path.to_s.gsub(/\A\/+|\/+\z/, "").gsub(/\.\./, "")
     
-    # Only allow alphanumeric characters, hyphens, underscores, and forward slashes
-    clean_path = clean_path.gsub(/[^a-zA-Z0-9\-_\/]/, "")
+    # Only allow alphanumeric characters, hyphens, underscores, plus signs, and forward slashes
+    clean_path = clean_path.gsub(/[^a-zA-Z0-9\-_+\/]/, "")
     
     # Ensure we don't have empty path
     clean_path.present? ? clean_path : "index"

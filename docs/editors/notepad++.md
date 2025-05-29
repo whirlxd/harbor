@@ -14,7 +14,13 @@ Visit the [setup page](https://hackatime.hackclub.com/my/wakatime_setup) to auto
 
 ## Step 3: Install Notepad++ Plugin
 
-Follow the detailed plugin installation instructions on the [WakaTime Notepad++ page](https://wakatime.com/notepad++).
+Follow the detailed plugin installation instructions:
+
+1. Inside Notepad++ open the Plugins Admin (`Plugins` → `Plugins Admin`).
+2. Search for `WakaTime` and then check the box in the list of plugins.
+3. Click the Install button.
+4. Restart Notepad++.
+5. Enter your API key when prompted (this will be automatically configured if you completed Step 2).
 
 The WakaTime plugin will automatically use your Hackatime configuration after running the setup script.
 
