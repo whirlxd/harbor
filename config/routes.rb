@@ -68,7 +68,7 @@ Rails.application.routes.draw do
   delete "signout", to: "sessions#destroy", as: "signout"
 
   resources :leaderboards, only: [ :index ]
-  
+
   # Docs routes
   get "docs", to: "docs#index", as: :docs
   get "docs/*path", to: "docs#show", as: :doc
