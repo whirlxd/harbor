@@ -7,6 +7,16 @@
 - **Server**: `docker compose run --service-ports web rails s -b 0.0.0.0` (development server)
 - **Database**: `docker compose run web rails db:migrate`, `docker compose run web rails db:create`, `docker compose run web rails db:schema:load`, `docker compose run web rails db:seed`
 - **Security**: `docker compose run web bundle exec brakeman` (security audit)
+- **JS Security**: `docker compose run web bin/importmap audit` (JS dependency scan)
+- **Zeitwerk**: `docker compose run web bin/rails zeitwerk:check` (autoloader check)
+
+## CI/Testing Requirements
+**Before marking any task complete, run ALL CI checks locally:**
+1. `docker compose run web bundle exec rubocop` (lint check)
+2. `docker compose run web bundle exec brakeman` (security scan)
+3. `docker compose run web bin/importmap audit` (JS security)
+4. `docker compose run web bin/rails zeitwerk:check` (autoloader)
+5. `docker compose run web rails test` (full test suite)
 
 ## Docker Development
 - **Interactive shell**: `docker compose run --service-ports web /bin/bash`
