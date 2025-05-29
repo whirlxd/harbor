@@ -22,7 +22,7 @@
     <meta property="og:description" content="<%= @og_description || content_for(:og_description) || @meta_description || content_for(:meta_description) || 'Track your coding time easily with Hackatime. A free tool to see how much time you spend programming. Better than WakaTime!' %>">
     <meta property="og:url" content="<%= content_for(:og_url) || request.original_url %>">
     <meta property="og:type" content="<%= content_for(:og_type) || 'website' %>">
-    <meta property="og:image" content="<%= content_for(:og_image) || 'https://hackatime.hackclub.com/favicon.png' %>">
+    <meta property="og:image" content="<%= content_for(:og_image) || asset_path('favicon.png') %>">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:site_name" content="Hackatime">
@@ -34,7 +34,7 @@
     <meta name="twitter:creator" content="@hackclub">
     <meta name="twitter:title" content="<%= @twitter_title || content_for(:twitter_title) || @page_title || content_for(:title) || 'Hackatime - Free Coding Time Tracker' %>">
     <meta name="twitter:description" content="<%= @twitter_description || content_for(:twitter_description) || @meta_description || content_for(:meta_description) || 'Track your coding time easily with Hackatime. A free tool to see how much time you spend programming. Better than WakaTime!' %>">
-    <meta name="twitter:image" content="<%= content_for(:twitter_image) || 'https://hackatime.hackclub.com/favicon.png' %>">
+    <meta name="twitter:image" content="<%= content_for(:twitter_image) || asset_path('favicon.png') %>">
 
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
