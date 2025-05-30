@@ -4,6 +4,7 @@ class Commit < ApplicationRecord
   self.primary_key = :sha
 
   belongs_to :user
+  belongs_to :repository, optional: true
 
   validates :sha, presence: true, uniqueness: true
   validates :user_id, presence: true

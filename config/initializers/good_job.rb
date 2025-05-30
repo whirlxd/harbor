@@ -141,6 +141,11 @@ Rails.application.configure do
     cleanup_successful_jobs: {
       cron: "0 0 * * *",
       class: "CleanupSuccessfulJobsJob"
+    },
+    sync_stale_repo_metadata: {
+      cron: "0 4 * * *", # Daily at 4 AM
+      class: "SyncStaleRepoMetadataJob",
+      description: "Refreshes repository metadata (stars, commit counts, etc.) for repositories with stale data."
     }
   }
 end

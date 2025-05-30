@@ -95,7 +95,7 @@ class StaticPagesController < ApplicationController
   def project_durations
     return unless current_user
 
-    @project_repo_mappings = current_user.project_repo_mappings
+    @project_repo_mappings = current_user.project_repo_mappings.includes(:repository)
     cache_key = "user_#{current_user.id}_project_durations_#{params[:interval]}"
     cache_key += "_#{params[:from]}_#{params[:to]}" if params[:interval] == "custom"
 
@@ -104,9 +104,11 @@ class StaticPagesController < ApplicationController
       project_times = heartbeats.group(:project).duration_seconds
       project_labels = current_user.project_labels
       project_times.map do |project, duration|
+        mapping = @project_repo_mappings.find { |p| p.project_name == project }
         {
           project: project_labels.find { |p| p.project_key == project }&.label || project || "Unknown",
-          repo_url: @project_repo_mappings.find { |p| p.project_name == project }&.repo_url,
+          repo_url: mapping&.repo_url,
+          repository: mapping&.repository,
           duration: duration
         }
       end.filter { |p| p[:duration].positive? }.sort_by { |p| p[:duration] }.reverse

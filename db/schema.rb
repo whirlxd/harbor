@@ -10,9 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_27_052632) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_30_135145) do
+  create_schema "pganalyze"
+
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+  enable_extension "pg_stat_statements"
 
   create_table "ahoy_events", force: :cascade do |t|
     t.bigint "visit_id"
@@ -74,6 +77,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_27_052632) do
     t.jsonb "github_raw"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "repository_id"
+    t.index ["repository_id"], name: "index_commits_on_repository_id"
     t.index ["user_id"], name: "index_commits_on_user_id"
   end
 
@@ -310,7 +315,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_27_052632) do
     t.string "repo_url", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "repository_id"
     t.index ["project_name"], name: "index_project_repo_mappings_on_project_name"
+    t.index ["repository_id"], name: "index_project_repo_mappings_on_repository_id"
     t.index ["user_id", "project_name"], name: "index_project_repo_mappings_on_user_id_and_project_name", unique: true
     t.index ["user_id"], name: "index_project_repo_mappings_on_user_id"
   end
@@ -331,6 +338,24 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_27_052632) do
     t.index ["provider"], name: "index_repo_host_events_on_provider"
     t.index ["user_id", "provider", "created_at"], name: "index_repo_host_events_on_user_provider_created_at"
     t.index ["user_id"], name: "index_repo_host_events_on_user_id"
+  end
+
+  create_table "repositories", force: :cascade do |t|
+    t.string "url"
+    t.string "host"
+    t.string "owner"
+    t.string "name"
+    t.integer "stars"
+    t.text "description"
+    t.string "language"
+    t.text "languages"
+    t.integer "commit_count"
+    t.datetime "last_commit_at"
+    t.datetime "last_synced_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "homepage"
+    t.index ["url"], name: "index_repositories_on_url", unique: true
   end
 
   create_table "sailors_log_leaderboards", force: :cascade do |t|
@@ -428,6 +453,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_27_052632) do
   end
 
   add_foreign_key "api_keys", "users"
+  add_foreign_key "commits", "repositories"
   add_foreign_key "commits", "users"
   add_foreign_key "email_addresses", "users"
   add_foreign_key "email_verification_requests", "users"
@@ -437,6 +463,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_27_052632) do
   add_foreign_key "leaderboard_entries", "users"
   add_foreign_key "mailing_addresses", "users"
   add_foreign_key "physical_mails", "users"
+  add_foreign_key "project_repo_mappings", "repositories"
   add_foreign_key "project_repo_mappings", "users"
   add_foreign_key "repo_host_events", "users"
   add_foreign_key "sign_in_tokens", "users"

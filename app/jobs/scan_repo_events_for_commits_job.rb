@@ -53,11 +53,23 @@ class ScanRepoEventsForCommitsJob < ApplicationJob
           next
         end
 
+        # Extract repository info from commit API URL
+        # Format: https://api.github.com/repos/owner/repo/commits/sha
+        repository_id = nil
+        if commit_api_url =~ %r{https://api\.github\.com/repos/([^/]+)/([^/]+)/commits/}
+          owner = $1
+          repo = $2
+          repo_url = "https://github.com/#{owner}/#{repo}"
+          repository = Repository.find_by(url: repo_url)
+          repository_id = repository&.id
+        end
+
         potential_commits_buffer << {
           sha: commit_sha,
           api_url: commit_api_url,
           user_id: user.id,
-          provider: event.provider.to_s
+          provider: event.provider.to_s,
+          repository_id: repository_id
         }
       end
 
@@ -101,7 +113,8 @@ class ScanRepoEventsForCommitsJob < ApplicationJob
           commit_details[:user_id],
           commit_details[:sha],
           commit_details[:api_url],
-          commit_details[:provider]
+          commit_details[:provider],
+          commit_details[:repository_id]
         )
         enqueued_count += 1
       end

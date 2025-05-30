@@ -1,5 +1,6 @@
 class ProjectRepoMapping < ApplicationRecord
   belongs_to :user
+  belongs_to :repository, optional: true
 
   has_paper_trail
 
@@ -20,13 +21,32 @@ class ProjectRepoMapping < ApplicationRecord
     "<<LAST PROJECT>>"
   ]
 
-  after_create :schedule_commit_pull
+  after_create :create_repository_and_sync
+  after_update :sync_repository_if_url_changed
 
   private
 
   def repo_url_exists
     unless GitRemote.check_remote_exists(repo_url)
       errors.add(:repo_url, "is not cloneable")
+    end
+  end
+
+  def create_repository_and_sync
+    # Create or find repository record
+    repo = Repository.find_or_create_by_url(repo_url)
+    update_column(:repository_id, repo.id)
+
+    # Schedule commit pull and metadata sync
+    schedule_commit_pull
+    SyncRepoMetadataJob.perform_later(repo.id)
+  end
+
+  def sync_repository_if_url_changed
+    if saved_change_to_repo_url?
+      repo = Repository.find_or_create_by_url(repo_url)
+      update_column(:repository_id, repo.id)
+      SyncRepoMetadataJob.perform_later(repo.id)
     end
   end
 

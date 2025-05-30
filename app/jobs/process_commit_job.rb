@@ -10,9 +10,10 @@ class ProcessCommitJob < ApplicationJob
 
   discard_on ActiveJob::DeserializationError # If User record is gone
 
-  def perform(user_id, commit_sha, commit_api_url, provider_string)
+  def perform(user_id, commit_sha, commit_api_url, provider_string, repository_id = nil)
     provider_sym = provider_string.to_sym # Convert string back to symbol
     user = User.find_by(id: user_id)
+    repository = repository_id ? Repository.find_by(id: repository_id) : nil
 
     unless user
       Rails.logger.warn "[ProcessCommitJob] User ##{user_id} not found. Skipping commit #{commit_sha}."
@@ -31,10 +32,10 @@ class ProcessCommitJob < ApplicationJob
 
     case provider_sym
     when :github
-      process_github_commit(user, commit_sha, commit_api_url)
+      process_github_commit(user, commit_sha, commit_api_url, repository)
     # Add other providers like :gitlab later
     # when :gitlab
-    #   process_gitlab_commit(user, commit_sha, commit_api_url)
+    #   process_gitlab_commit(user, commit_sha, commit_api_url, repository)
     else
       Rails.logger.error "[ProcessCommitJob] Unknown provider '#{provider_sym}' for commit #{commit_sha}."
     end
@@ -42,7 +43,7 @@ class ProcessCommitJob < ApplicationJob
 
   private
 
-  def process_github_commit(user, commit_sha, commit_api_url)
+  def process_github_commit(user, commit_sha, commit_api_url, repository)
     unless user.github_access_token.present?
       Rails.logger.warn "[ProcessCommitJob] User ##{user.id} missing GitHub token for commit #{commit_sha}. Skipping."
       return
@@ -82,6 +83,7 @@ class ProcessCommitJob < ApplicationJob
         Commit.create!(
           sha: api_commit_sha,
           user_id: user.id,
+          repository_id: repository&.id,
           github_raw: commit_data_json,
           created_at: commit_actual_created_at, # Manually set created_at
           updated_at: Time.current # Let Rails handle updated_at, or set explicitly
@@ -95,7 +97,7 @@ class ProcessCommitJob < ApplicationJob
           reset_time = Time.at(response.headers["X-RateLimit-Reset"].to_i)
           delay_seconds = [ (reset_time - Time.current).ceil, 5 ].max # at least 5s delay
           Rails.logger.warn "[ProcessCommitJob] GitHub API rate limit exceeded for User ##{user.id}. Retrying in #{delay_seconds}s. URL: #{commit_api_url}"
-          self.class.set(wait: delay_seconds.seconds).perform_later(user.id, commit_sha, commit_api_url, "github")
+          self.class.set(wait: delay_seconds.seconds).perform_later(user.id, commit_sha, commit_api_url, "github", repository&.id)
         else
           Rails.logger.error "[ProcessCommitJob] GitHub API forbidden (403) for User ##{user.id}. URL: #{commit_api_url}. Response: #{response.body.to_s.truncate(500)}"
         end

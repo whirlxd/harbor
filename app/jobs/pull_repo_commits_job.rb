@@ -22,7 +22,11 @@ class PullRepoCommitsJob < ApplicationJob
       return
     end
 
-    Rails.logger.info "[PullRepoCommitsJob] Pulling commits for #{owner}/#{repo} for User ##{user.id}"
+    # Find the repository record
+    repo_url = "https://github.com/#{owner}/#{repo}"
+    repository = Repository.find_by(url: repo_url)
+
+    Rails.logger.info "[PullRepoCommitsJob] Pulling commits for #{owner}/#{repo} for User ##{user.id} (Repository: #{repository&.id})"
 
     # Get commits from the last 3 days
     since_date = 3.days.ago.iso8601
@@ -37,7 +41,7 @@ class PullRepoCommitsJob < ApplicationJob
 
       if response.status.success?
         commits_data = response.parse
-        process_commits(user, commits_data)
+        process_commits(user, commits_data, repository)
       elsif response.status.code == 404
         Rails.logger.warn "[PullRepoCommitsJob] Repository #{owner}/#{repo} not found (404) for User ##{user.id}."
       elsif response.status.code == 403 # Forbidden, could be rate limit or permissions
@@ -65,7 +69,7 @@ class PullRepoCommitsJob < ApplicationJob
 
   private
 
-  def process_commits(user, commits_data)
+  def process_commits(user, commits_data, repository)
     return if commits_data.empty?
 
     # Get existing commit SHAs to avoid duplicates
@@ -106,7 +110,8 @@ class PullRepoCommitsJob < ApplicationJob
               user.id,
               commit_sha,
               commit_api_url,
-              "github"
+              "github",
+              repository&.id
             )
             enqueued_count += 1
           else
