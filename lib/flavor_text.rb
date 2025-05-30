@@ -214,7 +214,8 @@ class FlavorText
       "never a minute too soon",
       "a minute saved is a minute earned",
       "how did it get so late so soon?", # dr. seuss
-      "You can have it all. Just not all at once." # oprah i think?
+      "You can have it all. Just not all at once.", # oprah i think?
+      "from the #{%w[makers inventor].sample} of #{%w[clocks time hackatime].sample}"
     ]
   end
 
