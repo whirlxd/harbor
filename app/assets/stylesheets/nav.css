@@ -1,19 +1,15 @@
-.nav-item.active {
-  color: var(--primary-color);
+body {
+  display: flex;
+  min-height: 100vh;
 }
 
-.nav > ul {
-  list-style: none;
-  padding: 0;
-}
-
-.nav > ul > li {
-  margin: 8px 0;
-  padding: 0;
-}
-
-a.nav-item {
-  text-decoration: none;
+main {
+  flex: 1;
+  margin-left: 250px;
+  max-width: calc(100% - 250px);
+  padding: 20px;
+  margin-bottom: 100px;
+  transition: margin-left 0.3s ease, max-width 0.3s ease;
 }
 
 aside.nav {
@@ -29,19 +25,15 @@ aside.nav {
   z-index: 1000;
 }
 
-/* Add styles for the main content wrapper */
-body {
-  display: flex;
-  min-height: 100vh;
+.nav > ul {
+  list-style: none;
+  padding: 0;
+  background: transparent;
 }
 
-main {
-  flex: 1;
-  margin-left: 250px;
-  max-width: calc(100% - 250px);
-  padding: 20px;
-  margin-bottom: 100px;
-  transition: margin-left 0.3s ease, max-width 0.3s ease;
+.nav > ul > li {
+  margin: 8px 0;
+  padding: 0;
 }
 
 .nav-item {
@@ -50,6 +42,11 @@ main {
   color: var(--text-color, #333);
   border-radius: 6px;
   transition: background-color 0.15s, color 0.15s;
+  text-decoration: none;
+}
+
+.nav-item.active {
+  color: var(--primary-color);
 }
 
 .nav-item:hover {
@@ -58,7 +55,6 @@ main {
   transition: background-color 0.15s, color 0.15s;
 }
 
-/* Mobile styles */
 @media (max-width: 768px) {
   aside.nav {
     transform: translateX(-100%);
@@ -116,7 +112,6 @@ main {
   }
 }
 
-/* Desktop styles - hide toggle button */
 @media (min-width: 769px) {
   .nav-toggle {
     display: none;
@@ -127,13 +122,7 @@ main {
   }
 }
 
-/* Dark mode support */
 @media (prefers-color-scheme: dark) {
-  .nav-toggle {
-    background: rgb(30, 30, 30);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: white;
-  }
   aside.nav {
     background-color: #13171f;
     color: #f3f3f3;
@@ -157,5 +146,10 @@ main {
     background-color: #23272a;
     color: var(--primary-color, #e13950);
     transition: background-color 0.15s, color 0.15s;
+  }
+  .nav-toggle {
+    background: rgb(30, 30, 30);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
   }
 }
