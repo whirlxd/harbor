@@ -5,6 +5,7 @@ Here's how to add WakaTime plugins to your code editor so Hackatime can track yo
 ## What You Need
 
 Before you start, make sure you have:
+
 * A code editor (like VS Code, PyCharm, Vim, etc.)
 * A [Hackatime account](/)
 

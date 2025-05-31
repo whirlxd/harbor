@@ -11,6 +11,7 @@ Link your coding projects to GitHub so they show up better on leaderboards:
 3. If you need to override a project link, go to [Projects](https://hackatime.hackclub.com/my/projects) → click the pencil emoji (✏️) next to a project → set the GitHub URL
 
 This helps because:
+
 * Your projects show up with links on leaderboards
 * Other people can see what you're building
 * Your GitHub activity connects to your coding time
@@ -28,6 +29,7 @@ Make sure your daily stats are right by setting your time zone:
 ### What Hackatime Sees
 
 Hackatime only tracks:
+
 * **File names** (like `main.py` or `index.html`)
 * **What language you're coding in** (like Python or JavaScript)
 * **What editor you use** (like VS Code or Vim)
@@ -36,6 +38,7 @@ Hackatime only tracks:
 ### What Hackatime Never Sees
 
 Hackatime **never** tracks:
+
 * What you type in your code
 * Your passwords
 * Screenshots of your screen
@@ -45,7 +48,7 @@ Hackatime **never** tracks:
 
 You can tell WakaTime to ignore certain files. Make a file called `.wakatime-project` in your project folder:
 
-```
+```ini
 [settings]
 exclude = 
     /node_modules/
@@ -55,6 +58,7 @@ exclude =
 ```
 
 This will ignore:
+
 * `node_modules` and `vendor` folders
 * Any `.log` files
 * The `temp` folder
@@ -63,11 +67,10 @@ This will ignore:
 
 If you only want to track projects that have a `.wakatime-project` file:
 
-```
+```ini
 [settings]
 include_only_with_project_file = true
 ```
-
 
 ## Need Help?
 
