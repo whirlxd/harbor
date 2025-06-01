@@ -6,8 +6,8 @@ Here's how to add WakaTime plugins to your code editor so Hackatime can track yo
 
 Before you start, make sure you have:
 
-* A code editor (like VS Code, PyCharm, Vim, etc.)
-* A [Hackatime account](/)
+- A code editor (like VS Code, PyCharm, Vim, etc.)
+- A [Hackatime account](/)
 
 ## Step 1: Do the Automated Setup
 
@@ -60,6 +60,6 @@ After setup, start coding! Your time will show up on your [Hackatime dashboard](
 
 ## Need Help?
 
-* **Not seeing your time?** Make sure the API URL is set correctly
-* **Plugin not working?** Try closing and opening your editor again
-* **Still stuck?** Ask for help in [Hack Club Slack](https://hackclub.slack.com) (#hackatime-dev channel)
+- **Not seeing your time?** Make sure the API URL is set correctly
+- **Plugin not working?** Try closing and opening your editor again
+- **Still stuck?** Ask for help in [Hack Club Slack](https://hackclub.slack.com) (#hackatime-dev channel)

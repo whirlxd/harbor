@@ -12,9 +12,9 @@ Link your coding projects to GitHub so they show up better on leaderboards:
 
 This helps because:
 
-* Your projects show up with links on leaderboards
-* Other people can see what you're building
-* Your GitHub activity connects to your coding time
+- Your projects show up with links on leaderboards
+- Other people can see what you're building
+- Your GitHub activity connects to your coding time
 
 ## Set Your Time Zone
 
@@ -30,19 +30,19 @@ Make sure your daily stats are right by setting your time zone:
 
 Hackatime only tracks:
 
-* **File names** (like `main.py` or `index.html`)
-* **What language you're coding in** (like Python or JavaScript)
-* **What editor you use** (like VS Code or Vim)
-* **How long you code**
+- **File names** (like `main.py` or `index.html`)
+- **What language you're coding in** (like Python or JavaScript)
+- **What editor you use** (like VS Code or Vim)
+- **How long you code**
 
 ### What Hackatime Never Sees
 
 Hackatime **never** tracks:
 
-* What you type in your code
-* Your passwords
-* Screenshots of your screen
-* Anything you type on your keyboard
+- What you type in your code
+- Your passwords
+- Screenshots of your screen
+- Anything you type on your keyboard
 
 ## Hide Files You Don't Want Tracked
 
@@ -50,7 +50,7 @@ You can tell WakaTime to ignore certain files. Make a file called `.wakatime-pro
 
 ```ini
 [settings]
-exclude = 
+exclude =
     /node_modules/
     /vendor/
     *.log
@@ -59,9 +59,9 @@ exclude =
 
 This will ignore:
 
-* `node_modules` and `vendor` folders
-* Any `.log` files
-* The `temp` folder
+- `node_modules` and `vendor` folders
+- Any `.log` files
+- The `temp` folder
 
 ## Only Track Certain Projects
 

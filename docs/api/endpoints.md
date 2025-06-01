@@ -63,12 +63,10 @@ See someone else's public coding stats.
   "user": "username",
   "total_seconds": 86400,
   "languages": [
-    {"name": "Python", "seconds": 43200},
-    {"name": "JavaScript", "seconds": 28800}
+    { "name": "Python", "seconds": 43200 },
+    { "name": "JavaScript", "seconds": 28800 }
   ],
-  "projects": [
-    {"name": "my-app", "seconds": 36000}
-  ]
+  "projects": [{ "name": "my-app", "seconds": 36000 }]
 }
 ```
 
@@ -84,7 +82,7 @@ Get the raw data about when you coded.
 **Options you can add**:
 
 - `start` - Start date
-- `end` - End date  
+- `end` - End date
 - `limit` - How many results (max 100)
 
 ### Find Users
