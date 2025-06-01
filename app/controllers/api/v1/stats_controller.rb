@@ -32,7 +32,7 @@ class Api::V1::StatsController < ApplicationController
   def user_stats
     # Used by the github stats page feature
 
-    return render plain: "User not found", status: :not_found unless @user.present?
+    return render json: { error: "User not found" }, status: :not_found unless @user.present?
 
     if !@user.allow_public_stats_lookup && (!current_user || current_user != @user)
       return render json: { error: "user has disabled public stats" }, status: :forbidden
