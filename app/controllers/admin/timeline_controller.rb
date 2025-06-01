@@ -39,12 +39,17 @@ class Admin::TimelineController < Admin::BaseController
 
     users_to_process = valid_user_ids_to_fetch.map { |id| users_by_id[id] }.compact
 
-    start_of_day_timestamp = @date.beginning_of_day.to_f
-    end_of_day_timestamp = @date.end_of_day.to_f
+    # Get all heartbeats for all users within a broader time range (to account for timezone differences)
+    # We'll filter by user timezone later for accuracy
+    server_start_of_day = @date.beginning_of_day.to_f
+    server_end_of_day = @date.end_of_day.to_f
+    # Expand range by 24 hours on each side to account for timezone differences
+    expanded_start = server_start_of_day - 24.hours.to_i
+    expanded_end = server_end_of_day + 24.hours.to_i
 
     all_heartbeats = Heartbeat
                       .where(user_id: valid_user_ids_to_fetch, deleted_at: nil)
-                      .where("time >= ? AND time <= ?", start_of_day_timestamp, end_of_day_timestamp)
+                      .where("time >= ? AND time <= ?", expanded_start, expanded_end)
                       .select(:id, :user_id, :time, :entity, :project, :editor, :language)
                       .order(:user_id, :time)
                       .to_a
@@ -54,11 +59,18 @@ class Admin::TimelineController < Admin::BaseController
     @users_with_timeline_data_unordered = []
 
     users_to_process.each do |user|
+      # Calculate day boundaries in user's timezone
+      user_tz = user.timezone || "UTC"
+      user_start_of_day = @date.in_time_zone(user_tz).beginning_of_day.to_f
+      user_end_of_day = @date.in_time_zone(user_tz).end_of_day.to_f
+
       user_daily_heartbeats_relation = Heartbeat.where(user_id: user.id, deleted_at: nil)
-                                                .where("time >= ? AND time <= ?", start_of_day_timestamp, end_of_day_timestamp)
+                                                .where("time >= ? AND time <= ?", user_start_of_day, user_end_of_day)
       total_coded_time_seconds = user_daily_heartbeats_relation.duration_seconds
 
-      user_heartbeats_for_spans = heartbeats_by_user_id[user.id] || []
+      # Filter heartbeats for spans by user's timezone day boundaries
+      all_user_heartbeats = heartbeats_by_user_id[user.id] || []
+      user_heartbeats_for_spans = all_user_heartbeats.select { |hb| hb.time >= user_start_of_day && hb.time <= user_end_of_day }
       calculated_spans_with_details = []
 
       if user_heartbeats_for_spans.any?
