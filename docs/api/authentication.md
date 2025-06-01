@@ -74,15 +74,15 @@ If it works, you'll get something like:
 
 We don't enforce hard limits right now, but be reasonable:
 
-* Don't make thousands of requests per minute
-* The WakaTime plugin automatically limits heartbeats to every 30 seconds
+- Don't make thousands of requests per minute
+- The WakaTime plugin automatically limits heartbeats to every 30 seconds
 
 ## Keep Your Key Safe
 
-* **Never put API keys in your code** that others can see
-* **Use environment variables** to store your API key
-* **Only use HTTPS** (never HTTP) for API requests
-* **Get a new key** if you think yours was stolen
+- **Never put API keys in your code** that others can see
+- **Use environment variables** to store your API key
+- **Only use HTTPS** (never HTTP) for API requests
+- **Get a new key** if you think yours was stolen
 
 ## Need Help?
 

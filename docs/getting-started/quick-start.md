@@ -29,7 +29,7 @@ The setup page handles all configuration automatically - no manual editing requi
 
 Hackatime works with **any WakaTime plugin**. Install for your editor:
 
-### Popular Editors:
+### Popular Editors
 
 - **VS Code**: Search "WakaTime" in Extensions marketplace
 - **IntelliJ/PyCharm**: Settings → Plugins → Install "WakaTime"
@@ -37,7 +37,7 @@ Hackatime works with **any WakaTime plugin**. Install for your editor:
 - **Sublime Text**: Install via Package Control
 - **Atom**: Install `wakatime` package
 
-### All Other Editors:
+### All Other Editors
 
 Visit [wakatime.com/plugins](https://wakatime.com/plugins) for 40+ supported editors.
 
@@ -70,7 +70,7 @@ Check that it's working:
 
 - ⏱️ **Automatic time tracking** - no manual timers
 - 📊 **Language & project insights** - see what you code most
-- 🏆 **Leaderboards** - compare with other Hack Club members  
+- 🏆 **Leaderboards** - compare with other Hack Club members
 - 🔒 **Privacy-first** - only metadata tracked, never your actual code
 - 🆓 **Completely free** - no premium features or paywalls
 
@@ -95,7 +95,7 @@ Just run the automated setup script on the [Hackatime Setup Page](https://hackat
 
 ## Frequently Asked Questions
 
-**Is Hackatime really free?** Yes! Hackatime is completely free with no premium features or paywalls. It's open source and maintained by Hack Club.
+**Is Hackatime really free?** Yes! Hackatime is completely free with no premium features or paywalls. It's [open source](https://github.com/hackclub/hackatime) and maintained by Hack Club.
 
 **Which editors work with Hackatime?** All [70+ editors](../#supported-editors) that support WakaTime work with Hackatime, including [VS Code](../editors/vs-code), [IntelliJ IDEA](../editors/intellij-idea), [Sublime Text](../editors/sublime-text), [Vim](../editors/vim), [Neovim](../editors/neovim), [PyCharm](../editors/pycharm), and many more.
 
