@@ -12,12 +12,14 @@ The Hackatime API lets you get your coding data with code. It works just like Wa
 Put your API key in your requests like this:
 
 **Best way (Authorization Header)**:
-```
+
+```text
 Authorization: Bearer YOUR_API_KEY
 ```
 
 **Other way (in the URL)**:
-```
+
+```text
 ?api_key=YOUR_API_KEY
 ```
 
@@ -33,6 +35,7 @@ curl -H "Authorization: Bearer YOUR_API_KEY" \
 ## Works With WakaTime Tools
 
 Since Hackatime works like WakaTime's API, you can:
+
 - Use any WakaTime code libraries
 - Point WakaTime tools to Hackatime
 - Move data between WakaTime and Hackatime
@@ -45,4 +48,4 @@ Since Hackatime works like WakaTime's API, you can:
 
 ## More Details
 
-Want to see all the API commands? Check out our [complete API list](./endpoints). Most things work exactly like [WakaTime's API](https://wakatime.com/developers).
+Want to see all the API commands? Check out our [complete API list](./endpoints.md). Most things work exactly like [WakaTime's API](https://wakatime.com/developers).

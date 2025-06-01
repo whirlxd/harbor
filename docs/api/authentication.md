@@ -73,6 +73,7 @@ If it works, you'll get something like:
 ## Rate Limits
 
 We don't enforce hard limits right now, but be reasonable:
+
 * Don't make thousands of requests per minute
 * The WakaTime plugin automatically limits heartbeats to every 30 seconds
 
@@ -86,6 +87,7 @@ We don't enforce hard limits right now, but be reasonable:
 ## Need Help?
 
 Having trouble with your API key? Check:
+
 1. You copied the whole key correctly
 2. You're using the right website URL
 3. Your request looks like the examples above

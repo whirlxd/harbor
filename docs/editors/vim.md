@@ -15,15 +15,20 @@ Click this link to the [setup page](https://hackatime.hackclub.com/my/wakatime_s
 ## Step 3: Add the Plugin to Vim
 
 ### Easy Way (with vim-plug)
+
 1. Add this line to your `.vimrc` file:
-   ```
+
+   ```text
    Plug 'wakatime/vim-wakatime'
    ```
+
 2. Save the file and restart Vim
 3. Type `:PlugInstall` in Vim and press Enter
 
 ### Simple Way (copy and paste)
+
 Copy and paste this into your terminal:
+
 ```bash
 echo "Plugin 'wakatime/vim-wakatime'" >> ~/.vimrc && vim +PluginInstall
 ```

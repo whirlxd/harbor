@@ -5,6 +5,7 @@ Here are all the ways you can get data from Hackatime with code.
 ## How to Log In
 
 All requests need your API key:
+
 - **Best way**: `Authorization: Bearer YOUR_API_KEY` in the header
 - **Other way**: Add `?api_key=YOUR_API_KEY` to the URL
 
@@ -14,16 +15,16 @@ Get your API key from [Hackatime settings](https://hackatime.hackclub.com/my/set
 
 These work with existing WakaTime apps and libraries.
 
-
-
 ### Get Today's Time
-```
+
+```bash
 GET /api/hackatime/v1/users/{user_id}/statusbar/today
 ```
 
 Shows how much you've coded today.
 
 **What you get back**:
+
 ```json
 {
   "data": {
@@ -40,20 +41,23 @@ Shows how much you've coded today.
 These are special to Hackatime.
 
 ### Your Coding Stats
-```
+
+```bash
 GET /api/v1/stats
 ```
 
 Get how much you've coded overall.
 
 ### Someone Else's Stats
-```
+
+```bash
 GET /api/v1/users/{username}/stats
 ```
 
 See someone else's public coding stats.
 
 **What you get back**:
+
 ```json
 {
   "user": "username",
@@ -69,7 +73,8 @@ See someone else's public coding stats.
 ```
 
 ### Your Raw Activity Data
-```
+
+```bash
 GET /api/v1/my/heartbeats
 GET /api/v1/my/heartbeats/most_recent
 ```
@@ -77,12 +82,14 @@ GET /api/v1/my/heartbeats/most_recent
 Get the raw data about when you coded.
 
 **Options you can add**:
+
 - `start` - Start date
 - `end` - End date  
 - `limit` - How many results (max 100)
 
 ### Find Users
-```
+
+```bash
 GET /api/v1/users/lookup_email/{email}
 GET /api/v1/users/lookup_slack_uid/{slack_uid}
 ```
@@ -92,14 +99,14 @@ Find users by their email or Slack ID.
 ## Try These Examples
 
 ### See Your Recent Activity
+
 ```bash
 curl -H "Authorization: Bearer YOUR_API_KEY" \
   "https://hackatime.hackclub.com/api/v1/my/heartbeats?limit=10"
 ```
 
+### See Today's Time
 
-
-### Get Today's Time
 ```bash
 curl -H "Authorization: Bearer YOUR_API_KEY" \
   "https://hackatime.hackclub.com/api/hackatime/v1/users/current/statusbar/today"
@@ -121,8 +128,7 @@ Errors look like this:
 ```
 
 Common problems:
+
 - `401` - Bad or missing API key
 - `404` - That thing doesn't exist
 - `500` - Something broke on our end
-
-
