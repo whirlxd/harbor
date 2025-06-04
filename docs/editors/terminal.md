@@ -14,9 +14,13 @@ Visit the [setup page](https://hackatime.hackclub.com/my/wakatime_setup) to auto
 
 ## Step 3: Install Terminal Plugin
 
-Follow the detailed plugin installation instructions on the [WakaTime Terminal page](https://wakatime.com/terminal).
+Run this command in your terminal to install the Hack Club terminal-wakatime plugin:
 
-The WakaTime plugin will automatically use your Hackatime configuration after running the setup script.
+```bash
+curl -fsSL http://hack.club/terminal-wakatime.sh | sh
+```
+
+This installs `terminal-wakatime` and automatically configures it for bash, zsh, or fish shells. The plugin will use your Hackatime configuration from the setup script.
 
 ## Troubleshooting
 
