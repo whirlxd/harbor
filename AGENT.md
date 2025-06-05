@@ -22,6 +22,9 @@
 - **Interactive shell**: `docker compose run --service-ports web /bin/bash`
 - **Initial setup**: `docker compose run web bin/rails db:create db:schema:load db:seed`
 
+## Git Practices
+- **NEVER commit `config/database.yml`** unless explicitly asked to - contains sensitive local/production database credentials
+
 ## Code Style (rubocop-rails-omakase)
 - **Naming**: snake_case files/methods/vars, PascalCase classes, 2-space indent
 - **Controllers**: Inherit `ApplicationController`, use `before_action`, strong params with `.permit()`
