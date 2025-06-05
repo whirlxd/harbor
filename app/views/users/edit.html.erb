@@ -212,6 +212,21 @@
     </p>
   </section>
 
+  <section>
+    <h2 id="user_privacy">Privacy</h2>
+    <%= form_with model: @user,
+      url: @is_own_settings ? my_settings_path : settings_user_path(@user),
+      method: :patch do |f| %>
+      <fieldset>
+        <label for="user_allow_public_stats_lookup">
+          <%= f.check_box :allow_public_stats_lookup, id: "user_allow_public_stats_lookup" %>
+          <%= f.label :allow_public_stats_lookup, "Allow others to look up my public coding stats via the API" %>
+        </label>
+      </fieldset>
+      <%= f.submit "Save Settings" %>
+    <% end %>
+  </section>
+
   <% admin_tool do %>
     <section>
       <h2 id="wakatime_mirror">WakaTime Mirror</h2>

@@ -7,6 +7,8 @@ class User < ApplicationRecord
   validates :timezone, inclusion: { in: TZInfo::Timezone.all_identifiers }, allow_nil: false
   validates :country_code, inclusion: { in: ISO3166::Country.codes }, allow_nil: true
 
+  attribute :allow_public_stats_lookup, :boolean, default: true
+
   def country_name
     ISO3166::Country.new(country_code).common_name
   end
