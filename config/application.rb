@@ -46,5 +46,7 @@ module Harbor
       expire_after: 14.days,
       secure: Rails.env.production?,
       httponly: true
+
+    config.middleware.use HtmlCompressor::Rack
   end
 end

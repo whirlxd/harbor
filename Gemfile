@@ -122,3 +122,5 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+gem "htmlcompressor", "~> 0.4.0"
