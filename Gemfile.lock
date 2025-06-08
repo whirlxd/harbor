@@ -99,6 +99,7 @@ GEM
       device_detector (>= 1)
       safely_block (>= 0.4)
     ast (2.4.3)
+    autotuner (1.0.2)
     base64 (0.3.0)
     bcrypt_pbkdf (1.1.1)
     bcrypt_pbkdf (1.1.1-arm64-darwin)
@@ -523,6 +524,7 @@ DEPENDENCIES
   activerecord-import
   ahoy_captain!
   ahoy_matey
+  autotuner (~> 1.0)
   bootsnap
   brakeman
   bullet
