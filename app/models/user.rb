@@ -211,10 +211,10 @@ class User < ApplicationRecord
     return if status_present && status_custom
 
     current_project = heartbeats.order(time: :desc).first&.project
-    Time.use_zone(timezone) do
-      current_project_duration = heartbeats.where(project: current_project)
-                                           .today
-                                           .duration_seconds
+    current_project_duration = Time.use_zone(timezone) do
+      heartbeats.where(project: current_project)
+                .today
+                .duration_seconds
     end
     current_project_duration_formatted = ApplicationController.helpers.short_time_simple(current_project_duration)
 
