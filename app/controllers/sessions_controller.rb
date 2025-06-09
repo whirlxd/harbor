@@ -82,6 +82,17 @@ class SessionsController < ApplicationController
     end
   end
 
+  def github_unlink
+    unless current_user
+      redirect_to root_path, alert: "Please sign in first"
+      return
+    end
+
+    current_user.update!(github_access_token: nil)
+    Rails.logger.info "GitHub account unlinked for User ##{current_user.id}"
+    redirect_to my_settings_path, notice: "GitHub account unlinked successfully"
+  end
+
   def email
     email = params[:email].downcase
     continue_param = params[:continue]

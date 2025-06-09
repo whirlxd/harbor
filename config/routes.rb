@@ -65,6 +65,7 @@ Rails.application.routes.draw do
   get "/auth/slack/callback", to: "sessions#create"
   get "/auth/github", to: "sessions#github_new", as: :github_auth
   get "/auth/github/callback", to: "sessions#github_create"
+  delete "/auth/github/unlink", to: "sessions#github_unlink", as: :github_unlink
   post "/auth/email", to: "sessions#email", as: :email_auth
   post "/auth/email/add", to: "sessions#add_email", as: :add_email_auth
   get "/auth/token/:token", to: "sessions#token", as: :auth_token

@@ -92,6 +92,17 @@
         <p>This is used to show your active projects on the leaderboard &amp; current hacking activity on the dashboard.</p>
         <% if @user.github_uid.present? %>
           <p>✅ Your GitHub account is linked: <%= link_to "@#{@user.github_username}", "https://github.com/#{@user.github_username}", target: "_blank" %></p>
+          <% if @user.github_access_token.present? %>
+            <%= link_to "Relink GitHub Account", github_auth_path, data: { turbo: "false" }, role: "button" %>
+            <%= link_to "Unlink GitHub Account", github_unlink_path, 
+                method: :delete, 
+                data: { confirm: "Are you sure? This will remove access to your GitHub data." }, 
+                role: "button", 
+                class: "outline" %>
+          <% else %>
+            <p>⚠️ Your GitHub token has expired. Please relink your account.</p>
+            <%= link_to "Relink GitHub Account", github_auth_path, data: { turbo: "false" }, role: "button" %>
+          <% end %>
         <% else %>
           <%= link_to "Link GitHub Account", github_auth_path, data: { turbo: "false" }, role: "button" %>
         <% end %>
