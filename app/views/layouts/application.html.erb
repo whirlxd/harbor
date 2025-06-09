@@ -137,7 +137,7 @@
     <%= Sentry.get_trace_propagation_meta.html_safe %>
   </head>
 
-  <body style="display: flex;" data-controller="nav">
+  <body class="<%= content_for(:body_class) %>" style="display: flex;" data-controller="nav">
     <!-- Mobile nav toggle button -->
     <button class="nav-toggle" data-action="click->nav#toggle">Menu</button>
     
