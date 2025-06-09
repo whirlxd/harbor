@@ -219,7 +219,14 @@ class Api::Hackatime::V1::HackatimeController < ApplicationController
   end
 
   def body_to_json
-    params.to_unsafe_h["_json"] || {}
+    return params.to_unsafe_h["_json"] if params.to_unsafe_h["_json"].present?
+
+    # Handle text/plain content-type by manually parsing JSON body
+    begin
+      JSON.parse(request.raw_post) if request.raw_post.present?
+    rescue JSON::ParserError
+      {}
+    end || {}
   end
 
   def handle_heartbeat(heartbeat_array)
@@ -315,6 +322,10 @@ class Api::Hackatime::V1::HackatimeController < ApplicationController
   def heartbeat_bulk_params
     if params[:_json].present?
       { heartbeats: params.permit(_json: [ *heartbeat_keys ])[:_json] }
+    elsif request.content_type&.include?("text/plain") && request.raw_post.present?
+      # Handle text/plain requests by parsing JSON directly
+      parsed_json = JSON.parse(request.raw_post) rescue []
+      { heartbeats: parsed_json }
     else
       params.require(:hackatime).permit(
         heartbeats: [
@@ -328,6 +339,11 @@ class Api::Hackatime::V1::HackatimeController < ApplicationController
     # Handle both direct params and _json format from WakaTime
     if params[:_json].present?
       params[:_json].first.permit(*heartbeat_keys)
+    elsif request.content_type&.include?("text/plain") && request.raw_post.present?
+      # Handle text/plain requests by parsing JSON directly
+      parsed_json = JSON.parse(request.raw_post) rescue {}
+      parsed_json = [ parsed_json ] unless parsed_json.is_a?(Array)
+      parsed_json.first&.with_indifferent_access&.slice(*heartbeat_keys) || {}
     elsif params[:hackatime].present?
       params.require(:hackatime).permit(*heartbeat_keys)
     else
