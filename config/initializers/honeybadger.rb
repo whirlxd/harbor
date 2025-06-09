@@ -7,6 +7,10 @@ Honeybadger.configure do |config|
   MAX_ERRORS_PER_DAY = 50
 
   config.before_notify do |notice|
+    if notice.error_class == "Norairrecord::Error" && notice.error_message&.include?("HTTP 429")
+      return false
+    end
+
     error_index = generate_error_index notice
 
     should_ignore = rate_limit_exceeded? error_index
