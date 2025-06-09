@@ -80,15 +80,14 @@ class ProcessCommitJob < ApplicationJob
           return
         end
 
-        Commit.create!(
-          sha: api_commit_sha,
-          user_id: user.id,
-          repository_id: repository&.id,
-          github_raw: commit_data_json,
-          created_at: commit_actual_created_at, # Manually set created_at
-          updated_at: Time.current # Let Rails handle updated_at, or set explicitly
-        )
-        Rails.logger.info "[ProcessCommitJob] Successfully stored commit #{api_commit_sha} for User ##{user.id}."
+        commit = Commit.find_or_create_by(sha: api_commit_sha) do |c|
+          c.user_id = user.id
+          c.repository_id = repository&.id
+          c.github_raw = commit_data_json
+          c.created_at = commit_actual_created_at
+          c.updated_at = Time.current
+        end
+        Rails.logger.info "[ProcessCommitJob] Successfully processed commit #{api_commit_sha} for User ##{user.id}."
 
       elsif response.status.code == 404
         Rails.logger.warn "[ProcessCommitJob] Commit #{commit_sha} not found (404) at #{commit_api_url} for User ##{user.id}."
@@ -113,8 +112,7 @@ class ProcessCommitJob < ApplicationJob
       Rails.logger.error "[ProcessCommitJob] JSON Parse Error for commit #{commit_sha} (User ##{user.id}): #{e.message}. URL: #{commit_api_url}. Body: #{response&.body&.to_s&.truncate(200)}"
       # Malformed JSON usually isn't temporary, so might not retry unless API is known to be flaky.
     rescue ActiveRecord::RecordInvalid => e
-      Rails.logger.error "[ProcessCommitJob] Validation failed for commit #{commit_sha} (User ##{user.id}): #{e.message}. Data to save: sha=#{api_commit_sha}, user_id=#{user.id}, created_at=#{commit_actual_created_at}"
-      # This indicates a local data or logic issue, usually not retried.
+      Rails.logger.error "[ProcessCommitJob] Validation failed for commit #{commit_sha} (User ##{user.id}): #{e.message}"
     end
   end
 end
