@@ -286,6 +286,10 @@ class Api::Hackatime::V1::HackatimeController < ApplicationController
       api_token ||= params[:api_key]
     end
     return render json: { error: "Unauthorized" }, status: :unauthorized unless api_token.present?
+    
+    # Sanitize api_token to handle invalid UTF-8 sequences
+    api_token = api_token.to_s.encode('UTF-8', invalid: :replace, undef: :replace, replace: '')
+    
     valid_key = ApiKey.find_by(token: api_token)
     return render json: { error: "Unauthorized" }, status: :unauthorized unless valid_key.present?
 
