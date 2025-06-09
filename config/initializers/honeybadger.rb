@@ -18,7 +18,7 @@ Honeybadger.configure do |config|
 
   private
 
-  def generate_error_index notice
+  def generate_error_index(notice)
     if notice.backtrace&.any?
       first_stack_line = notice.backtrace.first
       "#{notice.error_class}:#{first_stack_line}"
@@ -29,7 +29,7 @@ Honeybadger.configure do |config|
     end
   end
 
-  def rate_limit_exceeded? error_index
+  def rate_limit_exceeded?(error_index)
     now = Time.current
     one_hour_ago = now - 1.hour
     one_day_ago = now - 1.day
@@ -43,7 +43,7 @@ Honeybadger.configure do |config|
     hourly_count >= MAX_ERRORS_PER_HOUR || daily_count >= MAX_ERRORS_PER_DAY
   end
 
-  def record_error_occurrence error_index
+  def record_error_occurrence(error_index)
     now = Time.current
     @error_counts[error_index][:hourly] << now
     @error_counts[error_index][:daily] << now
