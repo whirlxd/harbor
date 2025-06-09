@@ -1,7 +1,6 @@
 class AttemptProjectRepoMappingJob < ApplicationJob
   queue_as :latency_10s
-
-  include GoodJob::ActiveJobExtensions::Concurrency
+  include HasEnqueueControl
 
   good_job_control_concurrency_with(
     total_limit: 1,

@@ -11,4 +11,12 @@ module HasEnqueueControl
       )
     end
   end
+
+  def perform(*args)
+    super
+  rescue GoodJob::ActiveJobExtensions::Concurrency::ConcurrencyExceededError
+    msg = "Concurrency limit exceeded for #{self.class.name}"
+    msg += " with args: #{args.inspect}" if args.present?
+    Rails.logger.info msg
+  end
 end
