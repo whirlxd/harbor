@@ -127,7 +127,7 @@ Rails.application.configure do
       class: "AttemptToDeliverPhysicalMailJob"
     },
     sync_neighborhood_from_airtable: {
-      cron: "*/5 * * * *",
+      cron: "*/15 * * * *",
       class: "Neighborhood::SyncFromAirtableJob"
     },
     trigger_time_update: {
