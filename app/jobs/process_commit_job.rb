@@ -89,6 +89,10 @@ class ProcessCommitJob < ApplicationJob
         end
         Rails.logger.info "[ProcessCommitJob] Successfully processed commit #{api_commit_sha} for User ##{user.id}."
 
+      elsif response.status.code == 401 # Unauthorized
+        Rails.logger.error "[ProcessCommitJob] Unauthorized (401) for User ##{user.id}. GitHub token expired/invalid. URL: #{commit_api_url}"
+        user.update!(github_access_token: nil)
+        Rails.logger.info "[ProcessCommitJob] Cleared invalid GitHub token for User ##{user.id}. User will need to re-authenticate."
       elsif response.status.code == 404
         Rails.logger.warn "[ProcessCommitJob] Commit #{commit_sha} not found (404) at #{commit_api_url} for User ##{user.id}."
       elsif response.status.code == 403 # Forbidden, could be rate limit or permissions
@@ -102,7 +106,7 @@ class ProcessCommitJob < ApplicationJob
         end
       else
         Rails.logger.error "[ProcessCommitJob] GitHub API error for User ##{user.id}. Status: #{response.status}. URL: #{commit_api_url}. Response: #{response.body.to_s.truncate(500)}"
-        raise "GitHub API Error: Status #{response.status}" if response.status.server_error? || response.status.code == 401 # Trigger retry for server errors or auth issues
+        raise "GitHub API Error: Status #{response.status}" if response.status.server_error? # Trigger retry for server errors
       end
 
     rescue HTTP::Error => e # Covers TimeoutError, ConnectionError

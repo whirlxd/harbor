@@ -42,6 +42,11 @@ class PullRepoCommitsJob < ApplicationJob
       if response.status.success?
         commits_data = response.parse
         process_commits(user, commits_data, repository)
+
+      elsif response.status.code == 401 # Unauthorized
+        Rails.logger.error "[PullRepoCommitsJob] Unauthorized (401) for User ##{user.id}. GitHub token expired/invalid. URL: #{commit_api_url}"
+        user.update!(github_access_token: nil)
+        Rails.logger.info "[PullRepoCommitsJob] Cleared invalid GitHub token for User ##{user.id}. User will need to re-authenticate."
       elsif response.status.code == 404
         Rails.logger.warn "[PullRepoCommitsJob] Repository #{owner}/#{repo} not found (404) for User ##{user.id}."
       elsif response.status.code == 403 # Forbidden, could be rate limit or permissions
@@ -55,7 +60,7 @@ class PullRepoCommitsJob < ApplicationJob
         end
       else
         Rails.logger.error "[PullRepoCommitsJob] GitHub API error for User ##{user.id}. Status: #{response.status}. Response: #{response.body.to_s.truncate(500)}"
-        raise "GitHub API Error: Status #{response.status}" if response.status.server_error? || response.status.code == 401
+        raise "GitHub API Error: Status #{response.status}" if response.status.server_error?
       end
 
     rescue HTTP::Error => e
