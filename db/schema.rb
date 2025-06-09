@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_08_205244) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_09_143856) do
   create_schema "pganalyze"
 
   # These are extensions that must be enabled in order to support this database
@@ -250,6 +250,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_08_205244) do
     t.datetime "finished_generating_at"
     t.datetime "deleted_at"
     t.integer "period_type", default: 0, null: false
+    t.index ["start_date"], name: "index_leaderboards_on_start_date", where: "(deleted_at IS NULL)"
   end
 
   create_table "mailing_addresses", force: :cascade do |t|
