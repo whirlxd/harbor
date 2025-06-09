@@ -66,12 +66,12 @@ class AttemptProjectRepoMappingJob < ApplicationJob
       .get("https://api.github.com/users/#{@user.github_username}/orgs")
 
     Rails.logger.info "GitHub orgs response: #{response.body}"
-    
+
     return [] unless response.status.success?
-    
+
     parsed_response = JSON.parse(response.body)
     return [] unless parsed_response.is_a?(Array)
-    
+
     parsed_response
   rescue JSON::ParserError => e
     Rails.logger.error "Failed to parse GitHub orgs response: #{e.message}"
