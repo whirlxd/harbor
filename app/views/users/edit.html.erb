@@ -95,8 +95,10 @@
           <% if @user.github_access_token.present? %>
             <%= link_to "Relink GitHub Account", github_auth_path, data: { turbo: "false" }, role: "button" %>
             <%= link_to "Unlink GitHub Account", github_unlink_path, 
-                method: :delete, 
-                data: { confirm: "Are you sure? This will remove access to your GitHub data." }, 
+                data: { 
+                  turbo_method: :delete,
+                  confirm: "Are you sure? This will remove access to your GitHub data." 
+                }, 
                 role: "button", 
                 class: "outline" %>
           <% else %>
