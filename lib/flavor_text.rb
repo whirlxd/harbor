@@ -215,6 +215,7 @@ class FlavorText
       "a minute saved is a minute earned",
       "how did it get so late so soon?", # dr. seuss
       "You can have it all. Just not all at once.", # oprah i think?
+      "It takes a long time to build something good: <a href='https://github.com/hackclub/hackatime#readme' target='_blank'><img src='https://hackatime-badge.hackclub.com/U0C7B14Q3/harbor'></a>".html_safe,
       "If you're seeing this, the page is currently <a href='https://status.hackatime.hackclub.com/status/hackatime' target='_blank'><img src='https://status.hackatime.hackclub.com/api/badge/1/status'></a>.".html_safe
     ]
   end
