@@ -215,6 +215,7 @@ class FlavorText
       "a minute saved is a minute earned",
       "how did it get so late so soon?", # dr. seuss
       "You can have it all. Just not all at once.", # oprah i think?
+      "from the #{%w[makers inventor].sample} of #{%w[clocks time hackatime].sample}",
       "written in #{Rails.application.config.lines_of_code} lines of code!",
       "#{%w[est created inited].sample} <span id='init-time-ago'>#{Time.now.to_i - Time.parse("Sun Feb 16 03:21:30 2025 -0500").to_i}</span> seconds ago!<script>setInterval(()=>{document.getElementById('init-time-ago').innerHTML=parseInt(document.getElementById('init-time-ago').innerHTML)+1},1000)</script>".html_safe,
       "uptime: <span id='uptime'>#{Time.now.to_i - Rails.application.config.server_start_time.to_i}</span> seconds!<script>setInterval(()=>{document.getElementById('uptime').innerHTML=parseInt(document.getElementById('uptime').innerHTML)+1},1000)</script>".html_safe,
