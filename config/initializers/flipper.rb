@@ -1,7 +1,7 @@
 Rails.application.configure do
   ## Memoization ensures that only one adapter call is made per feature per request.
   ## For more info, see https://www.flippercloud.io/docs/optimization#memoization
-  # config.flipper.memoize = true
+  config.flipper.memoize = true
 
   ## Flipper preloads all features before each request, which is recommended if:
   ##   * you have a limited number of features (< 100?)
@@ -14,6 +14,7 @@ Rails.application.configure do
   ## Warn or raise an error if an unknown feature is checked
   ## Can be set to `:warn`, `:raise`, or `false`
   # config.flipper.strict = Rails.env.development? && :warn
+  config.flipper.strict = false
 
   ## Show Flipper checks in logs
   # config.flipper.log = true
@@ -26,10 +27,6 @@ Rails.application.configure do
 
   ## The instrumenter that Flipper will use. Defaults to ActiveSupport::Notifications.
   # config.flipper.instrumenter = ActiveSupport::Notifications
-end
-
-Flipper.configure do |config|
-  config.use Flipper::Adapters::ActiveRecord
 end
 
 ## Register a group that can be used for enabling features.
