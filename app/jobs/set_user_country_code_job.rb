@@ -18,10 +18,7 @@ class SetUserCountryCodeJob < ApplicationJob
         country_code = result.country_code.upcase
         puts "Found country code: #{country_code}"
 
-        if ISO3166::Country.codes.include?(country_code)
-          User.find(user_id).update!(country_code: country_code)
-          return
-        end
+        User.find(user_id).update!(country_code: country_code)
       rescue => e
         Rails.logger.error "Error getting country code for IP #{ip}: #{e.message}"
         next
