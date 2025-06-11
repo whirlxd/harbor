@@ -24,5 +24,6 @@ class GeocodeUsersWithoutCountryJob < ApplicationJob
                               .joins(:heartbeats)
                               .where.not(heartbeats: { ip_address: nil })
                               .distinct
+                              .limit(100)
   end
 end
