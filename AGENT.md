@@ -21,6 +21,7 @@
 ## Docker Development
 - **Interactive shell**: `docker compose run --service-ports web /bin/bash`
 - **Initial setup**: `docker compose run web bin/rails db:create db:schema:load db:seed`
+- **Cleanup**: Run commands with the `--remove-orphans` flag to remove unused containers and images
 
 ## Git Practices
 - **NEVER commit `config/database.yml`** unless explicitly asked to - contains sensitive local/production database credentials
