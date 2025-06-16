@@ -14,9 +14,9 @@ development:
     adapter: postgresql
     encoding: unicode
     pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-    url: <%= ENV['DATABASE_URL'] %>
+    url: <%= ENV['PROD_DATABASE_URL'] %>
   primary_direct:
-    url: <%= ENV['DATABASE_URL'] %>
+    url: <%= ENV['PROD_DATABASE_URL'] %>
     adapter: postgresql
     encoding: unicode
     database_tasks: false
@@ -71,7 +71,6 @@ test:
     username: postgres
     password: postgres
     replica: true
-
 
 # Store production database in the storage/ directory, which by default
 # is mounted as a persistent Docker volume in config/deploy.yml.
