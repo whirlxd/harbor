@@ -5,6 +5,7 @@ class AddIndexToGoodJobsFinishedAtWithError < ActiveRecord::Migration[8.0]
     add_index :good_jobs, :finished_at,
               where: 'error IS NOT NULL',
               algorithm: :concurrently,
-              name: 'index_good_jobs_finished_at_with_error'
+              name: 'index_good_jobs_finished_at_with_error',
+              if_not_exists: true
   end
 end
