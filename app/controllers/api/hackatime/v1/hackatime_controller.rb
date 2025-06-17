@@ -234,6 +234,10 @@ class Api::Hackatime::V1::HackatimeController < ApplicationController
     heartbeat_array.each do |heartbeat|
       source_type = :direct_entry
 
+      # Fallback to :plugin if :user_agent is not set
+      fallback_value = heartbeat.delete(:plugin)
+      heartbeat[:user_agent] ||= fallback_value
+
       parsed_ua = WakatimeService.parse_user_agent(heartbeat[:user_agent])
 
       # special case: if the entity is "test.txt", this is a test heartbeat
@@ -318,7 +322,8 @@ class Api::Hackatime::V1::HackatimeController < ApplicationController
       :project_root_count,
       :time,
       :type,
-      :user_agent
+      :user_agent,
+      :plugin
     ]
   end
 
@@ -328,8 +333,9 @@ class Api::Hackatime::V1::HackatimeController < ApplicationController
       { heartbeats: params.permit(_json: [ *heartbeat_keys ])[:_json] }
     elsif request.content_type&.include?("text/plain") && request.raw_post.present?
       # Handle text/plain requests by parsing JSON directly
-      parsed_json = JSON.parse(request.raw_post) rescue []
-      { heartbeats: parsed_json }
+      parsed_json = JSON.parse(request.raw_post, symbolize_names: true) rescue []
+      filtered_json = parsed_json.map { |hb| hb.slice(*heartbeat_keys) }
+      { heartbeats: filtered_json }
     else
       params.require(:hackatime).permit(
         heartbeats: [
@@ -345,7 +351,7 @@ class Api::Hackatime::V1::HackatimeController < ApplicationController
       params[:_json].first.permit(*heartbeat_keys)
     elsif request.content_type&.include?("text/plain") && request.raw_post.present?
       # Handle text/plain requests by parsing JSON directly
-      parsed_json = JSON.parse(request.raw_post) rescue {}
+      parsed_json = JSON.parse(request.raw_post, symbolize_names: true) rescue {}
       parsed_json = [ parsed_json ] unless parsed_json.is_a?(Array)
       parsed_json.first&.with_indifferent_access&.slice(*heartbeat_keys) || {}
     elsif params[:hackatime].present?
