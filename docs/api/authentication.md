@@ -92,4 +92,4 @@ Having trouble with your API key? Check:
 2. You're using the right website URL
 3. Your request looks like the examples above
 
-Still stuck? Ask for help in [Hack Club Slack](https://hackclub.slack.com) (#hackatime-dev channel)!
+Still stuck? Ask for help in [Hack Club Slack](https://hackclub.slack.com) (#hackatime-v2 channel)!
