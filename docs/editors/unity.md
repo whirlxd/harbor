@@ -34,7 +34,7 @@ After installing, the plugin will use your settings from Step 2.
 
 **Package Manager not working?** Make sure you're connected to the internet.
 
-**Still having trouble?** Ask for help in [Hack Club Slack](https://hackclub.slack.com) - look for the #hackatime-dev channel.
+**Still having trouble?** Ask for help in [Hack Club Slack](https://hackclub.slack.com) - look for the #hackatime-v2 channel.
 
 ## What Happens Next
 
