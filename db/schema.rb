@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_16_192214) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_18_170000) do
   create_schema "pganalyze"
 
   # These are extensions that must be enabled in order to support this database
@@ -493,6 +493,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_16_192214) do
     t.string "country_code"
     t.string "mailing_address_otc"
     t.boolean "allow_public_stats_lookup", default: true, null: false
+    t.boolean "default_timezone_leaderboard", default: true, null: false
     t.index ["slack_uid"], name: "index_users_on_slack_uid", unique: true
     t.index ["timezone"], name: "index_users_on_timezone"
   end
