@@ -7,7 +7,7 @@
     <% elsif @scope == 'timezone' %>
       <em>🧪 <strong>Timezone Leaderboard:</strong> Showing users in <%= @scope_description %></em>
     <% elsif @scope == 'global' %>
-      <em>This leaderboard runs in UTC time!</em>
+      <em title="Current UTC time: <%= Time.now.utc.strftime('%H:%M:%S UTC') %>">This leaderboard runs in UTC time!</em>
     <% else %>
       <em>🧪 <strong>Regional Leaderboard:</strong> Showing users in <%= @scope_description %></em>
     <% end %>
