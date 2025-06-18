@@ -8,7 +8,7 @@
 
 ```sh
 # Set it up...
-$ git clone https://github.com/hackclub/harbor && cd harbor
+$ git clone https://github.com/hackclub/hackatime && cd hackatime
 
 # Set your config
 $ cp .env.example .env
