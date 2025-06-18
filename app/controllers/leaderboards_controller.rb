@@ -15,7 +15,7 @@ class LeaderboardsController < ApplicationController
   private
 
   def set_params
-    @use_timezone_leaderboard = current_user && Flipper.enabled?(:timezone_leaderboard, current_user)
+    @use_timezone_leaderboard = current_user&.default_timezone_leaderboard
     @period_type = validated_period_type
     @scope = params[:scope] || (@use_timezone_leaderboard ? "regional" : "global")
     @scope_description = scope_description

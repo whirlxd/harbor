@@ -20,32 +20,6 @@ class UsersController < ApplicationController
   end
 
   def update
-    # Handle timezone leaderboard toggle
-    if params[:toggle_timezone_leaderboard] == "1"
-      if Flipper.enabled?(:timezone_leaderboard, @user)
-        Flipper.disable(:timezone_leaderboard, @user)
-        message = "Regional & Timezone Leaderboards disabled"
-      else
-        Flipper.enable(:timezone_leaderboard, @user)
-        message = "Regional & Timezone Leaderboards enabled"
-      end
-
-      respond_to do |format|
-        format.turbo_stream do
-          render turbo_stream: turbo_stream.replace(
-            "timezone_leaderboard_toggle",
-            partial: "timezone_leaderboard_toggle",
-            locals: { user: @user }
-          )
-        end
-        format.html do
-          redirect_to is_own_settings? ? my_settings_path : settings_user_path(@user),
-            notice: message
-        end
-      end
-      return
-    end
-
     # Handle regular user settings updates
     if params[:user].present?
       if @user.update(user_params)
@@ -132,6 +106,6 @@ class UsersController < ApplicationController
   end
 
   def user_params
-    params.require(:user).permit(:uses_slack_status, :hackatime_extension_text_type, :timezone, :allow_public_stats_lookup)
+    params.require(:user).permit(:uses_slack_status, :hackatime_extension_text_type, :timezone, :allow_public_stats_lookup, :default_timezone_leaderboard)
   end
 end
