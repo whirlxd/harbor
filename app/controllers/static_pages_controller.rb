@@ -85,10 +85,10 @@ class StaticPagesController < ApplicationController
   end
 
   def mini_leaderboard
-    @use_timezone_leaderboard = current_user && Flipper.enabled?(:timezone_leaderboard, current_user)
+    use_timezone_leaderboard = current_user&.default_timezone_leaderboard
 
-    if @use_timezone_leaderboard && current_user&.timezone_utc_offset
-      # Use regional leaderboard for beta participants
+    if use_timezone_leaderboard && current_user&.timezone_utc_offset
+      # we now doing it by default wooo
       @leaderboard = LeaderboardGenerator.generate_timezone_offset_leaderboard(
         Date.current, current_user.timezone_utc_offset, :daily
       )

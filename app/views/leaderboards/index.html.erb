@@ -3,13 +3,13 @@
     <h1>Leaderboard</h1>
 
     <% if @scope == 'regional' %>
-      <em>🧪 <strong>Regional Leaderboard:</strong> Showing users in <%= @scope_description %></em>
+      <em><strong>Regional Leaderboard:</strong> Showing users in <%= @scope_description %></em>
     <% elsif @scope == 'timezone' %>
-      <em>🧪 <strong>Timezone Leaderboard:</strong> Showing users in <%= @scope_description %></em>
+      <em><strong>Timezone Leaderboard:</strong> Showing users in <%= @scope_description %></em>
     <% elsif @scope == 'global' %>
       <em title="Current UTC time: <%= Time.now.utc.strftime('%H:%M:%S UTC') %>">This leaderboard runs in UTC time!</em>
     <% else %>
-      <em>🧪 <strong>Regional Leaderboard:</strong> Showing users in <%= @scope_description %></em>
+      <em><strong>Regional Leaderboard:</strong> Showing users in <%= @scope_description %></em>
     <% end %>
     
     <div class="period-toggle">
@@ -21,18 +21,14 @@
                   class: "period-toggle-btn #{@period_type == :last_7_days ? 'active' : ''}" %>
     </div>
 
-    <% if current_user && Flipper.enabled?(:timezone_leaderboard, current_user) %>
-      <div class="period-toggle">
-        <%= link_to "Timezone", leaderboards_path(period_type: @period_type, scope: 'timezone'), 
-                    class: "period-toggle-btn #{@scope == 'timezone' ? 'active' : ''}" %>
-        <%= link_to "Regional", leaderboards_path(period_type: @period_type, scope: 'regional'), 
-                    class: "period-toggle-btn #{@scope == 'regional' ? 'active' : ''}" %>
-        <%= link_to "Global", leaderboards_path(period_type: @period_type, scope: 'global'), 
-                    class: "period-toggle-btn #{@scope == 'global' ? 'active' : ''}" %>
-      </div>
-    <% end %>
-
-
+    <div class="period-toggle">
+      <%= link_to "Timezone", leaderboards_path(period_type: @period_type, scope: 'timezone'), 
+                  class: "period-toggle-btn #{@scope == 'timezone' ? 'active' : ''}" %>
+      <%= link_to "Regional", leaderboards_path(period_type: @period_type, scope: 'regional'), 
+                  class: "period-toggle-btn #{@scope == 'regional' ? 'active' : ''}" %>
+      <%= link_to "Global", leaderboards_path(period_type: @period_type, scope: 'global'), 
+                  class: "period-toggle-btn #{@scope == 'global' ? 'active' : ''}" %>
+    </div>
 
     <% if current_user && current_user.github_uid.blank? %>
       <p>

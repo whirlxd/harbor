@@ -4,9 +4,8 @@
     <small>Access regional leaderboards that show users in your timezone region or specific timezone. Choose between timezone-specific, regional (UTC offset), or global competition modes.</small>
   </p>
   <%= form_with url: (@is_own_settings ? my_settings_path : settings_user_path(user)), method: :patch, local: false do |f| %>
-    <%= hidden_field_tag :toggle_timezone_leaderboard, "1" %>
-    <%= f.submit Flipper.enabled?(:timezone_leaderboard, user) ? "Disable Feature" : "Enable Feature", 
-                 role: "button", 
-                 class: Flipper.enabled?(:timezone_leaderboard, user) ? "secondary" : "" %>
+    <%= f.check_box :default_timezone_leaderboard, checked: user.default_timezone_leaderboard, id: "user_default_timezone_leaderboard" %>
+    <%= f.label :default_timezone_leaderboard, "Default to Timezone Leaderboard", for: "user_default_timezone_leaderboard" %>
+    <%= f.submit "Save", role: "button" %>
   <% end %>
 </div>

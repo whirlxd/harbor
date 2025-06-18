@@ -10,6 +10,7 @@ class User < ApplicationRecord
   validates :country_code, inclusion: { in: ISO3166::Country.codes }, allow_nil: true
 
   attribute :allow_public_stats_lookup, :boolean, default: true
+  attribute :default_timezone_leaderboard, :boolean, default: true
 
   def country_name
     ISO3166::Country.new(country_code).common_name
