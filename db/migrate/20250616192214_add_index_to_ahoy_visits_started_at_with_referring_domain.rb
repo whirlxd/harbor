@@ -5,6 +5,7 @@ class AddIndexToAhoyVisitsStartedAtWithReferringDomain < ActiveRecord::Migration
     add_index :ahoy_visits, :started_at,
               where: 'referring_domain IS NOT NULL',
               algorithm: :concurrently,
-              name: 'index_ahoy_visits_started_at_with_referring_domain'
+              name: 'index_ahoy_visits_started_at_with_referring_domain',
+              if_not_exists: true
   end
 end
