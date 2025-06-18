@@ -421,6 +421,10 @@ class User < ApplicationRecord
     "https://github.com/#{github_username}" if github_username.present?
   end
 
+  def self.not_convicted
+    where.not(trust_level: User.trust_levels[:red])
+  end
+
   private
 
   def invalidate_activity_graph_cache

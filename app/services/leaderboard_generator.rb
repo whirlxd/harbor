@@ -11,13 +11,13 @@ class LeaderboardGenerator
 
   def generate_timezone_offset_leaderboard(date, utc_offset, period_type = :daily)
     date = Date.current if date.blank?
-    users = User.users_in_timezone_offset(utc_offset)
+    users = User.users_in_timezone_offset(utc_offset).not_convicted
     generate_leaderboard_for_users(users, date, "UTC#{utc_offset >= 0 ? '+' : ''}#{utc_offset}", period_type)
   end
 
   def generate_timezone_leaderboard(date, timezone, period_type = :daily)
     date = Date.current if date.blank?
-    users = User.users_in_timezone(timezone)
+    users = User.users_in_timezone(timezone).not_convicted
     generate_leaderboard_for_users(users, date, timezone, period_type)
   end
 

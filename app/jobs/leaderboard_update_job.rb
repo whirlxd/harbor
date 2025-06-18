@@ -44,6 +44,9 @@ class LeaderboardUpdateJob < ApplicationJob
 
       entries_data = entries_data.filter { |_, total_seconds| total_seconds > 60 }
 
+      convicted_users = User.where(trust_level: User.trust_levels[:red]).pluck(:id)
+      entries_data = entries_data.reject { |user_id, _| convicted_users.include?(user_id) }
+
       streaks = Heartbeat.daily_streaks_for_users(entries_data.keys)
 
       entries_data = entries_data.map do |user_id, total_seconds|

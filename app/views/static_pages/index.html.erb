@@ -1,4 +1,20 @@
 <div class="container">
+  <% if current_user&.trust_level == "red" %>
+    <div class="acct-convicted">
+      <strong>Hold up!</strong> Your account has been flagged for suspicious activity.<br> If this was a mistake, please <a href="https://hackclub.slack.com/team/U080A3QP42C">contact me on Slack</a> or email <a href="mailto:echo@hackclub.com">echo@hackclub.com</a>.
+    </div>
+    <style>
+      .acct-convicted {
+        color: #ff6467;
+        background: color-mix(in oklab, rgb(251, 44, 54) 10%, transparent);
+        border: 2px solid color-mix(in oklab, rgb(251, 44, 54) 20%, transparent);
+        padding: 1em;
+        text-align: center;
+        border-radius: 8px;
+        margin-bottom: 1em;
+      }
+    </style>
+  <% end %>
   <p class="super">
     <%= @flavor_text %>
   </p>
