@@ -21,11 +21,14 @@ export default class extends Controller {
             <button type="button" class="co" data-value="red" data-level="1">
               🔴 Convicted (1)
             </button>
-            <button type="button" class="co" data-value="yellow" data-level="0">
-              🟡 Unscored (0)
+            <button type="button" class="co" data-value="blue" data-level="0">
+              🔵 Unscored (0)
             </button>
             <button type="button" class="co" data-value="green" data-level="2">
               🟢 Trusted (2)
+            </button>
+            <button type="button" class="co" data-value="yellow" data-level="3">
+              🟡 Suspected (3) - Hidden
             </button>
           </div>
         </div>
@@ -68,12 +71,14 @@ export default class extends Controller {
       if (resp.ok) {
         const cell = document.querySelector(`.admin-timeline-user-header-cell[data-user-id="${userId}"]`);
         if (cell) {
-          cell.classList.remove('user-trust-red', 'user-trust-green');
+          cell.classList.remove('user-trust-red', 'user-trust-green', 'user-trust-yellow');
           
           if (level === 'red') {
             cell.classList.add('user-trust-red');
           } else if (level === 'green') {
             cell.classList.add('user-trust-green');
+          } else if (level === 'yellow') {
+            cell.classList.add('user-trust-yellow');
           }
           
           const indicator = cell.querySelector('.user-trust-indicator');
@@ -84,8 +89,13 @@ export default class extends Controller {
             } else if (level === 'green') {
               indicator.textContent = '🟢';
               indicator.title = 'Trusted';
+            } else if (level === 'yellow') {
+              // For suspected users, show indicator only in admin UI
+              indicator.textContent = '🟡';
+              indicator.title = 'Suspected (Hidden from user)';
             } else {
-              indicator.textContent = '';
+              // Blue/unscored
+              indicator.textContent = '🔵';
               indicator.title = 'Unscored';
             }
           }

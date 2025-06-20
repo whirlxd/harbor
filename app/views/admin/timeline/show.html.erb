@@ -145,6 +145,8 @@
                     trust_level_class = "user-trust-red"
                   when "green"
                     trust_level_class = "user-trust-green"
+                  when "yellow"
+                    trust_level_class = "user-trust-yellow"
                   end
                 end
               %>
@@ -170,9 +172,18 @@
                        style="font-size: 0.7rem; color: #9CA3AF; text-decoration: none;" 
                        title="Set trust level">🔨</a>
                   <% end %>
-                  <% if user.respond_to?(:trust_level) && user.trust_level != "yellow" %>
+                  <% if user.respond_to?(:trust_level) %>
                     <span class="user-trust-indicator" data-user-conviction-target="trustIndicator" title="<%= user.trust_level.capitalize %>">
-                      <%= user.trust_level == "red" ? "🔴" : "🟢" %>
+                      <% case user.trust_level %>
+                      <% when "red" %>
+                        🔴
+                      <% when "green" %>
+                        🟢
+                      <% when "yellow" %>
+                        �
+                      <% when "blue" %>
+                        🔵
+                      <% end %>
                     </span>
                   <% else %>
                     <span class="user-trust-indicator" data-user-conviction-target="trustIndicator"></span>
@@ -416,6 +427,11 @@
   .user-trust-green {
     background-color: rgba(16, 185, 129, 0.15);
     border-left: 3px solid #10B981;
+  }
+  
+  .user-trust-yellow {
+    background-color: rgba(245, 158, 11, 0.08);
+    border-left: 3px solid #F59E0B;
   }
   
   .user-trust-indicator {

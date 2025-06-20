@@ -111,12 +111,6 @@ Get a user's trust factor.
 }
 ```
 
-Trust levels can be:
-
-- `yellow` (0): unscored
-- `red` (1): convicted/untrusted
-- `green` (2): trusted
-
 ## Try These Examples
 
 ### See Your Recent Activity
