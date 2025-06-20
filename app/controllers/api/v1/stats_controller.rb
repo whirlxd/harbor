@@ -53,10 +53,12 @@ class Api::V1::StatsController < ApplicationController
       end_date: end_date
     ).generate_summary
 
-    # Include trust factor information
+    trust_level = @user.trust_level
+    trust_level = "blue" if trust_level == "yellow"
+    trust_value = User.trust_levels[trust_level]
     trust_info = {
-      trust_level: @user.trust_level,
-      trust_value: User.trust_levels[@user.trust_level]
+      trust_level: trust_level,
+      trust_value: trust_value
     }
 
     render json: {
@@ -88,9 +90,12 @@ class Api::V1::StatsController < ApplicationController
   def trust_factor
     return render json: { error: "User not found" }, status: :not_found unless @user
 
+    trust_level = @user.trust_level
+    trust_level = "blue" if trust_level == "yellow"
+    trust_value = User.trust_levels[trust_level]
     render json: {
-      trust_level: @user.trust_level,
-      trust_value: User.trust_levels[@user.trust_level]
+      trust_level: trust_level,
+      trust_value: trust_value
     }
   end
 
