@@ -137,7 +137,20 @@
                 # Add the hour label padding to get the absolute left position - EXACT SAME CALCULATION AS SPANS
                 header_left_px = (line_left_rem * 16) + base_offset_px
               %>
-              <div class="admin-timeline-user-header-cell" 
+              <% 
+                trust_level_class = ""
+                if user.respond_to?(:trust_level)
+                  case user.trust_level
+                  when "red"
+                    trust_level_class = "user-trust-red"
+                  when "green"
+                    trust_level_class = "user-trust-green"
+                  end
+                end
+              %>
+              <div class="admin-timeline-user-header-cell <%= trust_level_class %>" 
+                   data-user-id="<%= user.id %>"
+                   data-controller="user-conviction"
                    style="width: <%= min_column_width_px %>px; position: absolute; left: <%= header_left_px %>px;"
                    title="User ID: <%= user.id %> - <%= user.respond_to?(:username) && user.username.present? ? user.username : user.email_addresses.first&.email %> | Total Coded: <%= total_coded_time_seconds && total_coded_time_seconds > 0 ? short_time_detailed(total_coded_time_seconds) : '0m' %> | TZ: <%= user.timezone %>">
                 <% github_url = user.respond_to?(:github_profile_url) ? user.github_profile_url : nil %>
@@ -148,6 +161,21 @@
                   <% end %>
                   <% if github_url.present? %>
                     <%= link_to "Git", github_url, target: "_blank", style: "font-size: 0.7rem; color: #9CA3AF; text-decoration: underline;" %>
+                  <% end %>
+                  <% if current_user && current_user.admin? && user != current_user %>
+                    <a href="#" 
+                       data-action="click->user-conviction#convictUser" 
+                       data-user-id="<%= user.id %>" 
+                       class="conviction-hammer"
+                       style="font-size: 0.7rem; color: #9CA3AF; text-decoration: none;" 
+                       title="Set trust level">🔨</a>
+                  <% end %>
+                  <% if user.respond_to?(:trust_level) && user.trust_level != "yellow" %>
+                    <span class="user-trust-indicator" data-user-conviction-target="trustIndicator" title="<%= user.trust_level.capitalize %>">
+                      <%= user.trust_level == "red" ? "🔴" : "🟢" %>
+                    </span>
+                  <% else %>
+                    <span class="user-trust-indicator" data-user-conviction-target="trustIndicator"></span>
                   <% end %>
                 </div>
                 <% if total_coded_time_seconds && total_coded_time_seconds > 0 %>
@@ -378,6 +406,106 @@
   .visually-hidden {
     border: 0; clip: rect(0 0 0 0); height: 1px; margin: -1px;
     overflow: hidden; padding: 0; position: absolute; width: 1px;
+  }
+  
+  .user-trust-red {
+    background-color: rgba(220, 38, 38, 0.15);
+    border-left: 3px solid #DC2626;
+  }
+  
+  .user-trust-green {
+    background-color: rgba(16, 185, 129, 0.15);
+    border-left: 3px solid #10B981;
+  }
+  
+  .user-trust-indicator {
+    font-size: 0.75rem;
+    margin-left: 0.25rem;
+  }
+  
+  .cm {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .cm-content {
+    background-color: #2D3748;
+    border-radius: 0.5rem;
+    width: 95%;
+    max-width: 500px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    color: white;
+  }
+  
+  .cm-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid #4A5568;
+  }
+  
+  .cm-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+  }
+  
+  .cm-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #CBD5E0;
+    cursor: pointer;
+  }
+  
+  .cm-body {
+    padding: 1.5rem;
+  }
+  
+  .cos {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .co {
+    background-color: #4A5568;
+    border: none;
+    border-radius: 0.375rem;
+    padding: 0.75rem;
+    color: white;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .tln {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #38A169;
+    color: white;
+    padding: 1rem;
+    border-radius: 0.375rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    animation: f 3s ease-in-out;
+  }
+  
+  @keyframes f {
+    0% { opacity: 0; transform: translateY(20px); }
+    10% { opacity: 1; transform: translateY(0); }
+    90% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-20px); }
   }
 </style>
 <% end %> 
