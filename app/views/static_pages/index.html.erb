@@ -1,12 +1,21 @@
 <div class="container">
   <% if current_user&.trust_level == "red" %>
-    <div class="acct-convicted">
-      <strong>Hold up!</strong> Your account has been flagged for suspicious activity.<br>
-      This means that you are no longer included in the public leaderboards.<br>
-      If this was a mistake, please email <a href="mailto:echo@hackclub.com">echo@hackclub.com</a>.
+    <div class="ac">
+      <span class="at"><b>Hold up!</b> Your account has been banned for suspicious activity.<br></span>
+      <div class="ap">
+        <p><b>What does this mean?</b> Your account was convicted for fraud or abuse of Hackatime, such as using methods to gain an unfair advantage on the leaderboards or attempting to manipulate your coding time in any way. This restricts your access to participate in public leaderboards, but Hackatime will still track and display your time. This may also affect your ability to participate in current and future Hack Club events.</p>
+        <p><b>What can I do?</b> Account bans are permanent, non-negotiable, and cannot be removed. If a ban is determined to have been issued incorrectly, it will automatically be removed. We take fraud very seriously and have a zero-tolerance policy for abuse. If you believe this was a mistake, please email <a href="mailto:echo@hackclub.com">echo@hackclub.com</a>. We do not respond in any other channel.</p>
+        <p><b>Can I know what caused this?</b> No. We do not disclose the patterns that were detected. Releasing this information would only benefit fraudsters. The fraud team regularly investigates claims of false bans to increase the effectiveness of our detection systems to combat fraud.</p>
+      </div>
     </div>
     <style>
-      .acct-convicted {
+      .ap > p {
+        color: #ff6467;
+        text-align: left;
+        font-size: 0.9em;
+        margin-bottom: 0;
+      }
+      .ac {
         color: #ff6467;
         background: color-mix(in oklab, rgb(251, 44, 54) 10%, transparent);
         border: 2px solid color-mix(in oklab, rgb(251, 44, 54) 20%, transparent);
@@ -14,6 +23,9 @@
         text-align: center;
         border-radius: 8px;
         margin-bottom: 1em;
+      }
+      .at {
+        font-size: 1.5em;
       }
     </style>
   <% end %>
