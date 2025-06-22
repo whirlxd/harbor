@@ -27,28 +27,28 @@
           </div>
           <span class="project-time"><%= short_time_detailed project[:duration] %></span>
         </div>
-        
+
         <% if project[:repository]&.description.present? %>
           <div class="project-description">
             <%= project[:repository].description.truncate(80) %>
           </div>
         <% end %>
-        
+
         <% if project[:repository]&.formatted_languages.present? %>
           <div class="project-languages">
             <span class="languages-label">Languages:</span>
             <%= project[:repository].formatted_languages %>
           </div>
         <% end %>
-        
+
         <div class="project-progress-bar">
-          <div 
-            class="progress" 
-            style="width: <%= [project[:duration].to_f / max_project_duration.to_f * 100, 100].min %>%; 
+          <div
+            class="progress"
+            style="width: <%= [project[:duration].to_f / max_project_duration.to_f * 100, 100].min %>%;
                   background-color: var(--primary-color);"
           ></div>
         </div>
-        
+
         <% if project[:repository]&.last_commit_at.present? %>
           <div class="project-meta">
             Last commit: <%= time_ago_in_words(project[:repository].last_commit_at) %> ago

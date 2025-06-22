@@ -11,23 +11,23 @@
     <% else %>
       <em><strong>Regional Leaderboard:</strong> Showing users in <%= @scope_description %></em>
     <% end %>
-    
+
     <div class="period-toggle">
-      <%= link_to "Daily", leaderboards_path(period_type: 'daily', scope: @scope), 
-                  class: "period-toggle-btn #{(@period_type == :daily || @period_type == :daily_timezone_normalized) ? 'active' : ''}" %>
-      <%= link_to "Weekly", leaderboards_path(period_type: 'weekly', scope: @scope), 
-                  class: "period-toggle-btn #{@period_type == :weekly ? 'active' : ''}" %>
-      <%= link_to "Last 7 Days", leaderboards_path(period_type: 'last_7_days', scope: @scope), 
-                  class: "period-toggle-btn #{@period_type == :last_7_days ? 'active' : ''}" %>
+      <%= link_to "Daily", leaderboards_path(period_type: 'daily', scope: @scope),
+            class: "period-toggle-btn #{(@period_type == :daily || @period_type == :daily_timezone_normalized) ? 'active' : ''}" %>
+      <%= link_to "Weekly", leaderboards_path(period_type: 'weekly', scope: @scope),
+            class: "period-toggle-btn #{@period_type == :weekly ? 'active' : ''}" %>
+      <%= link_to "Last 7 Days", leaderboards_path(period_type: 'last_7_days', scope: @scope),
+            class: "period-toggle-btn #{@period_type == :last_7_days ? 'active' : ''}" %>
     </div>
 
     <div class="period-toggle">
-      <%= link_to "Timezone", leaderboards_path(period_type: @period_type, scope: 'timezone'), 
-                  class: "period-toggle-btn #{@scope == 'timezone' ? 'active' : ''}" %>
-      <%= link_to "Regional", leaderboards_path(period_type: @period_type, scope: 'regional'), 
-                  class: "period-toggle-btn #{@scope == 'regional' ? 'active' : ''}" %>
-      <%= link_to "Global", leaderboards_path(period_type: @period_type, scope: 'global'), 
-                  class: "period-toggle-btn #{@scope == 'global' ? 'active' : ''}" %>
+      <%= link_to "Timezone", leaderboards_path(period_type: @period_type, scope: 'timezone'),
+            class: "period-toggle-btn #{@scope == 'timezone' ? 'active' : ''}" %>
+      <%= link_to "Regional", leaderboards_path(period_type: @period_type, scope: 'regional'),
+            class: "period-toggle-btn #{@scope == 'regional' ? 'active' : ''}" %>
+      <%= link_to "Global", leaderboards_path(period_type: @period_type, scope: 'global'),
+            class: "period-toggle-btn #{@scope == 'global' ? 'active' : ''}" %>
     </div>
 
     <% if current_user && current_user.github_uid.blank? %>
@@ -35,7 +35,7 @@
         <%= link_to "Connect your GitHub", "/auth/github", class: "button" %> to qualify for the leaderboard.
       </p>
     <% end %>
-    
+
     <p class="date">
       <% if @leaderboard %>
         <%= @leaderboard.date_range_text %>
@@ -48,13 +48,13 @@
 
       <% else %>
         <%= case @period_type
-            when :weekly
-              "#{Date.current.beginning_of_week.strftime('%B %d')} - #{(Date.current.beginning_of_week + 6.days).strftime('%B %d, %Y')}"
-            when :last_7_days
-              "#{(Date.current - 6.days).strftime('%B %d')} - #{Date.current.strftime('%B %d, %Y')}"
-            else
-              Date.current.strftime('%B %d, %Y')
-            end %>
+              when :weekly
+                "#{Date.current.beginning_of_week.strftime('%B %d')} - #{(Date.current.beginning_of_week + 6.days).strftime('%B %d, %Y')}"
+              when :last_7_days
+                "#{(Date.current - 6.days).strftime('%B %d')} - #{Date.current.strftime('%B %d, %Y')}"
+              else
+                Date.current.strftime('%B %d, %Y')
+              end %>
       <% end %>
     </p>
   </div>
@@ -88,25 +88,25 @@
                 </span>
               <% end %>
               <% if entry.streak_count > 0 %>
-                <%= render "static_pages/streak", 
-                           user: entry.user, 
-                           streak_count: entry.streak_count, 
-                           turbo_frame: false, 
-                           icon_size: 16, 
-                           show_super_class: true %>
+                <%= render "static_pages/streak",
+                      user: entry.user,
+                      streak_count: entry.streak_count,
+                      turbo_frame: false,
+                      icon_size: 16,
+                      show_super_class: true %>
               <% end %>
             </span>
             <span class="time"><%= short_time_detailed entry.total_seconds %></span>
             <% admin_tool do %>
-              <select class="trust-level-select" 
+              <select class="trust-level-select"
                   data-controller="trust-level"
                   data-trust-level-target="select"
-                  data-user-id="<%= entry.user.id %>" 
+                  data-user-id="<%= entry.user.id %>"
                   data-current-trust-level="<%= entry.user.trust_level %>">
-              <option value="blue" <%= 'selected' if entry.user.blue? %>>Unscored</option>
-              <option value="red" <%= 'selected' if entry.user.red? %>>Convicted</option>
-              <option value="green" <%= 'selected' if entry.user.green? %>>Trusted</option>
-              <option value="yellow" <%= 'selected' if entry.user.yellow? %>>Suspected</option>
+                <option value="blue" <%= 'selected' if entry.user.blue? %>>Unscored</option>
+                <option value="red" <%= 'selected' if entry.user.red? %>>Convicted</option>
+                <option value="green" <%= 'selected' if entry.user.green? %>>Trusted</option>
+                <option value="yellow" <%= 'selected' if entry.user.yellow? %>>Suspected</option>
               </select>
             <% end %>
           </div>
