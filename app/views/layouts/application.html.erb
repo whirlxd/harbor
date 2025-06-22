@@ -139,17 +139,23 @@
     <%= Sentry.get_trace_propagation_meta.html_safe %>
   </head>
 
-  <body class="<%= content_for(:body_class) %>" style="display: flex;" data-controller="nav">
-    <!-- Mobile nav toggle button -->
-    <!--<button class="nav-toggle" data-action="click->nav#toggle">Menu</button>-->
+  <body class="<%= content_for(:body_class) %> flex min-h-screen" data-controller="nav">
+    <button class="mobile-nav-button" 
+            data-action="click->nav#toggle" 
+            data-nav-target="button"
+            aria-label="Toggle navigation menu"
+            aria-expanded="false">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
     
-    <!-- Mobile nav overlay -->
-    <!--<div class="nav-overlay" data-nav-target="overlay" data-action="click->nav#close"></div>-->
+    <div class="nav-overlay" data-nav-target="overlay" data-action="click->nav#close"></div>
     
     <%= render "shared/nav" %>
     
     <!-- 250px is defined in nav.css -->
-    <main>
+    <main class="flex-1 lg:ml-[250px] lg:max-w-[calc(100%-250px)] p-5 mb-[100px] pt-16 lg:pt-5 transition-all duration-300 ease-in-out">
       <%= yield %>
       <footer>
         <div class="container">
