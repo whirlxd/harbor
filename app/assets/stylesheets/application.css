@@ -24,10 +24,10 @@
 }
 
 :root.development {
-  --primary-color: var(--uchu-green);
+  --primary-color: var(--color-green);
 }
 :root.production {
-  --primary-color: var(--uchu-dark-orange);
+  --primary-color: var(--color-primary);
 }
 
 .title {
@@ -53,7 +53,7 @@
 }
 .dev-tool {
   border-radius: 5px;
-  border: 1px dashed hsl(126.2, 60.6%, 62.2%);
+  border: 1px dashed var(--color-green);
   background-color: hsl(127.5, 61.5%, 89.8%);
 }
 
@@ -101,18 +101,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-/* Mobile layout - stack elements on small screens */
-@media (max-width: 768px) {
-  .login-grid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-
-  .video-container {
-    margin-bottom: 1rem;
-  }
 }
 
 .auth-options {
