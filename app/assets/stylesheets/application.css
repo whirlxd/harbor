@@ -48,14 +48,19 @@
 
 .admin-tool {
   border-radius: 5px;
-  border: 1px dashed var(--uchu-orange);
-  background-color: var(--uchu-light-yellow);
+  border: 1px dashed hsl(24.9, 100%, 67.8%);
+  background-color: hsl(44.6, 100%, 92.4%);
 }
-
 .dev-tool {
   border-radius: 5px;
-  border: 1px dashed var(--uchu-green);
-  background-color: var(--uchu-light-green);
+  border: 1px dashed hsl(126.2, 60.6%, 62.2%);
+  background-color: hsl(127.5, 61.5%, 89.8%);
+}
+
+@media (prefers-color-scheme: dark) {
+  .admin-tool, .dev-tool {
+    background-color: rgba(255, 255, 255, 0.02);
+  }
 }
 
 .loading {
