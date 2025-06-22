@@ -10,7 +10,7 @@ Make sure you have a [Hackatime account](https://hackatime.hackclub.com) and are
 
 ## Step 2: Install the Extension
 
-Visit the [GitHub page](https://go.skyfall.dev/waka) and install the extension on Chrome or Firefox.
+Visit the [GitHub page](https://github.com/SkyfallWasTaken/figma-wakatime) and install the extension on Chrome or Firefox.
 
 ## Step 3: Configure API credentials
 
@@ -22,7 +22,7 @@ Visit the [GitHub page](https://go.skyfall.dev/waka) and install the extension o
 ## Troubleshooting
 
 - **Plugin not working?** Try refreshing your Figma after installation. You should see a "WakaTime for Figma is running!" toast when you open a Figma design.
-- **Using FigJam or Figma Slides?** The plugin currently doesn't support FigJam or Figma Slides - it only works for the main editor. If you would like support for this, open an issue on the extension's [GitHub page.](https://go.skyfall.dev/waka)
+- **Using FigJam or Figma Slides?** The plugin currently doesn't support FigJam or Figma Slides - it only works for the main editor. If you would like support for this, open an issue on the extension's [GitHub page.](https://github.com/SkyfallWasTaken/figma-wakatime)
 - **Is time being misattributed to different projects?** The extension uses your Figma filename as the Hackatime project name. So make sure it's not called "Untitled" or something similar!
 - **Still stuck?** Ask for help in [Hack Club Slack](https://hackclub.slack.com) ([#figma-wakatime channel](https://hackclub.slack.com/archives/C092UUSQC01)), or open an issue to report bugs.
 
