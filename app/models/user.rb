@@ -71,8 +71,8 @@ class User < ApplicationRecord
   end
 
   def streak_days_formatted
-    if streak_days > 7
-      "7+"
+    if streak_days > 30
+      "30+"
     elsif streak_days < 1
       nil
     else
