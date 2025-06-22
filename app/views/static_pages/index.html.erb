@@ -1,37 +1,19 @@
 <div class="container">
-  <% if current_user&.trust_level == "red" %>
-    <div class="ac">
-      <span class="at"><b>Hold up!</b> Your account has been banned for suspicious activity.<br></span>
-      <div class="ap">
-        <p><b>What does this mean?</b> Your account was convicted for fraud or abuse of Hackatime, such as using methods to gain an unfair advantage on the leaderboards or attempting to manipulate your coding time in any way. This restricts your access to participate in public leaderboards, but Hackatime will still track and display your time. This may also affect your ability to participate in current and future Hack Club events.</p>
-        <p><b>What can I do?</b> Account bans are permanent, non-negotiable, and cannot be removed. If a ban is determined to have been issued incorrectly, it will automatically be removed. We take fraud very seriously and have a zero-tolerance policy for abuse. If you believe this was a mistake, please email <a href="mailto:echo@hackclub.com">echo@hackclub.com</a>. We do not respond in any other channel.</p>
-        <p><b>Can I know what caused this?</b> No. We do not disclose the patterns that were detected. Releasing this information would only benefit fraudsters. The fraud team regularly investigates claims of false bans to increase the effectiveness of our detection systems to combat fraud.</p>
+  <% if current_user&.trust_level != "red" %>
+    <div class="text-red-500 bg-red-500/10 border-2 border-red-500/20 p-4 text-center rounded-lg mb-4">
+      <span class="text-xl font-bold block mb-2">Hold up! Your account has been banned for suspicious activity.<br></span>
+      <div>
+        <p class="text-red-500 text-left text-sm mb-2"><b>What does this mean?</b> Your account was convicted for fraud or abuse of Hackatime, such as using methods to gain an unfair advantage on the leaderboards or attempting to manipulate your coding time in any way. This restricts your access to participate in public leaderboards, but Hackatime will still track and display your time. This may also affect your ability to participate in current and future Hack Club events.</p>
+        <p class="text-red-500 text-left text-sm mb-2"><b>What can I do?</b> Account bans are permanent, non-negotiable, and cannot be removed. If a ban is determined to have been issued incorrectly, it will automatically be removed. We take fraud very seriously and have a zero-tolerance policy for abuse. If you believe this was a mistake, please email <a href="mailto:echo@hackclub.com" class="underline">echo@hackclub.com</a>. We do not respond in any other channel.</p>
+        <p class="text-red-500 text-left text-sm mb-0"><b>Can I know what caused this?</b> No. We do not disclose the patterns that were detected. Releasing this information would only benefit fraudsters. The fraud team regularly investigates claims of false bans to increase the effectiveness of our detection systems to combat fraud.</p>
       </div>
     </div>
-    <style>
-      .ap > p {
-        color: #ff6467;
-        text-align: left;
-        font-size: 0.9em;
-        margin-bottom: 0;
-      }
-      .ac {
-        color: #ff6467;
-        background: color-mix(in oklab, rgb(251, 44, 54) 10%, transparent);
-        border: 2px solid color-mix(in oklab, rgb(251, 44, 54) 20%, transparent);
-        padding: 1em;
-        text-align: center;
-        border-radius: 8px;
-        margin-bottom: 1em;
-      }
-      .at {
-        font-size: 1.5em;
-      }
-    </style>
   <% end %>
-  <p class="italic underline mt-2">
-    <%= @flavor_text %>
-  </p>
+  <div class="flex items-center space-x-2 mt-2">
+    <p class="italic text-muted m-0">
+      <%= @flavor_text %>
+    </p>
+  </div>
   <h1 class="title">
     <% if current_user %>
       Keep Track of <span class="primary-color">Your</span> Coding Time
@@ -58,7 +40,7 @@
 
     <% if @home_stats&.[](:seconds_tracked) && @home_stats&.[](:users_tracked) %>
       <div class="social-proof">
-        <h2 style="font-size: 1.2em; margin: 0.5em 0;">Join Thousands of High Schoolers</h2>
+        <h2 class="text-xl my-2">Join Thousands of High Schoolers</h2>
         <p class="subtitle">
           Already tracking <span class="primary-color"><%= number_with_delimiter(@home_stats[:seconds_tracked] / 3600) %> <%= 'hour'.pluralize(@home_stats[:seconds_tracked] / 3600) %></span>
           of coding across <span class="primary-color"><%= number_with_delimiter(@home_stats[:users_tracked]) %> <%= 'high schooler'.pluralize(@home_stats[:users_tracked]) %></span>
@@ -66,21 +48,20 @@
         </p>
       </div>
 
-      <div class="benefits-section" style="margin: 2em 0;">
-        <h2 style="font-size: 1.3em; margin-bottom: 1em;">Why Choose Hackatime?</h2>
-        <ul style="list-style: none; padding: 0;">
-          <li style="margin: 0.5em 0;">✅ <strong>100% Free</strong> - No paid plans or hidden fees</li>
-          <li style="margin: 0.5em 0;">📊 <strong>75+ Editors</strong> - Works with <%= link_to "VS Code", doc_path("editors/vs-code") %>, <%= link_to "Vim", doc_path("editors/vim") %>, <%= link_to "Sublime", doc_path("editors/sublime-text") %> and <%= link_to "more", docs_path + "#supported-editors" %></li>
-          <li style="margin: 0.5em 0;">📡 <strong>Works Offline</strong> - Time tracking continues even without internet</li>
-          <li style="margin: 0.5em 0;">🔒 <strong>Privacy First</strong> - Your data stays safe</li>
-          <li style="margin: 0.5em 0;">⚡ <strong>Real-time Stats</strong> - See your coding time instantly</li>
-          <li style="margin: 0.5em 0;">🏆 <strong>Leaderboards</strong> - Compare with other high schoolers</li>
+      <div class="benefits-section my-8">
+        <h2 class="text-2xl mb-4">Why Choose Hackatime?</h2>
+        <ul class="list-none p-0">
+          <li class="my-2">✅ <strong>100% Free</strong> - No paid plans or hidden fees</li>
+          <li class="my-2">📊 <strong>75+ Editors</strong> - Works with <%= link_to "VS Code", doc_path("editors/vs-code") %>, <%= link_to "Vim", doc_path("editors/vim") %>, <%= link_to "Sublime", doc_path("editors/sublime-text") %> and <%= link_to "more", docs_path + "#supported-editors" %></li>
+          <li class="my-2">📡 <strong>Works Offline</strong> - Time tracking continues even without internet</li>
+          <li class="my-2">🔒 <strong>Privacy First</strong> - Your data stays safe</li>
+          <li class="my-2">⚡ <strong>Real-time Stats</strong> - See your coding time instantly</li>
+          <li class="my-2">🏆 <strong>Leaderboards</strong> - Compare with other high schoolers</li>
         </ul>
       </div>
     <% end %>
   <% end %>
   <% if current_user %>
-
     <% if @show_wakatime_setup_notice %>
       <div class="setup-notice">
         <%= link_to "Set up Hackatime! Click me.", my_wakatime_setup_path, class: "auth-button setup-button primary-action" %>
