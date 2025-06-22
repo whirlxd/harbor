@@ -21,12 +21,11 @@ class User < ApplicationRecord
   end
 
   enum :trust_level, {
-    yellow: 0,
-    red: 1,
-    green: 2
+    blue: 0,     # unscored
+    red: 1,      # convicted
+    green: 2,    # trusted
+    yellow: 3    # suspected (invisible to user)
   }
-  # yellow is unscored, red being convicted while green being trusted
-  # labels make it easier for display :okay-1:
 
   def set_trust(level)
     update!(trust_level: level)
@@ -422,8 +421,16 @@ class User < ApplicationRecord
     "https://github.com/#{github_username}" if github_username.present?
   end
 
+  # Returns users that are not convicted (red)
+  # For public APIs - includes blue, green, and yellow (suspected) users
   def self.not_convicted
     where.not(trust_level: User.trust_levels[:red])
+  end
+
+  # Returns only unscored (blue) and trusted (green) users
+  # Excludes suspected (yellow) and convicted (red) users
+  def self.not_suspect
+    where(trust_level: [ User.trust_levels[:blue], User.trust_levels[:green] ])
   end
 
   private

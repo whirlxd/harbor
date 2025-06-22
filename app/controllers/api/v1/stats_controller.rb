@@ -1,6 +1,6 @@
 class Api::V1::StatsController < ApplicationController
   before_action :ensure_authenticated!, only: [ :show ], unless: -> { Rails.env.development? }
-  before_action :set_user, only: [ :user_stats, :user_spans ]
+  before_action :set_user, only: [ :user_stats, :user_spans, :trust_factor ]
 
   def show
     # take either user_id with a start date & end date
@@ -53,7 +53,18 @@ class Api::V1::StatsController < ApplicationController
       end_date: end_date
     ).generate_summary
 
-    render json: { data: summary }
+    trust_level = @user.trust_level
+    trust_level = "blue" if trust_level == "yellow"
+    trust_value = User.trust_levels[trust_level]
+    trust_info = {
+      trust_level: trust_level,
+      trust_value: trust_value
+    }
+
+    render json: {
+      data: summary,
+      trust_factor: trust_info
+    }
   end
 
   def user_spans
@@ -74,6 +85,18 @@ class Api::V1::StatsController < ApplicationController
     end
 
     render json: { spans: heartbeats.to_span }
+  end
+
+  def trust_factor
+    return render json: { error: "User not found" }, status: :not_found unless @user
+
+    trust_level = @user.trust_level
+    trust_level = "blue" if trust_level == "yellow"
+    trust_value = User.trust_levels[trust_level]
+    render json: {
+      trust_level: trust_level,
+      trust_value: trust_value
+    }
   end
 
   private

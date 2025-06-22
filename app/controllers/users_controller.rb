@@ -70,10 +70,15 @@ class UsersController < ApplicationController
     @user = User.find(params[:id])
     require_admin
 
-    if @user.update(trust_level: params[:trust_level])
-      render json: { status: "success" }
+    if @user && current_user.admin? && params[:trust_level].present?
+      if User.trust_levels.key?(params[:trust_level])
+        @user.set_trust(params[:trust_level])
+        render json: { success: true, message: "updated", trust_level: @user.trust_level }
+      else
+        render json: { error: "402 invalid" }, status: :unprocessable_entity
+      end
     else
-      render json: { status: "error", message: @user.errors.full_messages.join(", ") }, status: :unprocessable_entity
+      render json: { error: "lmao no perms" }, status: :unprocessable_entity
     end
   end
 

@@ -94,6 +94,23 @@ GET /api/v1/users/lookup_slack_uid/{slack_uid}
 
 Find users by their email or Slack ID.
 
+### User Trust Factor
+
+```bash
+GET /api/v1/users/{username}/trust_factor
+```
+
+Get a user's trust factor.
+
+**What you get back**:
+
+```json
+{
+  "trust_level": "yellow",
+  "trust_value": 0
+}
+```
+
 ## Try These Examples
 
 ### See Your Recent Activity
