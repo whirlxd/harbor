@@ -97,7 +97,7 @@ module Heartbeatable
       end
     end
 
-    def daily_streaks_for_users(user_ids, start_date: 8.days.ago)
+    def daily_streaks_for_users(user_ids, start_date: 31.days.ago)
       # First get the raw durations using window function
       raw_durations = joins(:user)
         .where(user_id: user_ids)

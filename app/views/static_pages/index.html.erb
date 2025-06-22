@@ -1,5 +1,5 @@
 <div class="container">
-  <% if current_user&.trust_level != "red" %>
+  <% if current_user&.trust_level == "red" %>
     <div class="text-red-500 bg-red-500/10 border-2 border-red-500/20 p-4 text-center rounded-lg mb-4">
       <span class="text-xl font-bold block mb-2">Hold up! Your account has been banned for suspicious activity.<br></span>
       <div>
