@@ -5,7 +5,7 @@ class User < ApplicationRecord
   encrypts :slack_access_token, :github_access_token
 
   validates :slack_uid, uniqueness: true, allow_nil: true
-  validates :github_uid, uniqueness: true, allow_nil: true
+  validates :github_uid, uniqueness: { conditions: -> { where.not(github_access_token: nil) } }, allow_nil: true
   validates :timezone, inclusion: { in: TZInfo::Timezone.all_identifiers }, allow_nil: false
   validates :country_code, inclusion: { in: ISO3166::Country.codes }, allow_nil: true
 
@@ -365,8 +365,17 @@ class User < ApplicationRecord
     Rails.logger.info "GitHub user data: #{user_data.inspect}"
     Rails.logger.info "GitHub user ID type: #{user_data['id'].class}"
 
+    # Clear GitHub access tokens from any other users with this GitHub UID
+    github_uid = user_data["id"]
+    other_users = User.where(github_uid: github_uid).where.not(id: current_user.id).where.not(github_access_token: nil)
+
+    other_users.find_each do |user|
+      Rails.logger.info "Clearing GitHub token for User ##{user.id} (GitHub UID: #{github_uid}) - linking to new account"
+      user.update!(github_access_token: nil)
+    end
+
     # Update GitHub-specific fields
-    current_user.github_uid = user_data["id"]
+    current_user.github_uid = github_uid
     current_user.username ||= user_data["login"]
     current_user.github_username = user_data["login"]
     current_user.github_avatar_url = user_data["avatar_url"]
