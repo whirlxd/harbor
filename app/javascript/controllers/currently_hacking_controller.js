@@ -9,36 +9,42 @@ export default class extends Controller {
 
   connect() {
     this.lastFullFetch = Date.now() // Initialize to now to prevent immediate refetch on click
+    this.isExpanded = false
     this.startPolling()
-    // Listen for visibility changes
-    this.boundToggleHandler = this.handleVisibilityToggle.bind(this)
-    document.addEventListener('click', this.boundToggleHandler)
+    this.boundClickHandler = this.handleClick.bind(this)
+    this.containerTarget.addEventListener('click', this.boundClickHandler)
   }
 
   disconnect() {
     this.stopPolling()
-    document.removeEventListener('click', this.boundToggleHandler)
+    this.containerTarget.removeEventListener('click', this.boundClickHandler)
   }
 
-  handleVisibilityToggle(event) {
+  handleClick(event) {
     const header = event.target.closest('.currently-hacking')
-    if (header && this.containerTarget.contains(header)) {
+    if (header) {
+      this.toggle()
       // Poll immediately when opening if we haven't fetched the list recently
-      setTimeout(() => {
-        if (this.isVisible()) {
-          const now = Date.now()
-          const timeSinceLastFetch = now - this.lastFullFetch
-          // Only fetch if we haven't fetched in the last 30 seconds
-          if (timeSinceLastFetch > 30000) {
-            this.poll()
-          }
+      if (this.isExpanded) {
+        const now = Date.now()
+        const timeSinceLastFetch = now - this.lastFullFetch
+        if (timeSinceLastFetch > 30000) {
+          this.poll()
         }
-      }, 50) // Small delay to allow class toggle to complete
+      }
+    }
+  }
+
+  toggle() {
+    this.isExpanded = !this.isExpanded
+    const frame = document.getElementById("currently_hacking")
+    if (frame) {
+      frame.style.display = this.isExpanded ? 'block' : 'none'
     }
   }
 
   isVisible() {
-    return this.containerTarget.classList.contains('visible')
+    return this.isExpanded
   }
 
   startPolling() {
@@ -101,6 +107,7 @@ export default class extends Controller {
       
       // Update content
       frame.innerHTML = html
+      frame.style.display = this.isExpanded ? 'block' : 'none'
       
       // Restore scroll position after a brief delay to allow DOM update
       if (scrollTop > 0) {
