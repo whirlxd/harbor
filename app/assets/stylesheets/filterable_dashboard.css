@@ -136,7 +136,6 @@
   display: none;
 }
 
-@media (prefers-color-scheme: light) {
   .filter .options-container {
     background: white;
     border: 1px solid #ddd;
@@ -192,7 +191,7 @@
   .filter .option input[type="checkbox"]:hover {
     border-color: rgba(0, 0, 0, 0.4);
   }
-}
+
 
 .dashboard-wrapper {
   display: flex;
@@ -338,47 +337,6 @@
   padding: 2rem;
   color: rgba(255, 255, 255, 0.5);
   font-style: italic;
-}
-
-@media (prefers-color-scheme: light) {
-  .dashboard-wrapper .stat-card {
-    background: var(--smoke);
-    border: 1px solid rgba(0, 0, 0, 0.1);
-  }
-
-  .dashboard-wrapper .stat-label {
-    color: #666;
-  }
-
-  .dashboard-wrapper .stat-value {
-    color: var(--text-color);
-  }
-
-  .dashboard-wrapper .card {
-    background: white;
-    border: none;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-
-  .dashboard-wrapper .card h2 {
-    color: var(--text-color);
-  }
-
-  .dashboard-wrapper .bar-label {
-    color: var(--text-color);
-  }
-
-  .dashboard-wrapper .bar-container {
-    background: var(--smoke);
-  }
-
-  .dashboard-wrapper .bar-value {
-    color: var(--text-inverse);
-  }
-
-  .dashboard-wrapper .no-data {
-    color: #666;
-  }
 }
 
 .container {
@@ -670,7 +628,6 @@ h1 {
   font-size: 0.9em;
 }
 
-@media (prefers-color-scheme: dark) {
   .interval-dropdown-trigger {
     background: #23272f;
     color: #f5f5f5;
@@ -706,7 +663,7 @@ h1 {
   .dropdown-arrow {
     color: #f5f5f5;
   }
-}
+
 
 .compact-options-list {
   max-height: 220px;

@@ -146,16 +146,15 @@
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  .settings-page article {
-    background: var(--pico-card-background-color, #1e293b);
-    border-color: var(--pico-card-border-color, #334155);
-  }
+/* Dark mode styles (now default) */
+.settings-page article {
+  background: var(--pico-card-background-color, #1e293b);
+  border-color: var(--pico-card-border-color, #334155);
+}
 
-  .settings-page article:hover {
-    box-shadow: var(
-      --pico-card-box-shadow-hover,
-      0 0.125rem 1rem rgba(0, 0, 0, 0.3)
-    );
-  }
+.settings-page article:hover {
+  box-shadow: var(
+    --pico-card-box-shadow-hover,
+    0 0.125rem 1rem rgba(0, 0, 0, 0.3)
+  );
 }

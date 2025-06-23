@@ -83,12 +83,3 @@
 .lvl3 { background-color: #2ea043; }
 .lvl4 { background-color: #56d364; }
 
-@media (prefers-color-scheme: light) { /* eww */
-  .lvl0 { background-color: #eff2f5; }
-  .lvl1 { background-color: #aceebb; }
-  .lvl2 { background-color: #4bc26b; }
-  .lvl3 { background-color: #2da44e; }
-  .lvl4 { background-color: #116329; }
-}
-
-

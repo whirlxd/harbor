@@ -56,7 +56,6 @@ footer a:hover {
   font-weight: bold;
 }
 
-@media (prefers-color-scheme: dark) {
   footer {
     color: rgba(180, 180, 180, 0.6);
   }
@@ -68,4 +67,3 @@ footer a:hover {
   .impersonate-link {
     color: #ff9999 !important;
   }
-}

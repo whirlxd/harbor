@@ -196,8 +196,6 @@
   opacity: 0.7;
 }
 
-/* Dark mode overrides */
-@media (prefers-color-scheme: dark) {
   .event-card {
     background: rgba(var(--uchu-green-rgb), 0.1);
     border-color: rgba(var(--uchu-green-rgb), 0.2);
@@ -244,4 +242,3 @@
   .sort-link.active {
     color: var(--uchu-yellow);
   }
-} 

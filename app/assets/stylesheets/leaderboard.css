@@ -14,8 +14,6 @@ turbo-frame#mini_leaderboard[aria-busy="true"]::before {
   opacity: 0.6;
 }
 
-/* Dark mode overrides */
-@media (prefers-color-scheme: dark) {
   .mini-leaderboard {
     background: rgba(255, 255, 255, 0.05);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
@@ -54,7 +52,7 @@ turbo-frame#mini_leaderboard[aria-busy="true"]::before {
   .period-toggle-btn:hover:not(.active) {
     background-color: rgba(255, 255, 255, 0.1);
   }
-}
+
 
 .mini-leaderboard.loading .leaderboard-entry {
   opacity: 0.7;

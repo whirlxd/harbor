@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html class="<%= Rails.env == "production" ? "production" : "development" %>">
+<html class="<%= Rails.env == "production" ? "production" : "development" %>" data-theme="dark">
   <head>
     <title><%= @page_title || content_for(:title) || "Hackatime" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
+    <meta name="color-scheme" content="dark">
     
     <!-- SEO Meta Tags -->
     <meta name="description" content="<%= @meta_description || content_for(:meta_description) || 'Track your coding time easily with Hackatime. A free tool to see how much time you spend programming in different languages and editors. Better than WakaTime and totally free!' %>">

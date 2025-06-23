@@ -27,18 +27,14 @@
   --color-primary: #ec3750;
   --color-secondary: #8492a6;
   --color-accent: #5bc0de;
+  --color-text: var(--color-white);
+  --color-background: var(--color-darker);
+  --color-elevated: var(--color-dark);
+  --color-sheet: var(--color-darkless);
+  --color-sunken: var(--color-darkless);
+  --color-border: var(--color-darkless);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-text: var(--color-white);
-    --color-background: var(--color-darker);
-    --color-elevated: var(--color-dark);
-    --color-sheet: var(--color-darkless);
-    --color-sunken: var(--color-darkless);
-    --color-border: var(--color-darkless);
-  }
-}
 
 @layer base {
   .bg-primary {

@@ -13,14 +13,24 @@
 @import "https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css";
 @import "settings.css";
 
+/* Force dark mode for all elements */
+*, *::before, *::after {
+  color-scheme: dark;
+}
+
+/* Ensure forms and inputs respect dark mode */
+input, textarea, select {
+  color-scheme: dark;
+}
+
 /* colors */
 
 :root {
   --muted-color: var(--uchu-gray);
   --black: rgb(42, 42, 42);
   --smoke: rgb(242, 242, 242);
-  /* color: var(--black); */
-  /* background-color: var(--smoke); */
+  /* Force dark mode colors */
+  color-scheme: dark;
 }
 
 :root.development {
@@ -49,18 +59,12 @@
 .admin-tool {
   border-radius: 5px;
   border: 1px dashed hsl(24.9, 100%, 67.8%);
-  background-color: hsl(44.6, 100%, 92.4%);
+  background-color: rgba(255, 255, 255, 0.02);
 }
 .dev-tool {
   border-radius: 5px;
   border: 1px dashed var(--color-green);
-  background-color: hsl(127.5, 61.5%, 89.8%);
-}
-
-@media (prefers-color-scheme: dark) {
-  .admin-tool, .dev-tool {
-    background-color: rgba(255, 255, 255, 0.02);
-  }
+  background-color: rgba(255, 255, 255, 0.02);
 }
 
 .loading {
@@ -153,7 +157,7 @@
 
 .auth-divider {
   margin: 1rem 0;
-  color: #666;
+  color: #ccc;
   position: relative;
 }
 
@@ -164,7 +168,7 @@
   top: 50%;
   width: 45%;
   height: 1px;
-  background-color: #ddd;
+  background-color: #555;
 }
 
 .auth-divider::before {
@@ -182,20 +186,22 @@
 .email-auth-form input[type="email"] {
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid #ddd;
+  border: 1px solid #555;
   border-radius: 4px;
   font-size: 1rem;
+  background-color: var(--background-color);
+  color: var(--color);
 }
 
 .super {
   font-style: italic;
   font-size: 0.9rem;
-  color: #666;
+  color: #ccc;
   margin: 0 0 0.1rem;
 }
 
 .super a {
-  color: #666;
+  color: #ccc;
 }
 
 .auto-scroll {
@@ -370,7 +376,7 @@ select {
   height: 0;
   border-left: 10px solid transparent;
   border-right: 10px solid transparent;
-  border-bottom: 10px solid #fff;
+  border-bottom: 10px solid #333;
 }
 
 .hover-user-list {
@@ -390,7 +396,7 @@ select {
 }
 
 .user-item:hover {
-  background-color: #f5f5f5;
+  background-color: #555;
 }
 
 .user-avatar {

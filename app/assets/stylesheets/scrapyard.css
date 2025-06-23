@@ -1,6 +1,7 @@
 .scrapyard-notice {
-  background-color: var(--uchu-light-green);
+  background-color: rgba(var(--uchu-green-rgb), 0.2);
   border-radius: 5px;
+  border: 1px solid var(--uchu-green);
   color: var(--uchu-yellow) !important;
   position: relative;
   padding: 1rem;
@@ -15,10 +16,3 @@
   top: -50px;
   right: 20px;
 }
-
-@media (prefers-color-scheme: dark) {
-  .scrapyard-notice {
-    background-color: rgba(var(--uchu-green-rgb), 0.2);
-    border: 1px solid var(--uchu-green);
-  }
-} 

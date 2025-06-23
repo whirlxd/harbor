@@ -39,8 +39,7 @@
   border-radius: 4px;
 }
 
-/* Dark mode overrides */
-@media (prefers-color-scheme: dark) {
+
   .admin-tool::before {
     opacity: 1;
     background-color: rgba(255, 166, 0, 0.02); /* Orange with very low opacity */
@@ -68,4 +67,3 @@
   .dev-tool a:hover {
     color: var(--uchu-orange);
   }
-} 
