@@ -37,7 +37,13 @@ class LeaderboardsController < ApplicationController
   def validate_timezone_requirements
     return unless regional_or_timezone_scope?
 
-    unless current_user&.timezone
+    unless current_user
+      flash[:error] = "Please log in to view regional leaderboards!"
+      redirect_to leaderboards_path(scope: "global")
+      return
+    end
+
+    unless current_user.timezone
       flash[:error] = "Please set your timezone in settings to view regional leaderboards"
       redirect_to my_settings_path
       return
@@ -54,20 +60,32 @@ class LeaderboardsController < ApplicationController
   end
 
   def find_or_generate_leaderboard
-    case @scope
+    leaderboard = case @scope
     when "regional" then generate_regional_leaderboard
     when "timezone" then generate_timezone_leaderboard
     else find_or_generate_global_leaderboard
     end
+
+    if leaderboard.nil? && %w[regional timezone].include?(@scope)
+      @scope = "global"
+      @scope_description = nil
+      leaderboard = find_or_generate_global_leaderboard
+    end
+
+    leaderboard
   end
 
   def generate_regional_leaderboard
+    return nil unless current_user&.timezone_utc_offset
+
     LeaderboardGenerator.generate_timezone_offset_leaderboard(
       start_date, current_user.timezone_utc_offset, @period_type
     )
   end
 
   def generate_timezone_leaderboard
+    return nil unless current_user&.timezone
+
     LeaderboardGenerator.generate_timezone_leaderboard(
       start_date, current_user.timezone, @period_type
     )

@@ -32,9 +32,17 @@ class UsersController < ApplicationController
         flash[:error] = "Failed to update settings"
         render :settings, status: :unprocessable_entity
       end
+    elsif params[:default_timezone_leaderboard].present?
+      if @user.update(default_timezone_leaderboard: params[:default_timezone_leaderboard] == "1")
+        redirect_to is_own_settings? ? my_settings_path : settings_user_path(@user),
+          notice: "Settings updated successfully!"
+      else
+        flash[:error] = "Failed to update settings :("
+        redirect_to is_own_settings? ? my_settings_path : settings_user_path(@user)
+      end
     else
       redirect_to is_own_settings? ? my_settings_path : settings_user_path(@user),
-        notice: "Settings updated successfully"
+        notice: "Settings updated successfully!"
     end
   end
 
