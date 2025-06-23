@@ -23,10 +23,10 @@
     %>
 
     <% if mini_leaderboard_entries&.any? %>
-      <div class="mini-leaderboard">
-        <p class="super">
+      <div class="bg-elevated rounded-xl border border-default p-4 shadow-lg">
+        <p class="text-xs italic text-muted mb-4">
           <% if leaderboard.respond_to?(:scope_name) %>
-            <strong>Showing others in <%= link_to "your timezone", my_settings_path(anchor: "user_timezone"), data: { turbo: false } %></strong>
+            <strong>Showing others in <%= link_to "your timezone", my_settings_path(anchor: "user_timezone"), data: { turbo: false }, class: "text-accent hover:text-cyan-400 transition-colors" %></strong>
           <% else %>
             This leaderboard is in <%= Leaderboard::GLOBAL_TIMEZONE %>.
             <% if current_user && timezone_difference_in_seconds(Leaderboard::GLOBAL_TIMEZONE, current_user.timezone) != 0 %>
@@ -34,48 +34,52 @@
             <% end %>
           <% end %>
         </p>
-        <div class="leaderboard-entries">
+        <div class="space-y-2">
           <% mini_leaderboard_entries.each_with_index do |entry, idx| %>
             <% is_competition = !show_top_entries && idx >= 2 %>
-            <div class="leaderboard-entry <%= 'current-user' if entry.user_id == current_user&.id %>">
+            <div class="flex items-center p-3 rounded-lg hover:bg-dark transition-colors duration-200 <%= 'bg-dark border border-primary' if entry.user_id == current_user&.id %>">
               <% if !is_competition %>
                 <% rank_emoji = case entries.index(entry)
                      when 0 then "🥇"
                      when 1 then "🥈"
                      when 2 then "🥉"
                      end %>
-                <span class="rank"><%= rank_emoji %></span>
+                <div class="w-8 text-center text-lg"><%= rank_emoji %></div>
               <% else %>
                 <% if idx == 2 && entries.index(entry) - entries.index(mini_leaderboard_entries[1]) > 1 %>
-                  <div class="leaderboard-break">...</div>
+                  <div class="text-center text-muted font-bold tracking-widest text-sm py-1">...</div>
                 <% end %>
-                <span class="rank"><%= (entries.index(entry) + 1).ordinalize %></span>
+                <div class="w-8 text-center text-sm font-medium text-muted"><%= (entries.index(entry) + 1).ordinalize %></div>
               <% end %>
-              <span class="user">
-                <%= render "shared/user_mention", user: entry.user, show: [:neighborhood] %>
-                <% if entry.user == current_user && current_user.github_username.blank? %>
-                  <span class="super">
-                    <%= link_to "Link active projects", my_settings_path(anchor: "user_github_account"), target: "_blank" %>
-                  </span>
-                <% end %>
-                <% if @active_projects&.dig(entry.user_id).present? %>
-                  <span class="super">
-                    working on <%= link_to @active_projects[entry.user_id].project_name, @active_projects[entry.user_id].repo_url, target: "_blank" %>
-                    <% dev_tool(nil, 'span') do %>
-                      <%= link_to "🌌", visualize_git_url(@active_projects[entry.user_id].repo_url), target: "_blank" %>
-                    <% end %>
-                  </span>
-                <% end %>
-                <% if entry.streak_count > 0 %>
-                  <%= render "static_pages/streak",
-                        user: entry.user,
-                        streak_count: entry.streak_count,
-                        turbo_frame: false,
-                        icon_size: 16,
-                        show_super_class: true %>
-                <% end %>
-              </span>
-              <span class="time"><%= short_time_detailed entry.total_seconds %></span>
+              <div class="flex-1 mx-3 min-w-0">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <%= render "shared/user_mention", user: entry.user, show: [:neighborhood] %>
+                  <% if entry.user == current_user && current_user.github_username.blank? %>
+                    <span class="text-xs italic text-muted">
+                      <%= link_to "Link active projects", my_settings_path(anchor: "user_github_account"), target: "_blank", class: "text-accent hover:text-cyan-400 transition-colors" %>
+                    </span>
+                  <% end %>
+                  <% if @active_projects&.dig(entry.user_id).present? %>
+                    <span class="text-xs italic text-muted">
+                      working on <%= link_to @active_projects[entry.user_id].project_name, @active_projects[entry.user_id].repo_url, target: "_blank", class: "text-accent hover:text-cyan-400 transition-colors" %>
+                      <% dev_tool(nil, 'span') do %>
+                        <%= link_to "🌌", visualize_git_url(@active_projects[entry.user_id].repo_url), target: "_blank", class: "ml-1" %>
+                      <% end %>
+                    </span>
+                  <% end %>
+                  <% if entry.streak_count > 0 %>
+                    <%= render "static_pages/streak",
+                          user: entry.user,
+                          streak_count: entry.streak_count,
+                          turbo_frame: false,
+                          icon_size: 16,
+                          show_super_class: true %>
+                  <% end %>
+                </div>
+              </div>
+              <div class="flex-shrink-0 font-mono text-sm text-white font-medium">
+                <%= short_time_detailed entry.total_seconds %>
+              </div>
             </div>
           <% end %>
         </div>

@@ -1,47 +1,47 @@
-<div class="leaderboard">
-  <div class="header">
-    <h1>Leaderboard</h1>
+<div class="max-w-4xl mx-auto p-6">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-white mb-4">Leaderboard</h1>
 
     <% if @scope == 'regional' %>
-      <em><strong>Regional Leaderboard:</strong> Showing users in <%= @scope_description %></em>
+      <em class="text-muted block mb-4"><strong>Regional Leaderboard:</strong> Showing users in <%= @scope_description %></em>
     <% elsif @scope == 'timezone' %>
-      <em><strong>Timezone Leaderboard:</strong> Showing users in <%= @scope_description %></em>
+      <em class="text-muted block mb-4"><strong>Timezone Leaderboard:</strong> Showing users in <%= @scope_description %></em>
     <% elsif @scope == 'global' %>
-      <em title="Current UTC time: <%= Time.now.utc.strftime('%H:%M:%S UTC') %>">This leaderboard runs in UTC time!</em>
+      <em class="text-muted block mb-4" title="Current UTC time: <%= Time.now.utc.strftime('%H:%M:%S UTC') %>">This leaderboard runs in UTC time!</em>
     <% else %>
-      <em><strong>Regional Leaderboard:</strong> Showing users in <%= @scope_description %></em>
+      <em class="text-muted block mb-4"><strong>Regional Leaderboard:</strong> Showing users in <%= @scope_description %></em>
     <% end %>
 
-    <div class="period-toggle">
+    <div class="inline-flex rounded-full p-1 mb-4">
       <%= link_to "Daily", leaderboards_path(period_type: 'daily', scope: @scope),
-            class: "period-toggle-btn #{(@period_type == :daily || @period_type == :daily_timezone_normalized) ? 'active' : ''}" %>
+        class: "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 #{(@period_type == :daily || @period_type == :daily_timezone_normalized) ? 'bg-primary text-white' : 'text-muted hover:text-white'}", style: "background:none; border:none;" %>
       <%= link_to "Weekly", leaderboards_path(period_type: 'weekly', scope: @scope),
-            class: "period-toggle-btn #{@period_type == :weekly ? 'active' : ''}" %>
+        class: "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 #{@period_type == :weekly ? 'bg-primary text-white' : 'text-muted hover:text-white'}", style: "background:none; border:none;" %>
       <%= link_to "Last 7 Days", leaderboards_path(period_type: 'last_7_days', scope: @scope),
-            class: "period-toggle-btn #{@period_type == :last_7_days ? 'active' : ''}" %>
+        class: "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 #{@period_type == :last_7_days ? 'bg-primary text-white' : 'text-muted hover:text-white'}", style: "background:none; border:none;" %>
     </div>
 
-    <div class="period-toggle">
+    <div class="inline-flex rounded-full p-1 mb-4 ml-4">
       <%= link_to "Timezone", leaderboards_path(period_type: @period_type, scope: 'timezone'),
-            class: "period-toggle-btn #{@scope == 'timezone' ? 'active' : ''}" %>
+        class: "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 #{@scope == 'timezone' ? ' text-white' : 'text-muted hover:text-white'}", style: "background:none; border:none;" %>
       <%= link_to "Regional", leaderboards_path(period_type: @period_type, scope: 'regional'),
-            class: "period-toggle-btn #{@scope == 'regional' ? 'active' : ''}" %>
+        class: "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 #{@scope == 'regional' ? ' text-white' : 'text-muted hover:text-white'}", style: "background:none; border:none;" %>
       <%= link_to "Global", leaderboards_path(period_type: @period_type, scope: 'global'),
-            class: "period-toggle-btn #{@scope == 'global' ? 'active' : ''}" %>
+        class: "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 #{@scope == 'global' ? ' text-white' : 'text-muted hover:text-white'}", style: "background:none; border:none;" %>
     </div>
 
     <% if current_user && current_user.github_uid.blank? %>
-      <p>
-        <%= link_to "Connect your GitHub", "/auth/github", class: "button" %> to qualify for the leaderboard.
-      </p>
+      <div class="bg-dark border border-primary rounded-lg p-4 mb-6">
+        <%= link_to "Connect your GitHub", "/auth/github", class: "bg-primary hover:bg-red-600 text-white font-medium px-4 py-2 rounded-lg transition-colors duration-200" %> to qualify for the leaderboard.
+      </div>
     <% end %>
 
-    <p class="date">
+    <div class="text-muted text-sm">
       <% if @leaderboard %>
         <%= @leaderboard.date_range_text %>
 
         <% if @leaderboard.finished_generating? && @leaderboard.persisted? %>
-          <span class="super">
+          <span class="block text-xs mt-1 italic">
             Updated <%= time_ago_in_words(@leaderboard.updated_at) %> ago.
           </span>
         <% end %>
@@ -56,49 +56,52 @@
                 Date.current.strftime('%B %d, %Y')
               end %>
       <% end %>
-    </p>
+    </div>
   </div>
 
-  <div class="content">
+  <div class="bg-elevated rounded-xl border border-default overflow-hidden">
     <% if @entries&.any? %>
-      <div class="leaderboard-entries">
+      <div class="divide-y divide-gray-800">
         <% @entries.each_with_index do |entry, index| %>
-          <div class="leaderboard-entry <%= 'current-user' if entry.user_id == current_user&.id %> <%= 'omitted' if entry.user.red? && current_user&.admin? %>">
-            <!-- in the future, convicted users will be hidden from public leaderboards -->
-            <span class="rank">
+          <div class="flex items-center p-2 hover:bg-dark transition-colors duration-200 <%= 'bg-dark border-l-4 border-l-primary' if entry.user_id == current_user&.id %> <%= 'opacity-40 hover:opacity-60' if entry.user.red? && current_user&.admin? %>">
+            <div class="w-12 flex-shrink-0 text-center font-medium text-muted">
               <% case index %>
               <% when 0 then %>
-                <%= "🥇" %>
+                <span class="text-2xl">🥇</span>
               <% when 1 then %>
-                <%= "🥈" %>
+                <span class="text-2xl">🥈</span>
               <% when 2 then %>
-                <%= "🥉" %>
+                <span class="text-2xl">🥉</span>
               <% else %>
-                <%= (index + 1).ordinalize %>
+                <span class="text-lg"><%= (index + 1).ordinalize %></span>
               <% end %>
-            </span>
-            <span class="user">
-              <%= render "shared/user_mention", user: entry.user, show: [:neighborhood, :slack] %>
-              <% if @active_projects&.dig(entry.user_id).present? %>
-                <span class="super">
-                  working on <%= link_to @active_projects[entry.user_id].project_name, @active_projects[entry.user_id].repo_url, target: "_blank" %>
-                  <% dev_tool(nil, 'span') do %>
-                    <%= link_to "🌌", visualize_git_url(@active_projects[entry.user_id].repo_url), target: "_blank" %>
-                  <% end %>
-                </span>
-              <% end %>
-              <% if entry.streak_count > 0 %>
-                <%= render "static_pages/streak",
-                      user: entry.user,
-                      streak_count: entry.streak_count,
-                      turbo_frame: false,
-                      icon_size: 16,
-                      show_super_class: true %>
-              <% end %>
-            </span>
-            <span class="time"><%= short_time_detailed entry.total_seconds %></span>
+            </div>
+            <div class="flex-1 mx-4 min-w-0">
+              <div class="flex items-center gap-2 flex-wrap">
+                <%= render "shared/user_mention", user: entry.user, show: [:neighborhood, :slack] %>
+                <% if @active_projects&.dig(entry.user_id).present? %>
+                  <span class="text-xs italic text-muted">
+                    working on <%= link_to @active_projects[entry.user_id].project_name, @active_projects[entry.user_id].repo_url, target: "_blank", class: "text-accent hover:text-cyan-400 transition-colors" %>
+                    <% dev_tool(nil, 'span') do %>
+                      <%= link_to "🌌", visualize_git_url(@active_projects[entry.user_id].repo_url), target: "_blank", class: "ml-1" %>
+                    <% end %>
+                  </span>
+                <% end %>
+                <% if entry.streak_count > 0 %>
+                  <%= render "static_pages/streak",
+                        user: entry.user,
+                        streak_count: entry.streak_count,
+                        turbo_frame: false,
+                        icon_size: 16,
+                        show_super_class: true %>
+                <% end %>
+              </div>
+            </div>
+            <div class="flex-shrink-0 font-mono text-sm text-white font-medium">
+              <%= short_time_detailed entry.total_seconds %>
+            </div>
             <% admin_tool do %>
-              <select class="trust-level-select"
+              <select class="ml-4 bg-dark border border-default rounded px-2 py-1 text-sm text-white"
                   data-controller="trust-level"
                   data-trust-level-target="select"
                   data-user-id="<%= entry.user.id %>"
@@ -113,23 +116,23 @@
         <% end %>
       </div>
       <% unless @user_on_leaderboard && @untracked_entries != 0 %>
-        <p>
+        <div class="px-4 py-3 text-sm text-muted border-t border-default">
           Don't see yourself on the leaderboard? You're probably one of the
           <%= pluralize(@untracked_entries, "user") %>
           who haven't
-          <%= link_to "updated their wakatime config", my_settings_path, target: "_blank" %>.
-        </p>
+          <%= link_to "updated their wakatime config", my_settings_path, target: "_blank", class: "text-accent hover:text-cyan-400 transition-colors" %>.
+        </div>
       <% end %>
       <% if @leaderboard.finished_generating? && @leaderboard.persisted? %>
-        <span class="super">
+        <div class="px-4 py-2 text-xs italic text-muted border-t border-default">
           Generated in <%= @leaderboard.finished_generating_at - @leaderboard.created_at %> seconds
-        </span>
+        </div>
       <% end %>
 
     <% else %>
-      <div class="empty-state">
-        <h3>No data available</h3>
-        <p>Check back later for <%= @period_type == :weekly ? "this week's" : @period_type == :last_7_days ? "the last 7 days" : "today's" %> results!</p>
+      <div class="py-16 text-center">
+        <h3 class="text-xl font-medium text-white mb-2">No data available</h3>
+        <p class="text-muted">Check back later for <%= @period_type == :weekly ? "this week's" : @period_type == :last_7_days ? "the last 7 days" : "today's" %> results!</p>
       </div>
     <% end %>
   </div>
