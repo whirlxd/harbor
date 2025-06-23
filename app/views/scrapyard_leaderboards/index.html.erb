@@ -22,7 +22,7 @@
           <% when 2 %>
             🥉
           <% else %>
-            <span class="ordinal"><%= (index + 1).ordinalize %></span>
+            <span class="ordinal"><%= index + 1 %></span>
           <% end %>
           <%= stats[:event].name %>
           <% if is_watched?(stats[:event].id) %>

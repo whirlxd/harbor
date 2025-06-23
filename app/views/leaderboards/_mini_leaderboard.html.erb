@@ -49,7 +49,7 @@
                 <% if idx == 2 && entries.index(entry) - entries.index(mini_leaderboard_entries[1]) > 1 %>
                   <div class="text-center text-muted font-bold tracking-widest text-sm py-1">...</div>
                 <% end %>
-                <div class="w-8 text-center text-sm font-medium text-muted"><%= (entries.index(entry) + 1).ordinalize %></div>
+                <div class="w-8 text-center text-sm font-medium text-muted"><%= entries.index(entry) + 1 %></div>
               <% end %>
               <div class="flex-1 mx-3 min-w-0">
                 <div class="flex items-center gap-2 flex-wrap">

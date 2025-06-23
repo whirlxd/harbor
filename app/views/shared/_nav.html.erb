@@ -6,7 +6,7 @@
       </div>
     <% end %>
     <% if current_user %>
-      <div class="px-2 rounded flex flex-col items-center gap-1">
+      <div class="px-2 rounded flex flex-col items-center gap-2">
         <%= render "shared/user_mention", user: current_user %>
         <%= render "static_pages/streak", user: current_user, show_text: true, turbo_frame: false %>
       </div>
