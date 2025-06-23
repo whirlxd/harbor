@@ -3,7 +3,7 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
     origins "*"
 
     # Allow CORS for the hackatime API endpoints
-    resource "/api/hackatime/v1/*",
+    resource "/api/*",
       headers: :any,
       methods: [ :get, :post, :options ],
       expose: [ "Authorization" ],
