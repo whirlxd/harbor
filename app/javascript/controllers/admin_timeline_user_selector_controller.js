@@ -87,22 +87,24 @@ export default class extends Controller {
       console.log(`Found ${users.length} users in search results`);
       this.renderSearchResults(users);
     } else {
-      this.searchResultsTarget.innerHTML = "<li class='list-group-item list-group-item-light disabled'>Error searching users</li>";
+      this.searchResultsTarget.innerHTML = "<li class='px-4 py-2 text-red-400 text-sm'>Error searching users</li>";
       this.searchResultsTarget.classList.add('active');
     }
   }
 
   renderSearchResults(users) {
     if (users.length === 0) {
-      this.searchResultsTarget.innerHTML = "<li class='list-group-item list-group-item-light disabled'>No users found</li>";
+      this.searchResultsTarget.innerHTML = "<li class='px-4 py-2 text-gray-400 text-sm'>No users found</li>";
     } else {
       this.searchResultsTarget.innerHTML = users.map(user => `
-        <li class="list-group-item list-group-item-action list-group-item-dark" 
+        <li class="px-4 py-2 hover:bg-gray-700 cursor-pointer text-white text-sm flex items-center transition-colors" 
             data-action="click->${this.identifier}#selectUser" 
             data-${this.identifier}-user-id-value="${user.id}" 
             data-${this.identifier}-user-display-name-value="${this.escapeHTML(user.display_name)}"
             data-${this.identifier}-user-avatar-url-value="${user.avatar_url || ''}">
-          <img src="${user.avatar_url || 'https://via.placeholder.com/20'}" alt="${this.escapeHTML(user.display_name)}" class="avatar-xs me-2 rounded-circle">${this.escapeHTML(user.display_name)}
+          <img src="${user.avatar_url || 'https://via.placeholder.com/20'}" alt="${this.escapeHTML(user.display_name)}" class="w-5 h-5 rounded-full mr-3">
+          <span>${this.escapeHTML(user.display_name)}</span>
+          <span class="ml-auto text-xs text-gray-400">#${user.id}</span>
         </li>
       `).join("");
     }
@@ -163,29 +165,36 @@ export default class extends Controller {
     this.selectedUsers.set(userId, user);
     
     const pill = document.createElement("span");
-    // Using Pico.css friendly classes if available, or simple badges
-    pill.classList.add("badge", "secondary", "me-1", "mb-1", "d-inline-flex", "align-items-center", "user-pill");
-    pill.style.backgroundColor = isPillForAdmin ? 'var(--pico-primary-focus)' : 'var(--pico-muted-border-color)';
-    pill.style.color = isPillForAdmin ? 'var(--pico-primary-inverse)' : 'var(--pico-color)';
-    pill.style.padding = '0.3em 0.6em';
-    pill.style.borderRadius = 'var(--pico-border-radius)';
-
+    const pillClasses = isPillForAdmin 
+      ? "inline-flex items-center bg-blue-600 text-white rounded-lg px-3 py-1 mr-2 mb-2 text-sm font-medium user-pill"
+      : "inline-flex items-center bg-gray-700 text-white rounded-lg px-3 py-1 mr-2 mb-2 text-sm user-pill";
+    
+    pill.className = pillClasses;
     pill.dataset.userId = userId;
     
-    let avatarImg = '';
+    let pillContent = '';
+
     if (user.avatar_url) {
-      avatarImg = `<img src="${user.avatar_url}" alt="${this.escapeHTML(user.display_name)}" class="avatar-xxs me-1 rounded-circle">`;
+      pillContent += `<img src="${user.avatar_url}" alt="${this.escapeHTML(user.display_name)}" class="w-4 h-4 rounded-full mr-2">`;
     }
 
-    pill.innerHTML = `${avatarImg} ${this.escapeHTML(user.display_name)}`;
+    pillContent += `<span class="mr-2">${this.escapeHTML(user.display_name)}</span>`;
+    
+    const idPillClasses = isPillForAdmin 
+      ? "inline-flex items-center bg-blue-500 text-white text-xs px-2 py-0.5 rounded-md"
+      : "inline-flex items-center bg-gray-600 text-gray-200 text-xs px-2 py-0.5 rounded-md";
+    
+    pillContent += `<span class="${idPillClasses}">#${userId}</span>`;
+    
+    pill.innerHTML = pillContent;
 
     if (!isPillForAdmin) {
       const removeButton = document.createElement("button");
       removeButton.type = "button";
-      removeButton.classList.add("btn-close-custom", "ms-1"); // Custom class for styling
-      removeButton.innerHTML = "&times;"; // Simple 'x'
+      removeButton.className = "ml-2 text-gray-300 hover:text-white focus:outline-none text-lg leading-none";
+      removeButton.innerHTML = "&times;";
       removeButton.dataset.action = `click->${this.identifier}#removeUser`;
-      removeButton.setAttribute("aria-label", "Remove");
+      removeButton.setAttribute("aria-label", "Remove user");
       pill.appendChild(removeButton);
     }
     
