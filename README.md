@@ -1,4 +1,4 @@
-# Hackatime!
+# Hackatime
 
 [![Ping](https://status.hackatime.hackclub.com/api/badge/1/ping)](https://status.hackatime.hackclub.com/status/hackatime)
 [![Status](https://status.hackatime.hackclub.com/api/badge/1/status)](https://status.hackatime.hackclub.com/status/hackatime)
@@ -48,9 +48,9 @@ app# bin/rails c # start an interactive irb!
 app# bin/rails db:migrate # migrate the database
 ```
 
-You can now access the app at http://localhost:3000/
+You can now access the app at <http://localhost:3000/>
 
-Use email authentication from the homepage with `test@example.com` or create a new user (you can view outgoing emails at http://localhost:3000/letter_opener)!
+Use email authentication from the homepage with `test@example.com` or create a new user (you can view outgoing emails at [http://localhost:3000/letter_opener](http://localhost:3000/letter_opener))!
 
 Ever need to setup a new database?
 
