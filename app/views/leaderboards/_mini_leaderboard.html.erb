@@ -23,7 +23,7 @@
     %>
 
     <% if mini_leaderboard_entries&.any? %>
-      <div class="bg-elevated rounded-xl border border-default p-4 shadow-lg">
+      <div class="bg-elevated rounded-xl border border-red p-4 shadow-lg">
         <p class="text-xs italic text-muted mb-4">
           <% if leaderboard.respond_to?(:scope_name) %>
             <strong>Showing others in <%= link_to "your timezone", my_settings_path(anchor: "user_timezone"), data: { turbo: false }, class: "text-accent hover:text-cyan-400 transition-colors" %></strong>
@@ -37,7 +37,7 @@
         <div class="space-y-2">
           <% mini_leaderboard_entries.each_with_index do |entry, idx| %>
             <% is_competition = !show_top_entries && idx >= 2 %>
-            <div class="flex items-center p-3 rounded-lg hover:bg-dark transition-colors duration-200 <%= 'bg-dark border border-primary' if entry.user_id == current_user&.id %>">
+            <div class="flex items-center p-3 rounded-lg hover:bg-dark transition-colors duration-200 <%= 'bg-dark border border-red' if entry.user_id == current_user&.id %>">
               <% if !is_competition %>
                 <% rank_emoji = case entries.index(entry)
                      when 0 then "🥇"
@@ -47,9 +47,9 @@
                 <div class="w-8 text-center text-lg"><%= rank_emoji %></div>
               <% else %>
                 <% if idx == 2 && entries.index(entry) - entries.index(mini_leaderboard_entries[1]) > 1 %>
-                  <div class="text-center text-muted font-bold tracking-widest text-sm py-1">...</div>
+                  <div class="text-center text-muted font-bold tracking-widest text-lg py-1">...</div>
                 <% end %>
-                <div class="w-8 text-center text-sm font-medium text-muted"><%= entries.index(entry) + 1 %></div>
+                <div class="w-8 text-center text-lg font-medium text-muted"><%= entries.index(entry) + 1 %></div>
               <% end %>
               <div class="flex-1 mx-3 min-w-0">
                 <div class="flex items-center gap-2 flex-wrap">

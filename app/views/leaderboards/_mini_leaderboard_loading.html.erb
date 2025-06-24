@@ -1,4 +1,4 @@
-<div class="bg-elevated rounded-xl border border-default p-4 shadow-lg">
+<div class="bg-elevated rounded-xl border border-red p-4 shadow-lg">
   <p class="text-xs italic text-muted mb-4 opacity-70">
     This leaderboard is in <%= Leaderboard::GLOBAL_TIMEZONE %>.
     <% if current_user && timezone_difference_in_seconds(Leaderboard::GLOBAL_TIMEZONE, current_user.timezone) != 0 %>

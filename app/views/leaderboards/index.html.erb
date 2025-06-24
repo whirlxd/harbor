@@ -31,7 +31,7 @@
     </div>
 
     <% if current_user && current_user.github_uid.blank? %>
-      <div class="bg-dark border border-primary rounded-lg p-4 mb-6">
+      <div class="bg-dark border border-red rounded-lg p-4 mb-6">
         <%= link_to "Connect your GitHub", "/auth/github", class: "bg-primary hover:bg-red-600 text-white font-medium px-4 py-2 rounded-lg transition-colors duration-200" %> to qualify for the leaderboard.
       </div>
     <% end %>
@@ -59,7 +59,7 @@
     </div>
   </div>
 
-  <div class="bg-elevated rounded-xl border border-default overflow-hidden">
+  <div class="bg-elevated rounded-xl border border-red overflow-hidden">
     <% if @entries&.any? %>
       <div class="divide-y divide-gray-800">
         <% @entries.each_with_index do |entry, index| %>
@@ -101,7 +101,7 @@
               <%= short_time_detailed entry.total_seconds %>
             </div>
             <% admin_tool do %>
-              <select class="ml-4 bg-dark border border-default rounded px-2 py-1 text-sm text-white"
+              <select class="ml-4 bg-dark border border-red rounded px-2 py-1 text-sm text-white"
                   data-controller="trust-level"
                   data-trust-level-target="select"
                   data-user-id="<%= entry.user.id %>"
@@ -116,7 +116,7 @@
         <% end %>
       </div>
       <% unless @user_on_leaderboard && @untracked_entries != 0 %>
-        <div class="px-4 py-3 text-sm text-muted border-t border-default">
+        <div class="px-4 py-3 text-sm text-muted border-t border-red">
           Don't see yourself on the leaderboard? You're probably one of the
           <%= pluralize(@untracked_entries, "user") %>
           who haven't
@@ -124,7 +124,7 @@
         </div>
       <% end %>
       <% if @leaderboard.finished_generating? && @leaderboard.persisted? %>
-        <div class="px-4 py-2 text-xs italic text-muted border-t border-default">
+        <div class="px-4 py-2 text-xs italic text-muted border-t border-red">
           Generated in <%= @leaderboard.finished_generating_at - @leaderboard.created_at %> seconds
         </div>
       <% end %>
