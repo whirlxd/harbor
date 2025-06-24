@@ -28,8 +28,7 @@ export default class extends Controller {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]')
-            .content,
+          "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content,
         },
         body: JSON.stringify({ trust_level: trustLevel }),
       });
@@ -40,10 +39,7 @@ export default class extends Controller {
         );
       }
 
-      // Update the current trust level in the dataset
       event.target.dataset.currentTrustLevel = trustLevel;
-
-      // Update the leaderboard entry's omitted class
       const leaderboardEntry = event.target.closest(".leaderboard-entry");
       if (leaderboardEntry) {
         if (trustLevel === "red") {
