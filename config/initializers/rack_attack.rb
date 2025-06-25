@@ -1,6 +1,13 @@
 # config/initializers/rack_attack.rb
 
 class Rack::Attack
+  if ENV["RACK_ATTACK_BYPASS"].present?
+    Rack::Attack.safelist("mark any authenticated access safe") do |request|
+      # Requests are allowed if the return value is truthy
+      request.env["HTTP_RACK_ATTACK_BYPASS"] == ENV["RACK_ATTACK_BYPASS"]
+    end
+  end
+
   # Always allow requests from localhost
   # (blocklist & throttles are skipped)
   Rack::Attack.safelist("allow from localhost") do |req|
