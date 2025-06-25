@@ -140,7 +140,7 @@
     <%= Sentry.get_trace_propagation_meta.html_safe %>
   </head>
 
-  <body class="<%= content_for(:body_class) %> flex min-h-screen" data-controller="nav">
+  <body class="<%= content_for(:body_class) %> flex min-h-screen bg-darker" data-controller="nav">
     <button class="mobile-nav-button" 
             data-action="click->nav#toggle" 
             data-nav-target="button"
