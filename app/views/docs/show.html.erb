@@ -38,30 +38,42 @@
   </script>
 <% end %>
 
-<div class="container">
-  <p class="super">
-    <% @breadcrumbs.each_with_index do |crumb, index| %>
-      <% if index == @breadcrumbs.length - 1 %>
-        <span><%= crumb[:name] %></span>
-      <% else %>
-        <% if crumb[:is_link] && crumb[:path] %>
-          <%= link_to crumb[:name], crumb[:path] %>
+<div class="min-h-screen text-white">
+  <div class="max-w-6xl mx-auto px-6 py-8">
+    <nav class="mb-8">
+      <% @breadcrumbs.each_with_index do |crumb, index| %>
+        <% if index == @breadcrumbs.length - 1 %>
+          <span class="text-primary"><%= crumb[:name] %></span>
         <% else %>
-          <span><%= crumb[:name] %></span>
+          <% if crumb[:is_link] && crumb[:path] %>
+            <%= link_to crumb[:name], crumb[:path], class: "text-secondary hover:text-primary" %>
+          <% else %>
+            <span class="text-secondary"><%= crumb[:name] %></span>
+          <% end %>
+          <span class="text-secondary mx-2">/</span>
         <% end %>
-        <span> / </span>
       <% end %>
-    <% end %>
-  </p>
-
-  <div class="docs-content">
-    <%= raw @rendered_content %>
+    </nav>
+    <div class="bg-dark rounded-lg p-8 mb-8 prose prose-invert max-w-none
+                prose-headings:text-primary prose-h1:text-3xl prose-h1:font-bold 
+                prose-h2:text-2xl prose-h2:font-semibold prose-h2:text-primary
+                prose-h3:text-xl prose-h3:font-semibold prose-h3:text-primary
+                prose-p:text-white prose-p:leading-relaxed
+                prose-a:text-primary prose-a:hover:text-red prose-a:underline
+                prose-strong:text-white prose-em:text-secondary
+                prose-code:bg-darkless prose-code:text-primary prose-code:px-2 prose-code:py-1 prose-code:rounded
+                prose-pre:bg-darkless prose-pre:border prose-pre:border-primary/20
+                prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:bg-darkless prose-blockquote:pl-4
+                prose-ul:text-white prose-ol:text-white prose-li:text-white">
+      <%= raw @rendered_content %>
+    </div>
+    <div class="text-center bg-darkless rounded-lg p-6">
+      <p class="text-secondary">
+        Found an issue with this page? 
+        <a href="https://github.com/hackclub/hackatime/edit/main/docs/<%= @doc_path %>.md" target="_blank" class="text-primary hover:text-red underline">
+          Edit it on GitHub
+        </a> - we'd love your help making the docs better!
+      </p>
+    </div>
   </div>
-
-  <p class="flavor">
-    Found an issue with this page? 
-    <a href="https://github.com/hackclub/hackatime/edit/main/docs/<%= @doc_path %>.md" target="_blank">
-      Edit it on GitHub
-    </a> - we'd love your help making the docs better!
-  </p>
 </div>
