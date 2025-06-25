@@ -10,13 +10,14 @@ export default class extends Controller {
   connect() {
     this.lastFullFetch = Date.now() // Initialize to now to prevent immediate refetch on click
     this.isExpanded = false
-    this.startPolling()
+    // this.startPolling()
+    this.poll()
     this.boundClickHandler = this.handleClick.bind(this)
     this.containerTarget.addEventListener('click', this.boundClickHandler)
   }
 
   disconnect() {
-    this.stopPolling()
+    // this.stopPolling()
     this.containerTarget.removeEventListener('click', this.boundClickHandler)
   }
 
@@ -24,14 +25,13 @@ export default class extends Controller {
     const header = event.target.closest('.currently-hacking')
     if (header) {
       this.toggle()
-      // Poll immediately when opening if we haven't fetched the list recently
-      if (this.isExpanded) {
-        const now = Date.now()
-        const timeSinceLastFetch = now - this.lastFullFetch
-        if (timeSinceLastFetch > 30000) {
-          this.poll()
-        }
-      }
+      // if (this.isExpanded) {
+      //   const now = Date.now()
+      //   const timeSinceLastFetch = now - this.lastFullFetch
+      //   if (timeSinceLastFetch > 30000) {
+      //     this.poll()
+      //   }
+      // }
     }
   }
 
@@ -47,20 +47,20 @@ export default class extends Controller {
     return this.isExpanded
   }
 
-  startPolling() {
-    this.stopPolling() // Clear any existing interval
-    this.poll() // Initial poll
-    this.intervalId = setInterval(() => {
-      this.poll()
-    }, this.intervalValue)
-  }
+  // startPolling() {
+  //   this.stopPolling() // Clear any existing interval
+  //   this.poll() // Initial poll
+  //   this.intervalId = setInterval(() => {
+  //     this.poll()
+  //   }, this.intervalValue)
+  // }
 
-  stopPolling() {
-    if (this.intervalId) {
-      clearInterval(this.intervalId)
-      this.intervalId = null
-    }
-  }
+  // stopPolling() {
+  //   if (this.intervalId) {
+  //     clearInterval(this.intervalId)
+  //     this.intervalId = null
+  //   }
+  // }
 
   async poll() {
     try {
