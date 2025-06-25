@@ -124,9 +124,9 @@
       <% end %>
     </p>
 
-    <%= turbo_frame_tag "mini_leaderboard", src: mini_leaderboard_static_pages_path do %>
-      <%= render "leaderboards/mini_leaderboard_loading" %>
-    <% end %>
+    <%#= turbo_frame_tag "mini_leaderboard", src: mini_leaderboard_static_pages_path do %>
+      <%#= render "leaderboards/mini_leaderboard_loading" %>
+    <%# end %>
 
     <%= turbo_frame_tag "filterable_dashboard", src: filterable_dashboard_static_pages_path do %>
       <span>Loading...</span>
@@ -136,10 +136,10 @@
       <span>Loading...</span>
     <% end %>
   <% else %>
-    <% if @leaderboard %>
-      <h3>Today's Top Hack Clubbers</h3>
-      <%= render "leaderboards/mini_leaderboard", leaderboard: @leaderboard, current_user: nil %>
-    <% end %>
+    <%# if @leaderboard %>
+      <!--<h3>Today's Top Hack Clubbers</h3>-->
+      <%#= render "leaderboards/mini_leaderboard", leaderboard: @leaderboard, current_user: nil %>
+    <%# end %>
 
     <div class="login-grid">
       <div class="video-container">
