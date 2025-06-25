@@ -15,7 +15,8 @@ Rails.application.configure do
   config.good_job.enable_cron = Rails.env.production?
 
   # https://github.com/bensheldon/good_job#configuring-your-queues
-  config.good_job.queues = "latency_10s:8; latency_5m,latency_10s:6; literally_whenever,*,latency_5m,latency_10s:10"
+  # Reduced from 24 to 8 total threads to leave room for 16 web request threads
+  config.good_job.queues = "latency_10s:3; latency_5m,latency_10s:2; literally_whenever,*,latency_5m,latency_10s:3"
 
   #  https://github.com/bensheldon/good_job#pgbouncer-compatibility
   GoodJob.active_record_parent_class = "ApplicationDirectRecord"
