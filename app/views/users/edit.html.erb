@@ -357,25 +357,28 @@
         </div>
         
         <% if current_user.wakatime_mirrors.any? %>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <% grid_cols = current_user.wakatime_mirrors.size > 1 ? "md:grid-cols-2" : "" %>
+          <div class="grid grid-cols-1 <%= grid_cols %> gap-4 mb-4">
             <% current_user.wakatime_mirrors.each do |mirror| %>
               <div class="p-4 bg-gray-800 border border-gray-600 rounded">
-                <h3 class="text-white font-medium"><%= mirror.name %></h3>
-                <p class="text-gray-400 text-sm"><%= mirror.endpoint_url %></p>
+                <h3 class="text-white font-medium"><%= mirror.endpoint_url %></h3>
+                <p class="text-gray-400 text-sm">
+                  Last synced: <%= mirror.last_synced_at ? time_ago_in_words(mirror.last_synced_at) + " ago" : "Never" %>
+                </p>
               </div>
             <% end %>
           </div>
         <% end %>
 
         <%= form_with(model: [current_user, WakatimeMirror.new], local: true, class: "space-y-4") do |f| %>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <%= f.label :name, class: "block text-sm font-medium text-gray-200 mb-2" %>
-              <%= f.text_field :name, class: "w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white focus:border-red focus:ring-1 focus:ring-primary" %>
-            </div>
+          <div class="grid grid-cols-1 gap-4">
             <div>
               <%= f.label :endpoint_url, class: "block text-sm font-medium text-gray-200 mb-2" %>
-              <%= f.url_field :endpoint_url, class: "w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white focus:border-red focus:ring-1 focus:ring-primary" %>
+              <%= f.url_field :endpoint_url, value: "https://wakatime.com/api/v1", class: "w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white focus:border-red focus:ring-1 focus:ring-primary" %>
+            </div>
+            <div>
+              <%= f.label :encrypted_api_key, "WakaTime API Key", class: "block text-sm font-medium text-gray-200 mb-2" %>
+              <%= f.password_field :encrypted_api_key, placeholder: "Enter your WakaTime API key", class: "w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white focus:border-red focus:ring-1 focus:ring-primary" %>
             </div>
           </div>
           <%= f.submit "Add Mirror", class: "px-4 py-2 bg-primary text-white font-medium rounded transition-colors duration-200" %>
