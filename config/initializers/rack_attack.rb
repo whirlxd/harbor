@@ -2,9 +2,21 @@
 
 class Rack::Attack
   if ENV["RACK_ATTACK_BYPASS"].present?
+    begin
+      TOKENS = JSON.parse(ENV["RACK_ATTACK_BYPASS"])
+      unless TOKENS.is_a?(Array)
+        Rails.logger.warn "RACK_ATTACK_BYPASS should be a array, tf is this #{TOKENS.class}"
+        TOKENS = []
+      end
+    rescue JSON::ParserError => e
+      Rails.logger.error "RACK_ATTACK_BYPASS failed to read, you fucked it up #{e.message}"
+      TOKENS = []
+    end
+
     Rack::Attack.safelist("mark any authenticated access safe") do |request|
       # Requests are allowed if the return value is truthy
-      request.env["HTTP_RACK_ATTACK_BYPASS"] == ENV["RACK_ATTACK_BYPASS"]
+      bypass = request.env["HTTP_RACK_ATTACK_BYPASS"]
+      bypass.present? && TOKENS.include?(bypass)
     end
   end
 
