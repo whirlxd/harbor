@@ -140,8 +140,8 @@
     </div>
   
     <details class="bg-dark rounded-lg p-6 mb-8">
-      <summary class="cursor-pointer font-semibold text-primary mb-4">View all 77 supported editors</summary>
-      <div id="all-editors" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3 mt-4 p-4 bg-darkless rounded-lg">
+      <summary class="cursor-pointer font-semibold text-primary">View all 77 supported editors</summary>
+      <div id="all-editors" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3 mt-4 p-4">
       <% 
         # All 77 editors - alphabetically sorted
         all_editors = [
@@ -168,7 +168,7 @@
         ]
       %>
         <% all_editors.each do |name, slug| %>
-          <a href="<%= doc_path("editors/#{slug}") %>" class="bg-dark rounded p-2 hover:bg-primary/10 transition-colors text-center block">
+          <a href="<%= doc_path("editors/#{slug}") %>" class="bg-darkless rounded p-2 hover:bg-primary/10 transition-colors text-center block">
             <img src="/images/editor-icons/<%= slug %>-128.png" alt="<%= name %>" class="w-8 h-8 mx-auto mb-1">
             <div class="text-xs text-white leading-tight"><%= name %></div>
           </a>
@@ -186,6 +186,5 @@
         </a> - we'd love your help making them better!
       </p>
     </div>
-
   </div>
 </div>
