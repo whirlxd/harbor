@@ -47,14 +47,14 @@ class Rack::Attack
   end
 
   # Custom response for throttled requests
-  self.throttled_response = lambda do |env|
-    retry_after = (env["rack.attack.match_data"] || {})[:period]
+  self.throttled_responder = lambda do |request|
+    retry_after = (request.env["rack.attack.match_data"] || {})[:period]
     [
       429,
       {
         "Content-Type" => "application/json",
         "Retry-After" => retry_after.to_s,
-        "X-RateLimit-Limit" => env["rack.attack.matched"].to_s,
+        "X-RateLimit-Limit" => request.env["rack.attack.matched"].to_s,
         "X-RateLimit-Remaining" => "0",
         "X-RateLimit-Reset" => (Time.now + retry_after).to_i.to_s
       },
