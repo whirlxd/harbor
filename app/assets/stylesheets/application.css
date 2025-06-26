@@ -12,8 +12,8 @@
 /* Phantom Sans Font Faces */
 @font-face {
   font-family: 'Phantom Sans';
-  src: url('/assets/Regular.woff2') format('woff2'),
-       url('/assets/Regular.woff') format('woff');
+  src: url('/fonts/Regular.woff2') format('woff2'),
+       url('/fonts/Regular.woff') format('woff');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
@@ -21,8 +21,8 @@
 
 @font-face {
   font-family: 'Phantom Sans';
-  src: url('/assets/Italic.woff2') format('woff2'),
-       url('/assets/Italic.woff') format('woff');
+  src: url('/fonts/Italic.woff2') format('woff2'),
+       url('/fonts/Italic.woff') format('woff');
   font-weight: normal;
   font-style: italic;
   font-display: swap;
@@ -30,8 +30,8 @@
 
 @font-face {
   font-family: 'Phantom Sans';
-  src: url('/assets/Bold.woff2') format('woff2'),
-       url('/assets/Bold.woff') format('woff');
+  src: url('/fonts/Bold.woff2') format('woff2'),
+       url('/fonts/Bold.woff') format('woff');
   font-weight: bold;
   font-style: normal;
   font-display: swap;
