@@ -8,7 +8,9 @@
       user_rank = user_entry ? entries.index(user_entry) : nil
       
       if user_entry && user_rank && user_rank >= 3
-        mini_leaderboard_entries = top_entries + [user_entry]
+        person_above = entries[user_rank - 1] if user_rank > 0
+        context_entries = person_above ? [person_above, user_entry] : [user_entry]
+        mini_leaderboard_entries = top_entries + context_entries
         show_user_separately = true
       else
         mini_leaderboard_entries = top_entries
@@ -32,21 +34,17 @@
           <% mini_leaderboard_entries.each_with_index do |entry, idx| %>
             <% 
               actual_rank = entries.index(entry) 
-              is_user_entry = show_user_separately && idx == 3
+              is_separator_needed = show_user_separately && idx == 3 && actual_rank > 3
             %>
-            <div class="flex items-center p-3 rounded-lg hover:bg-dark transition-colors duration-200 <%= 'bg-dark border border-red' if entry.user_id == current_user&.id %>">
-              <% if is_user_entry && actual_rank > 2 %>
-                <div class="w-full text-center text-muted font-bold tracking-widest text-sm py-2">...</div>
-                <div class="w-8 text-center text-lg font-bold text-muted"><%= actual_rank + 1 %></div>
-              <% else %>
-                <% rank_emoji = case actual_rank
-                     when 0 then "🥇"
-                     when 1 then "🥈"
-                     when 2 then "🥉"
-                     else actual_rank + 1
-                     end %>
-                <div class="w-8 text-center text-lg"><%= rank_emoji %></div>
-              <% end %>
+
+            <div class="flex items-center p-3 rounded-lg bg-dark transition-colors duration-200 <%= 'bg-dark border border-red' if entry.user_id == current_user&.id %>">
+              <% rank_emoji = case actual_rank
+                   when 0 then "🥇"
+                   when 1 then "🥈"
+                   when 2 then "🥉"
+                   else actual_rank + 1
+                   end %>
+              <div class="w-8 text-center text-lg"><%= rank_emoji %></div>
               <div class="flex-1 mx-3 min-w-0">
                 <div class="flex items-center gap-2 flex-wrap">
                   <%= render "shared/user_mention", user: entry.user, show: [:neighborhood] %>
