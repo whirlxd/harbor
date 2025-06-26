@@ -110,7 +110,6 @@ aside.nav, aside[data-nav-target="nav"] {
   border-radius: 6px;
   transition: background-color 0.15s, color 0.15s;
   text-decoration: none;
-  font-weight: normal;
 }
 
 .nav-item.active, aside[data-nav-target="nav"] .nav-item.active, aside[data-nav-target="nav"] a.block.bg-primary\/20 {
