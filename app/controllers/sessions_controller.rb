@@ -31,9 +31,9 @@ class SessionsController < ApplicationController
       if state["close_window"]
         redirect_to close_window_path
       elsif state["continue"]
-        redirect_to state["continue"], notice: "Successfully signed in with Slack!"
+        redirect_to state["continue"], notice: "Successfully signed in with Slack! Welcome!"
       else
-        redirect_to root_path, notice: "Successfully signed in with Slack!"
+        redirect_to root_path, notice: "Successfully signed in with Slack! Welcome!"
       end
     else
       Rails.logger.error "Failed to create/update user from Slack data"

@@ -351,12 +351,6 @@
   margin: 0 auto;
 }
 
-h1 {
-  font-size: 2rem;
-  font-weight: bold;
-  margin-bottom: 1.5rem;
-}
-
 .filters-section {
   display: flex;
   gap: 1rem;
