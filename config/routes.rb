@@ -50,6 +50,7 @@ Rails.application.routes.draw do
       get :project_durations
       get :activity_graph
       get :currently_hacking
+      get :currently_hacking_count
       get :filterable_dashboard_content
       get :filterable_dashboard
       get :mini_leaderboard

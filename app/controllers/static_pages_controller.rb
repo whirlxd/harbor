@@ -175,15 +175,37 @@ class StaticPagesController < ApplicationController
     respond_to do |format|
       format.html { render partial: "currently_hacking", locals: locals }
       format.json do
-        json_response = { count: locals[:users].count }
-
-        # Only include HTML if explicitly requested (when list is visible)
-        if params[:include_list] == "true"
-          json_response[:html] = render_to_string(partial: "currently_hacking", locals: locals, formats: [ :html ])
+        json_response = locals[:users].map do |user|
+          {
+            id: user.id,
+            username: user.username,
+            slack_username: user.slack_username,
+            github_username: user.github_username,
+            display_name: user.display_name,
+            avatar_url: user.avatar_url,
+            slack_uid: user.slack_uid,
+            active_project: locals[:active_projects][user.id]&.then do |project|
+              {
+                name: project.project_name,
+                repo_url: project.repo_url
+              }
+            end
+          }
         end
 
-        render json: json_response
+        render json: {
+          count: locals[:users].count,
+          users: json_response
+        }
       end
+    end
+  end
+
+  def currently_hacking_count
+    result = Cache::CurrentlyHackingCountJob.perform_now
+
+    respond_to do |format|
+      format.json { render json: { count: result[:count] } }
     end
   end
 
