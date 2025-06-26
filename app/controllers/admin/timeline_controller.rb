@@ -136,7 +136,7 @@ class Admin::TimelineController < Admin::BaseController
     # For Stimulus: provide initial selected users with details
     @initial_selected_user_objects = User.where(id: @selected_user_ids)
                                         .select(:id, :username, :slack_username, :github_username, :slack_avatar_url, :github_avatar_url)
-                                        .map { |u| { id: u.id, display_name: "#{u.display_name} (ID: #{u.id})", avatar_url: u.avatar_url } }
+                                        .map { |u| { id: u.id, display_name: "#{u.display_name}", avatar_url: u.avatar_url } }
                                         .sort_by { |u_obj| @selected_user_ids.index(u_obj[:id]) || Float::INFINITY } # Preserve order
 
     @primary_user = @users_with_timeline_data.first&.[](:user) || current_user
@@ -181,7 +181,7 @@ class Admin::TimelineController < Admin::BaseController
     if user_id_match
       results = [ {
         id: user_id_match.id,
-        display_name: "#{user_id_match.display_name} (ID: #{user_id_match.id})",
+        display_name: "#{user_id_match.display_name}",
         avatar_url: user_id_match.avatar_url
       } ]
     else
@@ -193,7 +193,7 @@ class Admin::TimelineController < Admin::BaseController
       results = users.map do |user|
         {
           id: user.id,
-          display_name: "#{user.display_name} (ID: #{user.id})",
+          display_name: "#{user.display_name}",
           avatar_url: user.avatar_url
         }
       end
@@ -224,7 +224,7 @@ class Admin::TimelineController < Admin::BaseController
     final_user_objects = []
     # Add admin first
     if admin_data = users_data[current_user.id]
-      final_user_objects << { id: admin_data.id, display_name: "#{admin_data.display_name} (ID: #{admin_data.id})", avatar_url: admin_data.avatar_url }
+      final_user_objects << { id: admin_data.id, display_name: "#{admin_data.display_name}", avatar_url: admin_data.avatar_url }
     end
 
     # Add leaderboard users, ensuring no duplicates and respecting limit
@@ -233,7 +233,7 @@ class Admin::TimelineController < Admin::BaseController
       next if uid == current_user.id
 
       if user_data = users_data[uid]
-        final_user_objects << { id: user_data.id, display_name: "#{user_data.display_name} (ID: #{user_data.id})", avatar_url: user_data.avatar_url }
+        final_user_objects << { id: user_data.id, display_name: "#{user_data.display_name}", avatar_url: user_data.avatar_url }
       end
     end
 

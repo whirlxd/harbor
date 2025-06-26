@@ -30,6 +30,11 @@
   current_date_for_form = @date.to_s
 %>
 
+<style>
+@keyframes spin {to {transform: rotate(360deg);}}
+.spinny {animation: spin 0.2s linear infinite;}
+</style>
+
 <div class=" text-white flex flex-col font-sans min-h-screen">
   <div 
     data-controller="admin-timeline-user-selector"
@@ -45,17 +50,28 @@
       
       <div class="flex items-center gap-3">
         <div class="flex-1 relative">
-          <input type="text"
-                id="user-search-input"
-                placeholder="Add user by name/email/id..."
-                data-admin-timeline-user-selector-target="searchInput"
-                data-action="input->admin-timeline-user-selector#debouncedSearch keydown->admin-timeline-user-selector#handleKeydown focus->admin-timeline-user-selector#search blur->admin-timeline-user-selector#hideResultsDelayed"
-                autocomplete="off"
-                class="w-full px-3 py-2 bg-darker rounded-md text-white placeholder-gray-300 focus:outline-none focus:border-transparent text-sm">
-          <ul class="absolute top-full left-0 w-full bg-dark border border-gray-600 rounded-b-md z-50 max-h-48 overflow-y-auto hidden" 
+          <div class="relative">
+            <div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+              <svg data-admin-timeline-user-selector-target="searchIcon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+              <svg data-admin-timeline-user-selector-target="searchSpinner" class="w-4 h-4 spinny hidden" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            </div>
+            <input type="text"
+                  id="user-search-input"
+                  placeholder="Add user by name/email/id..."
+                  data-admin-timeline-user-selector-target="searchInput"
+                  data-action="input->admin-timeline-user-selector#debouncedSearch keydown->admin-timeline-user-selector#handleKeydown focus->admin-timeline-user-selector#search blur->admin-timeline-user-selector#hideResultsDelayed"
+                  autocomplete="off"
+                  class="w-full pl-10 pr-3 py-2 bg-darker rounded-md text-white placeholder-gray-300 focus:outline-none focus:border-transparent text-sm">
+          </div>
+          <div class="absolute top-full left-0 w-full bg-dark border border-gray-700 rounded-lg mt-1 z-50 max-h-48 overflow-y-auto hidden shadow-lg" 
               data-admin-timeline-user-selector-target="searchResults">
             <%# Search results will appear here %>
-          </ul>
+          </div>
         </div>
         <button type="button" 
                 class="px-3 py-2 bg-darker rounded-md text-sm text-white transition-colors" 
@@ -141,7 +157,7 @@
             end
           %>
           <div class="absolute border-r border-gray-700" 
-               style="left: <%= column_left %>px; width: <%= min_column_width_px %>px; top: 120px; bottom: 0;">
+               style="left: <%= column_left %>px; width: <%= min_column_width_px %>px; top: 120px; bottom: 0; padding-bottom: 0;">
           </div>
           <div class="absolute top-0 p-3 rounded-lg shadow-lg <%= trust_level_bg %>"
                data-user-id="<%= user.id %>"
@@ -170,8 +186,7 @@
               </div>
               <% if current_user && current_user.admin? && user != current_user %>
               <div>
-                <button data-action="openModal" 
-                  data-user-id="<%= user.id %>" 
+                <button onclick="setTrust(<%= user.id %>)" 
                   class="text-xs text-gray-300 hover:text-white"
                   title="Set trust level">🔨</button>
               </div>
@@ -323,129 +338,68 @@
     <% end %>
   </div>
   
-  <div id="trust-level-modal" class="fixed inset-0 items-center justify-center hidden z-50">
-    <div class="bg-darker rounded-lg shadow-xl max-w-sm w-full mx-4">
-      <div class="flex justify-between items-center p-4 border-b border-gray-800">
-        <h3 class="text-base font-semibold text-gray-100">Set Trust Level</h3>
-        <button id="close-modal" class="text-gray-400 hover:text-white text-xl">×</button>
-      </div>
-      <div class="p-5">
-        <div id="trust-level-status" class="hidden mb-4 p-3 rounded text-sm"></div>
-        <ul class="space-y-2">
-          <li>
-            <button class="trust-option w-full text-left px-3 py-2 rounded bg-darkless text-gray-100" data-level="green">
-              🟢 Green - Trusted
-            </button>
-          </li>
-          <li>
-            <button class="trust-option w-full text-left px-3 py-2 rounded bg-darkless text-gray-100" data-level="yellow">
-              🟡 Yellow - Suspected
-            </button>
-          </li>
-          <li>
-            <button class="trust-option w-full text-left px-3 py-2 rounded bg-darkless text-gray-100" data-level="red">
-              🔴 Red - Convicted (banned)
-            </button>
-          </li>
-          <li>
-            <button class="trust-option w-full text-left px-3 py-2 rounded bg-darkless text-gray-100" data-level="blue">
-              🔵 Blue - Unscored
-            </button>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </div>
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  const modal = document.getElementById('trust-level-modal');
-  const closeModal = document.getElementById('close-modal');
-  const sdiv = document.getElementById('trust-level-status');
-  let currentUserId = null;
-  
-  function report(message, type = 'i') {
-    sdiv.className = `mb-4 p-3 rounded-lg text-sm ${type === 's' ? 'bg-green-500/20 border border-green-500 text-green-300' : 
-                          type === 'e' ? 'bg-red-500/20 border border-red-500 text-red-300' : 
-                          'bg-blue-500/20 border border-blue-500 text-blue-300'}`;
-    sdiv.textContent = message;
-    sdiv.classList.remove('hidden');
-  }
-  
-  function hide() {
-    sdiv.classList.add('hidden');
-  }
-  
-  function pause() {
-    document.querySelectorAll('.trust-option').forEach(btn => btn.disabled = true);
-  }
-  
-  function resume() {
-    document.querySelectorAll('.trust-option').forEach(btn => btn.disabled = false);
-  }
-  
-  document.addEventListener('click', function(e) {
-    if (e.target.closest('[data-action="openModal"]')) {
-      e.preventDefault();
-      currentUserId = e.target.dataset.userId;
-      hide();
-      resume();
-      modal.classList.remove('hidden');
-      modal.style.display = 'flex';
-    }
-  });
-  
-  function close() {
-    modal.classList.add('hidden');
-    modal.style.display = 'none';
-    hide();
-    resume();
-  }
-  
-  closeModal.addEventListener('click', close);
-  
-  modal.addEventListener('click', function(e) {
-    if (e.target === modal) {
-      close();
-    }
-  });
-  document.querySelectorAll('.trust-option').forEach(button => {
-    button.addEventListener('click', async function() {
-      const level = this.dataset.level;
-      if (!currentUserId || !level) return;
-      pause();
-      report('Updating trust level...', 'i');
-      
-      try {
-        console.log("set trust", currentUserId, "to:", level);
-        const url = new URL(
-          `/users/${currentUserId}/update_trust_level`,
-          window.location.origin
-        );
-        const response = await fetch(url, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
-          },
-          body: JSON.stringify({ trust_level: level })
-        });
+const trusts = {
+  'green': { emoji: '🟢', name: 'Green - Trusted', bg: 'bg-green-500/20' },
+  'yellow': { emoji: '🟡', name: 'Yellow - Suspected', bg: 'bg-yellow-500/20' },
+  'red': { emoji: '🔴', name: 'Red - Convicted (banned)', bg: 'bg-red-500/20' },
+  'blue': { emoji: '🔵', name: 'Blue - Unscored', bg: 'bg-blue-500/20' },
+  '1': { emoji: '🟢', name: 'Green - Trusted', bg: 'bg-green-500/20', level: 'green' },
+  '2': { emoji: '🟡', name: 'Yellow - Suspected', bg: 'bg-yellow-500/20', level: 'yellow' },
+  '3': { emoji: '🔴', name: 'Red - Convicted (banned)', bg: 'bg-red-500/20', level: 'red' },
+  '4': { emoji: '🔵', name: 'Blue - Unscored', bg: 'bg-blue-500/20', level: 'blue' }
+};
 
-        if (!response.ok) {
-          throw new Error(
-            `${response.status} ${response.statusText}`
-          );
-        }
-        report('done, reloading...', 's');
-        close();
-        location.reload();
-      } catch (error) {
-        console.error('you done did it', error);
-        report('check console', 'e');
-        resume();
-      }
+window.setTrust = function(userId) {
+  const options = '🟢 Green (1) - Trusted\n🟡 Yellow (2) - Suspected\n🔴 Red (3) - Convicted (banned)\n🔵 Blue (4) - Unscored';
+  const input = prompt(`set the trust for ${userId}\n\n${options}\n\nenter number or color`);
+  if (!input) return;
+  
+  const normalizedInput = input.toLowerCase().trim();
+  const trust = trusts[normalizedInput];
+  
+  if (!trust) {
+    alert('read the popup idiot');
+    return;
+  }
+  
+  const levelForAPI = trust.level || normalizedInput;
+    fetch(`/users/${userId}/update_trust_level`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+    },
+    body: JSON.stringify({ trust_level: levelForAPI })
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`${response.status} ${response.statusText}`);
+    }
+    return response.json();
+  })
+  .then(data => {
+    const card = Array.from(document.querySelectorAll('[data-user-id]')).find(card => {
+      const title = card.getAttribute('title') || '';
+      return title.match(new RegExp(`User ID:\\s*${userId}\\b`));
+      // what the fuck is this
     });
+    if (card) {
+      card.classList.remove('bg-red-500/20', 'bg-green-500/20', 'bg-yellow-500/20', 'bg-blue-500/20', 'bg-gray-500/20');
+      card.classList.add(trust.bg);
+      const span = card.querySelector('span.text-sm');
+      if (span) {
+        span.textContent = trust.emoji;
+      }
+    }
+    
+    alert(`set trust to ${trust.name}`);
+  })
+  .catch(error => {
+    console.error(error);
+    alert('shit ' + error.message);
   });
-});
+};
 </script>

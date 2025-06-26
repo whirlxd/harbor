@@ -15,7 +15,7 @@ function debounce(func, wait) {
 }
 
 export default class extends Controller {
-  static targets = ["searchInput", "searchResults", "selectedUsersContainer", "userIdsInput", "dateInput"]
+  static targets = ["searchInput", "searchResults", "selectedUsersContainer", "userIdsInput", "dateInput", "searchIcon", "searchSpinner"]
 
   static values = {
     currentUserJson: Object, 
@@ -76,36 +76,38 @@ export default class extends Controller {
     if (query.length < 2) {
       this.searchResultsTarget.innerHTML = "";
       this.searchResultsTarget.classList.remove('active');
+      this.hideSpinner();
       return;
     }
+    this.showSpinner();
 
     const request = new FetchRequest('get', `${this.searchUrlValue}?query=${encodeURIComponent(query)}`, { responseKind: 'json' })
     const response = await request.perform()
+    this.hideSpinner();
 
     if (response.ok) {
       const users = await response.json;
-      console.log(`Found ${users.length} users in search results`);
       this.renderSearchResults(users);
     } else {
-      this.searchResultsTarget.innerHTML = "<li class='px-4 py-2 text-red-400 text-sm'>Error searching users</li>";
+      this.searchResultsTarget.innerHTML = "<div class='px-4 py-2 text-red-400 text-sm'>Error searching users</div>";
       this.searchResultsTarget.classList.add('active');
     }
   }
 
   renderSearchResults(users) {
     if (users.length === 0) {
-      this.searchResultsTarget.innerHTML = "<li class='px-4 py-2 text-gray-400 text-sm'>No users found</li>";
+      this.searchResultsTarget.innerHTML = "<div class='px-4 py-2 text-gray-400 text-sm'>No users found</div>";
     } else {
       this.searchResultsTarget.innerHTML = users.map(user => `
-        <li class="px-4 py-2 hover:bg-gray-700 cursor-pointer text-white text-sm flex items-center transition-colors" 
+        <div class="mx-2 my-1 px-3 py-2 hover:bg-darkless cursor-pointer text-white text-sm flex items-center transition-colors rounded-lg border border-transparent hover:border-gray-600" 
             data-action="click->${this.identifier}#selectUser" 
             data-${this.identifier}-user-id-value="${user.id}" 
             data-${this.identifier}-user-display-name-value="${this.escapeHTML(user.display_name)}"
             data-${this.identifier}-user-avatar-url-value="${user.avatar_url || ''}">
           <img src="${user.avatar_url || 'https://via.placeholder.com/20'}" alt="${this.escapeHTML(user.display_name)}" class="w-5 h-5 rounded-full mr-3">
           <span>${this.escapeHTML(user.display_name)}</span>
-          <span class="ml-auto text-xs text-gray-400">#${user.id}</span>
-        </li>
+          <span class="ml-auto text-xs text-gray-400 bg-gray-700 px-2 py-1 rounded-full">#${user.id}</span>
+        </div>
       `).join("");
     }
     // Make sure the result list is shown
@@ -127,6 +129,7 @@ export default class extends Controller {
     if (isNaN(userId)) {
       console.error("Invalid user ID");
       this.clearSearch();
+      this.hideSpinner();
       return;
     }
     
@@ -277,10 +280,43 @@ export default class extends Controller {
     }
   }
 
-  handleKeydown(event) {
+  async handleKeydown(event) {
     if (event.key === "Escape") {
       this.clearSearch();
+    } else if (event.key === "Enter") {
+      event.preventDefault();
+      await this.handle();
     }
+  }
+
+  async handle() {
+    const query = this.searchInputTarget.value.trim();
+    if (/^\d+$/.test(query) || query.length >= 2) {
+      await this.pull(query);
+    }
+  }
+
+  async pull(query) {
+    this.showSpinner();
+    try {
+      const request = new FetchRequest('get', `${this.searchUrlValue}?query=${encodeURIComponent(query)}&limit=1`, { responseKind: 'json' });
+      const response = await request.perform();
+      if (response.ok) {
+        const users = await response.json;
+        if (users.length > 0) {
+          const user = users[0];
+          if (!this.selectedUsers.has(parseInt(user.id, 10))) {
+            this.addUserToSelection(user, false);
+            this.updateHiddenInput();
+            this.updateDateLinks();
+          }
+          this.clearSearch();
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+    this.hideSpinner();
   }
   
   clearSearch() {
@@ -296,6 +332,16 @@ export default class extends Controller {
         this.clearSearch();
       }
     }, 200);
+  }
+
+  showSpinner() {
+    if (this.hasSearchIconTarget) this.searchIconTarget.classList.add('hidden');
+    if (this.hasSearchSpinnerTarget) this.searchSpinnerTarget.classList.remove('hidden');
+  }
+
+  hideSpinner() {
+    if (this.hasSearchSpinnerTarget) this.searchSpinnerTarget.classList.add('hidden');
+    if (this.hasSearchIconTarget) this.searchIconTarget.classList.remove('hidden');
   }
 
   escapeHTML(str) {
