@@ -2,9 +2,7 @@
 
 class Rack::Attack
   # kill switch in case you really wanna
-  Rack::Attack.enabled = Rails.env.production? || ENV["RACK_ATTACK_ENABLED"] == "true"
-
-  Rack::Attack.cache.store = ActiveSupport::Cache::MemoryStore.new if Rails.env.development?
+  Rack::Attack.enabled = ENV.key?("RACK_ATTACK_ENABLED") ? ENV["RACK_ATTACK_ENABLED"] == "true" : Rails.env.production?
 
   if ENV["RACK_ATTACK_BYPASS"].present?
     begin
@@ -22,9 +20,9 @@ class Rack::Attack
       Rails.logger.error "RACK_ATTACK_BYPASS failed to read, you fucked it up #{e.message} raw: #{ENV['RACK_ATTACK_BYPASS'].inspect}"
       TOKENS = [].freeze
     end
+    Rack::Attack.safelist("bypass with valid token") do |request|
+      bypass = request.env["HTTP_RACK_ATTACK_BYPASS"]
 
-    Rack::Attack.safelist("mark any authenticated access safe") do |request|
-      bypass = request.env["HTTP_RACK_ATTACK_BYPASS"] || request.env["HTTP_X_RACK_ATTACK_BYPASS"]
       bypass.present? && TOKENS.include?(bypass)
     end
   else
@@ -53,26 +51,12 @@ class Rack::Attack
     req.ip if req.path.in?([ "/login", "/signup", "/auth", "/sessions" ]) && req.post?
   end
 
-  Rack::Attack.throttle("api requests", limit: 1000, period: 1.hour) do |req|
+  Rack::Attack.throttle("api requests", limit: 600, period: 1.hour) do |req|
     req.ip if req.path.start_with?("/api/")
   end
 
   Rack::Attack.throttle("heartbeat api", limit: 10000, period: 1.hour) do |req|
     req.ip if req.path.start_with?("/api/hackatime/v1/users/current/heartbeats")
-  end
-
-  Rack::Attack.blocklist("block sussy") do |req|
-    # somehow we can do this, so lets get all the cringe ones outta here
-    user_agent = req.env["HTTP_USER_AGENT"].to_s.downcase
-    sussy = %w[scanner bot crawler wget curl python-requests]
-
-    # if you spoof this i swear your actually cringe
-    no_cap = %w[wakatime hackatime github slack discord uptime kuma]
-
-    is_sus = sussy.any? { |agent| user_agent.include?(agent) }
-    allowed = no_cap.any? { |agent| user_agent.include?(agent) }
-
-    is_sus && !allowed
   end
 
   # lets actually log things? thanks
@@ -93,11 +77,13 @@ class Rack::Attack
   # Custom response for throttled requests
   self.throttled_responder = lambda do |request|
     match = request.env["rack.attack.match_data"] || {}
-    retry_after = match[:period] || 60
+    period = match[:period] || 60
     limit = match[:limit] || "unknown"
 
     now = Time.current
-    reset_time = (now + retry_after).to_i
+    window_start = now.to_i - (now.to_i % period)
+    reset_time = window_start + period
+    retry_after = reset_time - now.to_i
 
     headers = {
       "Content-Type" => "application/json",
