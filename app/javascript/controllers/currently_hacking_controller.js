@@ -1,23 +1,24 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["container", "count"]
+  static targets = ["container", "count", "content"]
   static values = { 
-    interval: { type: Number, default: 60000 }, // 60 seconds to match cron
-    url: String
+    interval: { type: Number, default: 60000 }, // 60 seconds
+    countUrl: String,
+    fullUrl: String
   }
 
   connect() {
-    this.lastFullFetch = Date.now() // Initialize to now to prevent immediate refetch on click
     this.isExpanded = false
-    // this.startPolling()
-    this.poll()
+    this.isLoading = false
+    this.isVisible = false
+    this.startCountPolling()
     this.boundClickHandler = this.handleClick.bind(this)
     this.containerTarget.addEventListener('click', this.boundClickHandler)
   }
 
   disconnect() {
-    // this.stopPolling()
+    this.stopCountPolling()
     this.containerTarget.removeEventListener('click', this.boundClickHandler)
   }
 
@@ -25,55 +26,58 @@ export default class extends Controller {
     const header = event.target.closest('.currently-hacking')
     if (header) {
       this.toggle()
-      // if (this.isExpanded) {
-      //   const now = Date.now()
-      //   const timeSinceLastFetch = now - this.lastFullFetch
-      //   if (timeSinceLastFetch > 30000) {
-      //     this.poll()
-      //   }
-      // }
     }
   }
 
-  toggle() {
+  async toggle() {
     this.isExpanded = !this.isExpanded
-    const frame = document.getElementById("currently_hacking")
-    if (frame) {
-      frame.style.display = this.isExpanded ? 'block' : 'none'
+    
+    if (this.isExpanded) {
+      this.showLoading()
+      this.contentTarget.style.display = 'block'
+      await this.gimmeAll()
+    } else {
+      this.contentTarget.style.display = 'none'
     }
   }
 
-  isVisible() {
-    return this.isExpanded
+  showLoading() {
+    this.contentTarget.innerHTML = `
+      <div class="p-4">
+        <div class="text-center text-muted text-md">Loading...</div>
+      </div>
+    `
   }
 
-  // startPolling() {
-  //   this.stopPolling() // Clear any existing interval
-  //   this.poll() // Initial poll
-  //   this.intervalId = setInterval(() => {
-  //     this.poll()
-  //   }, this.intervalValue)
-  // }
+  showBanner() {
+    if (!this.isVisible) {
+      this.isVisible = true
+      this.containerTarget.classList.remove('hidden')
+      setTimeout(() => {
+        this.containerTarget.classList.remove('-translate-y-full')
+        this.containerTarget.classList.add('translate-y-0')
+      }, 300)
+    }
+  }
 
-  // stopPolling() {
-  //   if (this.intervalId) {
-  //     clearInterval(this.intervalId)
-  //     this.intervalId = null
-  //   }
-  // }
+  startCountPolling() {
+    this.stopCountPolling()
+    this.pollCount()
+    this.countIntervalId = setInterval(() => {
+      this.pollCount()
+    }, this.intervalValue)
+  }
 
-  async poll() {
+  stopCountPolling() {
+    if (this.countIntervalId) {
+      clearInterval(this.countIntervalId)
+      this.countIntervalId = null
+    }
+  }
+
+  async pollCount() {
     try {
-      const includeList = this.isVisible()
-      const url = new URL(this.urlValue, window.location.origin)
-      url.searchParams.set('include_list', includeList.toString())
-      
-      // Track when we request the full list, not just when we get it back
-      if (includeList) {
-        this.lastFullFetch = Date.now()
-      }
-      
-      const response = await fetch(url, {
+      const response = await fetch(this.countUrlValue, {
         headers: {
           "Accept": "application/json"
         }
@@ -82,12 +86,39 @@ export default class extends Controller {
       if (response.ok) {
         const data = await response.json()
         this.updateCount(data.count)
-        if (data.html) {
-          this.updateFrame(data.html)
+        this.showBanner()
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  async gimmeAll() {
+    if (this.isLoading) return
+    
+    this.isLoading = true
+    try {
+      const res = await fetch(this.fullUrlValue, {
+        headers: {
+          "Accept": "application/json"
+        }
+      })
+
+      if (res.ok) {
+        const data = await res.json()
+        if (data.users) {
+          this.r(data.users)
         }
       }
     } catch (error) {
       console.error("Failed to poll currently hacking:", error)
+      this.contentTarget.innerHTML = `
+        <div class="p-4 bg-elevated">
+          <div class="text-center text-muted text-sm">ruh ro, something broke :(</div>
+        </div>
+      `
+    } finally {
+      this.isLoading = false
     }
   }
 
@@ -98,26 +129,69 @@ export default class extends Controller {
     }
   }
 
-  updateFrame(html) {
-    const frame = document.getElementById("currently_hacking")
-    if (frame && html) {
-      // Save scroll position before updating
-      const scrollContainer = frame.querySelector(".currently-hacking-list")
-      const scrollTop = scrollContainer ? scrollContainer.scrollTop : 0
-      
-      // Update content
-      frame.innerHTML = html
-      frame.style.display = this.isExpanded ? 'block' : 'none'
-      
-      // Restore scroll position after a brief delay to allow DOM update
-      if (scrollTop > 0) {
-        requestAnimationFrame(() => {
-          const newScrollContainer = frame.querySelector(".currently-hacking-list")
-          if (newScrollContainer) {
-            newScrollContainer.scrollTop = scrollTop
-          }
-        })
-      }
+  r(u) {
+    if (!u || u.length === 0) {
+      this.contentTarget.innerHTML = `
+        <div class="p-4 bg-elevated">
+          <div class="text-center text-muted text-sm italic">No one is currently hacking :(</div>
+        </div>
+      `
+      return
     }
+
+    const us = u.map(user => this.r1(user)).join('')
+    
+    this.contentTarget.innerHTML = `
+      <div class="currently-hacking-list max-h-[60vh] max-w-[400px] overflow-y-auto p-1 bg-darker">
+        <div class="space-y-1">
+          ${us}
+        </div>
+      </div>
+    `
+  }
+
+  r1(u) {
+    const mention = this.r2(u)
+    const project = u.active_project ? this.r3(u.active_project) : ''
+    
+    return `
+      <div class="flex flex-col space-y-1 p-1">
+        <div class="flex items-center">
+          ${mention}
+        </div>
+        ${project}
+      </div>
+    `
+  }
+
+  r2(u) {
+    const dis = u.display_name || `User ${u.id}`
+    const url = u.avatar_url || ''
+    
+    const name = u.slack_uid ? 
+      `<a href="https://slack.com/app_redirect?channel=${u.slack_uid}" target="_blank" class="text-blue-500 hover:underline">@${dis}</a>` :
+      `<span class="text-white">${dis}</span>`
+    
+    return `
+      <div class="user-info flex items-center gap-2">
+        ${url ? `<img src="${url}" alt="${dis}'s avatar" class="w-6 h-6 rounded-full aspect-square" loading="lazy">` : ''}
+        <span class="inline-flex items-center gap-1">
+          ${name}
+        </span>
+      </div>
+    `
+  }
+
+  r3(p) {
+    const v = p.repo_url ? 
+      p.repo_url.replace(/^https:\/\/github\.com\//, 'https://tkww0gcc0gkwwo4gc8kgs0sw.a.selfhosted.hackclub.com/') : ''
+    
+    return `
+      <div class="text-sm italic text-muted ml-2">
+        working on 
+        ${p.repo_url ? `<a href="${p.repo_url}" target="_blank" class="text-accent hover:text-cyan-400 transition-colors">${p.name}</a>` : p.name}
+        ${v ? `<a href="${v}" target="_blank" class="ml-1">🌌</a>` : ''}
+      </div>
+    `
   }
 }
