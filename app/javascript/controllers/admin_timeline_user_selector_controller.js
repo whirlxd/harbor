@@ -87,7 +87,6 @@ export default class extends Controller {
 
     if (response.ok) {
       const users = await response.json;
-      console.log(`Found ${users.length} users in search results`);
       this.renderSearchResults(users);
     } else {
       this.searchResultsTarget.innerHTML = "<div class='px-4 py-2 text-red-400 text-sm'>Error searching users</div>";
@@ -130,6 +129,7 @@ export default class extends Controller {
     if (isNaN(userId)) {
       console.error("Invalid user ID");
       this.clearSearch();
+      this.hideSpinner();
       return;
     }
     
@@ -291,55 +291,32 @@ export default class extends Controller {
 
   async handle() {
     const query = this.searchInputTarget.value.trim();
-        if (/^\d+$/.test(query)) {
-      this.showSpinner();
-      try {
-        const request = new FetchRequest('get', `${this.searchUrlValue}?query=${encodeURIComponent(query)}&limit=1`, { responseKind: 'json' })
-        const response = await request.perform()
-        
-        if (response.ok) {
-          const users = await response.json;
-          if (users.length > 0) {
-            const user = users[0];
-            if (!this.selectedUsers.has(parseInt(user.id, 10))) {
-              this.addUserToSelection(user, false);
-              this.updateHiddenInput();
-              this.updateDateLinks();
-            }
-            this.clearSearch();
-            this.hideSpinner();
-            return;
-          }
-        }
-      } catch (error) {
-        console.error(error);
-      }
-      this.hideSpinner();
+    if (/^\d+$/.test(query) || query.length >= 2) {
+      await this.pull(query);
     }
-    
-    if (query.length >= 2) {
-      this.showSpinner();
-      try {
-        const request = new FetchRequest('get', `${this.searchUrlValue}?query=${encodeURIComponent(query)}&limit=1`, { responseKind: 'json' })
-        const response = await request.perform()
-        
-        if (response.ok) {
-          const users = await response.json;
-          if (users.length > 0) {
-            const user = users[0];
-            if (!this.selectedUsers.has(parseInt(user.id, 10))) {
-              this.addUserToSelection(user, false);
-              this.updateHiddenInput();
-              this.updateDateLinks();
-            }
-            this.clearSearch();
+  }
+
+  async pull(query) {
+    this.showSpinner();
+    try {
+      const request = new FetchRequest('get', `${this.searchUrlValue}?query=${encodeURIComponent(query)}&limit=1`, { responseKind: 'json' });
+      const response = await request.perform();
+      if (response.ok) {
+        const users = await response.json;
+        if (users.length > 0) {
+          const user = users[0];
+          if (!this.selectedUsers.has(parseInt(user.id, 10))) {
+            this.addUserToSelection(user, false);
+            this.updateHiddenInput();
+            this.updateDateLinks();
           }
+          this.clearSearch();
         }
-      } catch (error) {
-        console.error(error);
       }
-      this.hideSpinner();
+    } catch (error) {
+      console.error(error);
     }
+    this.hideSpinner();
   }
   
   clearSearch() {
