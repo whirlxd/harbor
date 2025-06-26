@@ -10,6 +10,7 @@ class Rack::Attack
     begin
       bypass_value = ENV["RACK_ATTACK_BYPASS"].strip
       bypass_value = bypass_value.gsub(/\A['"]|['"]\z/, "")
+      bypass_value = bypass_value.gsub(/\\\"/, '"') if bypass_value.include?('\\\"')
 
       TOKENS = JSON.parse(bypass_value).freeze
       unless TOKENS.is_a?(Array)
