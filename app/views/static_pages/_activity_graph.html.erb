@@ -1,25 +1,26 @@
 <%= turbo_frame_tag "activity_graph" do %>
   <%= cache ["activity_graph", current_user.id, current_user.timezone], expires_in: 1.minute do %>
-    <div class="activity-graph-container">
-      <div class="activity-graph">
+    <div class="w-full overflow-x-auto mt-6 pb-2.5">
+      <div class="grid grid-rows-7 grid-flow-col gap-1 w-full lg:w-1/2">
         <% (365.days.ago.to_date..Time.current.to_date).to_a.each do |date| %>
           <% duration = daily_durations[date] || 0 %>
           <% if duration < 1.minute %>
             <% level = 0 %>
+            <% bg_class = "bg-[#151b23]" %>
           <% else %>
             <% ratio = duration.to_f / length_of_busiest_day %>
-            <% level =
+            <% level, bg_class =
               if ratio >= 0.8
-                4
+                [4, "bg-[#56d364]"]
               elsif ratio >= 0.5
-                3
+                [3, "bg-[#2ea043]"]
               elsif ratio >= 0.2
-                2
+                [2, "bg-[#196c2e]"]
               else
-                1
+                [1, "bg-[#033a16]"]
               end %>
           <% end %>
-          <a class="day lvl<%= level %>"
+          <a class="day transition-all duration-75 w-3 h-3 rounded-sm hover:scale-110 hover:z-10 hover:shadow-md <%= bg_class %>"
             href="?date=<%= date %>"
             data-turbo-frame="_top"
             data-date="<%= date %>"

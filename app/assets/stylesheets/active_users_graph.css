@@ -6,7 +6,7 @@
 }
 
 .active-users-graph__hour {
-  background-color: var(--uchu-dark-gray);
+  background-color: white;
   opacity: 0.1;
   flex-grow: 1;
   min-width: 10px;
