@@ -97,12 +97,6 @@ input, textarea, select {
   filter: grayscale(100%);
 }
 
-.project-durations {
-  margin-top: 1rem;
-}
-
-
-
 .super {
   font-style: italic;
   font-size: 0.9rem;
