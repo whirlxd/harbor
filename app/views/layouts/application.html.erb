@@ -158,20 +158,20 @@
     <!-- 250px is defined in nav.css -->
     <main class="flex-1 lg:ml-[250px] lg:max-w-[calc(100%-250px)] p-5 mb-[100px] pt-16 lg:pt-5 transition-all duration-300 ease-in-out">
       <%= yield %>
-      <footer>
+      <footer class="relative w-full mt-12 mb-5 p-2.5 text-center text-xs text-gray-600 hover:text-gray-300 transition-colors duration-200">
         <div class="container">
           <p>
-            Build <%= link_to Rails.application.config.git_version, Rails.application.config.commit_link %>
+            Build <%= link_to Rails.application.config.git_version, Rails.application.config.commit_link, class: "text-inherit underline opacity-80 hover:opacity-100 transition-opacity duration-200" %>
             from <%= time_ago_in_words(Rails.application.config.server_start_time) %> ago.
             <%= pluralize(Heartbeat.recent_count, 'heartbeat') %>
             (<%= Heartbeat.recent_imported_count %> imported)
-            in the last 24 hours.
+            in the past 24 hours.
             (DB: <%= pluralize(QueryCount::Counter.counter, "query") %>, <%= QueryCount::Counter.counter_cache %> cached)
             (CACHE: <%= cache_stats[:hits] %> hits, <%= cache_stats[:misses] %> misses)
             (<%= requests_per_second %>)
           </p>
           <% if session[:impersonater_user_id] %>
-            <%= link_to "Stop impersonating", stop_impersonating_path, class: "impersonate-link", data: { turbo_prefetch: "false" } %>
+            <%= link_to "Stop impersonating", stop_impersonating_path, class: "text-primary font-bold hover:text-red-300 transition-colors duration-200", data: { turbo_prefetch: "false" } %>
           <% end %>
         </div>
         <%= render "static_pages/active_users_graph", hours: active_users_graph_data %>
