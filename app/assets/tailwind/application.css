@@ -15,6 +15,10 @@
   --color-secondary: #8492A6;
 }
 
+:root.development {
+  --color-primary: var(--color-green);
+}
+
 /* for some reason tailwind just does not want to work, so lets make sure it does */
 .bg-darker { background-color: var(--color-darker) !important; }
 .bg-dark { background-color: var(--color-dark) !important; }

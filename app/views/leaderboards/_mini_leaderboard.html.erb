@@ -19,7 +19,7 @@
     %>
 
     <% if mini_leaderboard_entries&.any? %>
-      <div class="bg-elevated rounded-xl border border-red p-4 shadow-lg">
+      <div class="bg-elevated rounded-xl border border-primary p-4 shadow-lg">
         <p class="text-xs italic text-muted mb-4">
           <% if leaderboard.respond_to?(:scope_name) %>
             <strong>Showing others in <%= link_to "your timezone", my_settings_path(anchor: "user_timezone"), data: { turbo: false }, class: "text-accent hover:text-cyan-400 transition-colors" %></strong>
@@ -37,7 +37,7 @@
               is_separator_needed = show_user_separately && idx == 3 && actual_rank > 3
             %>
 
-            <div class="flex items-center p-3 rounded-lg bg-dark transition-colors duration-200 <%= 'bg-dark border border-red' if entry.user_id == current_user&.id %>">
+            <div class="flex items-center p-3 rounded-lg bg-dark transition-colors duration-200 <%= 'bg-dark border border-primary' if entry.user_id == current_user&.id %>">
               <% rank_emoji = case actual_rank
                    when 0 then "🥇"
                    when 1 then "🥈"

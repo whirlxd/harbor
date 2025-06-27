@@ -1,37 +1,22 @@
-/*
- * This is a manifest file that'll be compiled into application.css.
- *
- * With Propshaft, assets are served efficiently without preprocessing steps. You can still include
- * application-wide styles in this file, but keep in mind that CSS precedence will follow the standard
- * cascading order, meaning styles declared later in the document or manifest will override earlier ones,
- * depending on specificity.
- *
- * Consider organizing styles into separate files for maintainability.
- */
-
-/* Phantom Sans Font Faces */
 @font-face {
-  font-family: 'Phantom Sans';
-  src: url('/fonts/Regular.woff2') format('woff2'),
-       url('/fonts/Regular.woff') format('woff');
+  font-family: "Phantom Sans";
+  src: url("/fonts/Regular.woff2") format("woff2"), url("/fonts/Regular.woff") format("woff");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Phantom Sans';
-  src: url('/fonts/Italic.woff2') format('woff2'),
-       url('/fonts/Italic.woff') format('woff');
+  font-family: "Phantom Sans";
+  src: url("/fonts/Italic.woff2") format("woff2"), url("/fonts/Italic.woff") format("woff");
   font-weight: normal;
   font-style: italic;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Phantom Sans';
-  src: url('/fonts/Bold.woff2') format('woff2'),
-       url('/fonts/Bold.woff') format('woff');
+  font-family: "Phantom Sans";
+  src: url("/fonts/Bold.woff2") format("woff2"), url("/fonts/Bold.woff") format("woff");
   font-weight: bold;
   font-style: normal;
   font-display: swap;
@@ -40,47 +25,30 @@
 @import "https://uchu.style/color.css";
 @import "settings.css";
 
-body, html {
-  font-family: 'Phantom Sans', 'Segoe UI', sans-serif;
+body,
+html {
+  font-family: "Phantom Sans", "Segoe UI", sans-serif;
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   font-family: inherit;
 }
 
-code, pre, kbd, samp {
+code,
+pre,
+kbd,
+samp {
   font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
 }
 
-
-/* Force dark mode for all elements */
-*, *::before, *::after {
-  color-scheme: dark;
-}
-
 /* Ensure forms and inputs respect dark mode */
-input, textarea, select {
+input,
+textarea,
+select {
   color-scheme: dark;
 }
-
-/* colors */
-
-:root {
-  --muted-color: var(--uchu-gray);
-  --black: rgb(42, 42, 42);
-  --smoke: rgb(242, 242, 242);
-  /* Force dark mode colors */
-  color-scheme: dark;
-}
-
-:root.development {
-  --primary-color: var(--color-green);
-}
-:root.production {
-  --primary-color: var(--color-primary);
-}
-
-
 
 .admin-tool {
   border-radius: 5px;
@@ -109,7 +77,6 @@ input, textarea, select {
 }
 
 .auto-scroll {
-  /* flash a little bit yellow & leave a little bit of a border */
   animation: flash 1s ease-in-out;
   border: 2px solid var(--uchu-yellow);
   border-radius: 5px;
@@ -128,5 +95,3 @@ select {
     background-color: transparent;
   }
 }
-
-
