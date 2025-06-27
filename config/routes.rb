@@ -159,8 +159,6 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :scrapyard_leaderboards, only: [ :index, :show ]
-
   # SEO routes
   get "/sitemap.xml", to: "sitemap#sitemap", defaults: { format: "xml" }
 end
