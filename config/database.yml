@@ -104,9 +104,8 @@ production:
     replica: true
   cache:
     <<: *default
-    adapter: postgresql
-    encoding: unicode
-    url: <%= ENV['DATABASE_URL'] %>
+    adapter: sqlite3
+    database: storage/production_cache.sqlite3
     migrations_paths: db/cache_migrate
   cable:
     <<: *default
