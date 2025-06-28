@@ -9,7 +9,8 @@
       
       if user_entry && user_rank && user_rank >= 3
         person_above = entries[user_rank - 1] if user_rank > 0
-        context_entries = person_above ? [person_above, user_entry] : [user_entry]
+        person_below = entries[user_rank + 1] if user_rank < entries.length - 1
+        context_entries = [person_above, user_entry, person_below].compact
         mini_leaderboard_entries = top_entries + context_entries
         show_user_separately = true
       else
