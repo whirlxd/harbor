@@ -23,6 +23,7 @@ gem "paper_trail"
 # Handle CORS (Cross-Origin Resource Sharing)
 gem "rack-cors"
 
+gem "a11n", "~> 0.0.0"
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 # gem "bcrypt", "~> 3.1.7"
 
