@@ -222,7 +222,10 @@ class FlavorText
       "It takes a long time to build something good: <a href='https://github.com/hackclub/hackatime#readme' target='_blank'><img src='https://hackatime-badge.hackclub.com/U0C7B14Q3/harbor'></a>".html_safe,
       "If you're seeing this, the page is currently <a href='https://status.hackatime.hackclub.com/status/hackatime' target='_blank'><img src='https://status.hackatime.hackclub.com/api/badge/1/status'></a>.".html_safe,
       "time is money!",
-      "in soviet russia, time tracks you!"
+      "in soviet russia, time tracks you!",
+      "tick tock!",
+      "it waits for no one!",
+      "waiting for no one!"
     ]
   end
 
