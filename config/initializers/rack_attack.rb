@@ -7,22 +7,14 @@ class Rack::Attack
   if ENV["RACK_ATTACK_BYPASS"].present?
     begin
       bypass_value = ENV["RACK_ATTACK_BYPASS"].strip
-      bypass_value = bypass_value.gsub(/\A['"]|['"]\z/, "")
-      bypass_value = bypass_value.gsub(/\\\"/, '"') if bypass_value.include?('\\\"')
-
-      TOKENS = JSON.parse(bypass_value).freeze
-      unless TOKENS.is_a?(Array)
-        Rails.logger.warn "RACK_ATTACK_BYPASS should be a array, tf is this #{TOKENS.class}"
-        TOKENS = [].freeze
-      end
+      TOKENS = bypass_value.split(",").map(&:strip).reject(&:empty?).freeze
       Rails.logger.info "RACK_ATTACK_BYPASS loaded #{TOKENS.length} let me in tokens"
-    rescue JSON::ParserError => e
+    rescue => e
       Rails.logger.error "RACK_ATTACK_BYPASS failed to read, you fucked it up #{e.message} raw: #{ENV['RACK_ATTACK_BYPASS'].inspect}"
       TOKENS = [].freeze
     end
     Rack::Attack.safelist("bypass with valid token") do |request|
       bypass = request.env["HTTP_RACK_ATTACK_BYPASS"]
-
       bypass.present? && TOKENS.include?(bypass)
     end
   else
