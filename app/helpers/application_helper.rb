@@ -10,6 +10,11 @@ module ApplicationHelper
     rps == :high_load ? "lots of req/sec" : "#{rps} req/sec"
   end
 
+  def global_requests_per_second
+    rps = RequestCounter.global_per_second
+    rps == :high_load ? "lots of req/sec" : "#{rps} req/sec (global)"
+  end
+
   def admin_tool(class_name = "", element = "div", **options, &block)
     return unless current_user&.is_admin?
     concat content_tag(element, class: "admin-tool #{class_name}", **options, &block)
