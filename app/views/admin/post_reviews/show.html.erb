@@ -207,10 +207,10 @@
                    style="display: flex; align-items: center; background: <%= is_recommended ? '#1F2937' : '#374151' %>; padding: 0.25rem 0.5rem; border-radius: 0.25rem; cursor: pointer; border: 1px solid <%= is_recommended ? '#60A5FA' : 'transparent' %>;">
               <input type="checkbox" 
                      class="project-filter-checkbox" 
-                     data-project-name="<%= project_name %>" 
+                     data-project-name="<%= h(project_name) %>" 
                      <%= is_selected ? 'checked' : '' %>
                      style="margin-right: 0.5rem; accent-color: #60A5FA;">
-              <%= project_name %>
+              <%= h(project_name) %>
               <% if is_recommended %>
                 <span style="margin-left: 0.5rem; font-size: 0.75rem; color: #60A5FA;">(recommended)</span>
               <% end %>
