@@ -13,4 +13,3 @@ class CreateAdminApiKeys < ActiveRecord::Migration[8.0]
     add_index :admin_api_keys, [ :user_id, :name ], unique: true
   end
 end
-w
