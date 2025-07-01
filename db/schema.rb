@@ -10,12 +10,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_30_000002) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_01_142553) do
   create_schema "pganalyze"
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_stat_statements"
+
+  create_table "admin_api_keys", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.text "name", null: false
+    t.text "token", null: false
+    t.datetime "revoked_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["token"], name: "index_admin_api_keys_on_token", unique: true
+    t.index ["user_id", "name"], name: "index_admin_api_keys_on_user_id_and_name", unique: true
+    t.index ["user_id"], name: "index_admin_api_keys_on_user_id"
+  end
 
   create_table "ahoy_events", force: :cascade do |t|
     t.bigint "visit_id"
@@ -272,6 +284,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_30_000002) do
     t.datetime "finished_generating_at"
     t.datetime "deleted_at"
     t.integer "period_type", default: 0, null: false
+    t.integer "timezone_utc_offset"
+    t.integer "timezone_offset"
+    t.index ["start_date", "period_type", "timezone_offset"], name: "index_leaderboards_on_start_date_period_type_timezone_offset", where: "(deleted_at IS NULL)"
     t.index ["start_date"], name: "index_leaderboards_on_start_date", where: "(deleted_at IS NULL)"
   end
 
@@ -551,6 +566,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_30_000002) do
     t.index ["user_id"], name: "index_wakatime_mirrors_on_user_id"
   end
 
+  add_foreign_key "admin_api_keys", "users"
   add_foreign_key "api_keys", "users"
   add_foreign_key "commits", "repositories"
   add_foreign_key "commits", "users"

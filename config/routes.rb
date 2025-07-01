@@ -31,6 +31,7 @@ Rails.application.routes.draw do
     get "ysws_reviews/:record_id", to: "ysws_reviews#show", as: :ysws_review
 
     resources :trust_level_audit_logs, only: [ :index, :show ]
+    resources :admin_api_keys, except: [ :edit, :update ]
   end
 
   if Rails.env.development?
@@ -140,6 +141,20 @@ Rails.application.routes.draw do
 
       namespace :authenticated do
         resources :me, only: [ :index ]
+      end
+    end
+
+    # Admin-only API namespace
+    namespace :admin do
+      namespace :v1 do
+        get "stats", to: "stats#index"
+        get "heartbeats", to: "stats#heartbeats"
+
+        resources :users, only: [ :index, :show ] do
+          member do
+            patch :update_trust_level
+          end
+        end
       end
     end
 

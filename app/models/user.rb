@@ -73,6 +73,7 @@ class User < ApplicationRecord
     class_name: "Hackatime::ProjectLabel"
 
   has_many :api_keys
+  has_many :admin_api_keys, dependent: :destroy
 
   has_one :sailors_log,
     foreign_key: :slack_uid,
