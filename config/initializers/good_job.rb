@@ -27,21 +27,21 @@ Rails.application.configure do
     #   cron: "*/5 * * * *",
     #   class: "UserSlackStatusUpdateJob"
     # },
-    # daily_leaderboard_update: {
-    #   cron: "* * * * *",
-    #   class: "LeaderboardUpdateJob",
-    #   args: [ :daily ]
-    # },
-    # weekly_leaderboard_update: {
-    #   cron: "*/2 * * * *",
-    #   class: "LeaderboardUpdateJob",
-    #   args: [ :weekly ]
-    # },
-    # last_7_days_leaderboard_update: {
-    #   cron: "*/7 * * * *",
-    #   class: "LeaderboardUpdateJob",
-    #   args: [ :last_7_days ]
-    # },
+    daily_leaderboard_update: {
+      cron: "* * * * *",
+      class: "LeaderboardUpdateJob",
+      args: [ :daily ]
+    },
+    weekly_leaderboard_update: {
+      cron: "*/2 * * * *",
+      class: "LeaderboardUpdateJob",
+      args: [ :weekly ]
+    },
+    last_7_days_leaderboard_update: {
+      cron: "*/7 * * * *",
+      class: "LeaderboardUpdateJob",
+      args: [ :last_7_days ]
+    },
     # sailors_log_poll: {
     #   cron: "*/2 * * * *",
     #   class: "SailorsLogPollForChangesJob"
@@ -135,15 +135,15 @@ Rails.application.configure do
     trigger_time_update: {
       cron: "*/15 * * * *",
       class: "Neighborhood::TriggerTimeUpdateJob"
-    }
+    },
     # geocode_users_without_country: {
     #   cron: "7 * * * *",
     #   class: "GeocodeUsersWithoutCountryJob"
     # },
-    # cleanup_successful_jobs: {
-    #   cron: "0 0 * * *",
-    #   class: "CleanupSuccessfulJobsJob"
-    # },
+    cleanup_successful_jobs: {
+      cron: "0 0 * * *",
+      class: "CleanupSuccessfulJobsJob"
+    }
     # sync_stale_repo_metadata: {
     #   cron: "0 4 * * *", # Daily at 4 AM
     #   class: "SyncStaleRepoMetadataJob",
