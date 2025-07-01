@@ -23,29 +23,25 @@ Rails.application.configure do
   GoodJob.active_record_parent_class = "ApplicationDirectRecord"
 
   config.good_job.cron = {
-    update_slack_status: {
-      cron: "*/5 * * * *",
-      class: "UserSlackStatusUpdateJob"
-    },
-    daily_leaderboard_update: {
-      cron: "* * * * *",
-      class: "LeaderboardUpdateJob",
-      args: [ :daily ]
-    },
-    weekly_leaderboard_update: {
-      cron: "*/2 * * * *",
-      class: "LeaderboardUpdateJob",
-      args: [ :weekly ]
-    },
-    last_7_days_leaderboard_update: {
-      cron: "*/7 * * * *",
-      class: "LeaderboardUpdateJob",
-      args: [ :last_7_days ]
-    },
-    timezone_leaderboard_refresh: {
-      cron: "*/5 * * * *",
-      class: "WarmMiniLeaderboardCacheJob"
-    },
+    # update_slack_status: {
+    #   cron: "*/5 * * * *",
+    #   class: "UserSlackStatusUpdateJob"
+    # },
+    # daily_leaderboard_update: {
+    #   cron: "* * * * *",
+    #   class: "LeaderboardUpdateJob",
+    #   args: [ :daily ]
+    # },
+    # weekly_leaderboard_update: {
+    #   cron: "*/2 * * * *",
+    #   class: "LeaderboardUpdateJob",
+    #   args: [ :weekly ]
+    # },
+    # last_7_days_leaderboard_update: {
+    #   cron: "*/7 * * * *",
+    #   class: "LeaderboardUpdateJob",
+    #   args: [ :last_7_days ]
+    # },
     # sailors_log_poll: {
     #   cron: "*/2 * * * *",
     #   class: "SailorsLogPollForChangesJob"
@@ -58,28 +54,28 @@ Rails.application.configure do
     #   cron: "0 12 * * *",
     #   class: "UpdateSlackNeighborhoodChannelsJob"
     # },
-    slack_username_update: {
-      cron: "0 0 * * *",
-      class: "SlackUsernameUpdateJob"
-    },
-    scan_github_repos: {
-      cron: "0 10 * * *",
-      class: "ScanGithubReposJob"
-    },
-    sync_all_user_repo_events: {
-      cron: "0 */6 * * *", # Every 6 hours (at minute 0 of 0, 6, 12, 18 hours)
-      class: "SyncAllUserRepoEventsJob",
-      description: "Periodically syncs repository events for all eligible users."
-    },
-    scan_repo_events_for_commits: {
-      cron: "0 */3 * * *", # Every 3 hours at minute 0
-      class: "ScanRepoEventsForCommitsJob",
-      description: "Scans repository host events (PushEvents) and enqueues jobs to process new commits."
-    },
-    cleanup_expired_email_verification_requests: {
-      cron: "* * * * *",
-      class: "CleanupExpiredEmailVerificationRequestsJob"
-    },
+    # slack_username_update: {
+    #   cron: "0 0 * * *",
+    #   class: "SlackUsernameUpdateJob"
+    # },
+    # scan_github_repos: {
+    #   cron: "0 10 * * *",
+    #   class: "ScanGithubReposJob"
+    # },
+    # sync_all_user_repo_events: {
+    #   cron: "0 */6 * * *", # Every 6 hours (at minute 0 of 0, 6, 12, 18 hours)
+    #   class: "SyncAllUserRepoEventsJob",
+    #   description: "Periodically syncs repository events for all eligible users."
+    # },
+    # scan_repo_events_for_commits: {
+    #   cron: "0 */3 * * *", # Every 3 hours at minute 0
+    #   class: "ScanRepoEventsForCommitsJob",
+    #   description: "Scans repository host events (PushEvents) and enqueues jobs to process new commits."
+    # },
+    # cleanup_expired_email_verification_requests: {
+    #   cron: "* * * * *",
+    #   class: "CleanupExpiredEmailVerificationRequestsJob"
+    # },
     # update_airtable_user_data: {
     #   cron: "0 13 * * *",
     #   class: "UpdateAirtableUserDataJob"
@@ -139,24 +135,24 @@ Rails.application.configure do
     trigger_time_update: {
       cron: "*/15 * * * *",
       class: "Neighborhood::TriggerTimeUpdateJob"
-    },
-    geocode_users_without_country: {
-      cron: "7 * * * *",
-      class: "GeocodeUsersWithoutCountryJob"
-    },
-    cleanup_successful_jobs: {
-      cron: "0 0 * * *",
-      class: "CleanupSuccessfulJobsJob"
-    },
+    }
+    # geocode_users_without_country: {
+    #   cron: "7 * * * *",
+    #   class: "GeocodeUsersWithoutCountryJob"
+    # },
+    # cleanup_successful_jobs: {
+    #   cron: "0 0 * * *",
+    #   class: "CleanupSuccessfulJobsJob"
+    # },
     # sync_stale_repo_metadata: {
     #   cron: "0 4 * * *", # Daily at 4 AM
     #   class: "SyncStaleRepoMetadataJob",
     #   description: "Refreshes repository metadata (stars, commit counts, etc.) for repositories with stale data."
     # },
-    cleanup_old_leaderboards: {
-      cron: "0 3 * * *", # daily at 3
-      class: "CleanupOldLeaderboardsJob",
-      description: "Remove leaderboards older than 2 days"
-    }
+    # cleanup_old_leaderboards: {
+    #   cron: "0 3 * * *", # daily at 3
+    #   class: "CleanupOldLeaderboardsJob",
+    #   description: "Remove leaderboards older than 2 days"
+    # }
   }
 end
