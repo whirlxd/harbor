@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_30_000002) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_01_035652) do
   create_schema "pganalyze"
 
   # These are extensions that must be enabled in order to support this database
@@ -272,6 +272,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_30_000002) do
     t.datetime "finished_generating_at"
     t.datetime "deleted_at"
     t.integer "period_type", default: 0, null: false
+    t.integer "timezone_utc_offset"
     t.index ["start_date"], name: "index_leaderboards_on_start_date", where: "(deleted_at IS NULL)"
   end
 

@@ -10,8 +10,12 @@ class Leaderboard < ApplicationRecord
   enum :period_type, {
     daily: 0,
     weekly: 1,
-    last_7_days: 2
+    last_7_days: 2,
+    daily_timezone_normalized: 3
   }
+
+  scope :for_timezone_offset, ->(offset) { where(timezone_utc_offset: offset) }
+  scope :global, -> { where(timezone_utc_offset: nil) }
 
   def finished_generating?
     finished_generating_at.present?

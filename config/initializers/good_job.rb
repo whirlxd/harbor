@@ -42,6 +42,10 @@ Rails.application.configure do
       class: "LeaderboardUpdateJob",
       args: [ :last_7_days ]
     },
+    timezone_leaderboard_refresh: {
+      cron: "*/5 * * * *",
+      class: "WarmMiniLeaderboardCacheJob"
+    },
     # sailors_log_poll: {
     #   cron: "*/2 * * * *",
     #   class: "SailorsLogPollForChangesJob"
