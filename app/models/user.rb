@@ -27,8 +27,30 @@ class User < ApplicationRecord
     yellow: 3    # suspected (invisible to user)
   }
 
-  def set_trust(level)
-    update!(trust_level: level)
+  def set_trust(level, changed_by_user: nil, reason: nil, notes: nil)
+    return false unless level.present?
+
+    previous_level = trust_level
+
+    if changed_by_user.present? && level.to_s == "red" && !changed_by_user.superadmin?
+      return false
+    end
+
+    if previous_level != level.to_s
+      if changed_by_user.present?
+        trust_level_audit_logs.create!(
+          changed_by: changed_by_user,
+          previous_trust_level: previous_level,
+          new_trust_level: level.to_s,
+          reason: reason,
+          notes: notes
+        )
+      end
+
+      update!(trust_level: level)
+    end
+
+    true
   end
   # ex: .set_trust(:green) or set_trust(1) setting it to red
 
@@ -58,6 +80,9 @@ class User < ApplicationRecord
     class_name: "SailorsLog"
 
   has_many :wakatime_mirrors, dependent: :destroy
+
+  has_many :trust_level_audit_logs, dependent: :destroy
+  has_many :trust_level_changes_made, class_name: "TrustLevelAuditLog", foreign_key: "changed_by_id", dependent: :destroy
 
   def streak_days
     @streak_days ||= heartbeats.daily_streaks_for_users([ id ]).values.first
@@ -148,15 +173,35 @@ class User < ApplicationRecord
   end
 
   def admin?
-    is_admin
+    is_admin || is_superadmin
+  end
+
+  def superadmin?
+    is_superadmin
   end
 
   def make_admin!
     update!(is_admin: true)
   end
 
+  def make_superadmin!
+    update!(is_superadmin: true, is_admin: true)
+  end
+
   def remove_admin!
     update!(is_admin: false)
+  end
+
+  def remove_superadmin!
+    update!(is_superadmin: false)
+  end
+
+  def can_convict_users?
+    superadmin?
+  end
+
+  def can_moderate_trust_levels?
+    admin?
   end
 
   def raw_github_user_info

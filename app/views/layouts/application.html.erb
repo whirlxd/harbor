@@ -39,6 +39,11 @@
 
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
+    
+    <% if current_user %>
+      <meta name="user-is-superadmin" content="<%= current_user.superadmin? %>">
+      <meta name="user-is-admin" content="<%= current_user.admin? %>">
+    <% end %>
 
     <%= yield :head %>
     

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_28_011017) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_30_000002) do
   create_schema "pganalyze"
 
   # These are extensions that must be enabled in order to support this database
@@ -483,6 +483,21 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_28_011017) do
     t.index ["key_hash"], name: "index_solid_cache_entries_on_key_hash", unique: true
   end
 
+  create_table "trust_level_audit_logs", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "changed_by_id", null: false
+    t.string "previous_trust_level", null: false
+    t.string "new_trust_level", null: false
+    t.text "reason"
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["changed_by_id", "created_at"], name: "index_trust_level_audit_logs_on_changed_by_and_created_at"
+    t.index ["changed_by_id"], name: "index_trust_level_audit_logs_on_changed_by_id"
+    t.index ["user_id", "created_at"], name: "index_trust_level_audit_logs_on_user_and_created_at"
+    t.index ["user_id"], name: "index_trust_level_audit_logs_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "slack_uid"
     t.datetime "created_at", null: false
@@ -506,6 +521,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_28_011017) do
     t.string "mailing_address_otc"
     t.boolean "allow_public_stats_lookup", default: true, null: false
     t.boolean "default_timezone_leaderboard", default: true, null: false
+    t.boolean "is_superadmin", default: false, null: false
     t.index ["github_uid", "github_access_token"], name: "index_users_on_github_uid_and_access_token"
     t.index ["github_uid"], name: "index_users_on_github_uid"
     t.index ["slack_uid"], name: "index_users_on_slack_uid", unique: true
@@ -552,5 +568,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_28_011017) do
   add_foreign_key "project_repo_mappings", "users"
   add_foreign_key "repo_host_events", "users"
   add_foreign_key "sign_in_tokens", "users"
+  add_foreign_key "trust_level_audit_logs", "users"
+  add_foreign_key "trust_level_audit_logs", "users", column: "changed_by_id"
   add_foreign_key "wakatime_mirrors", "users"
 end
