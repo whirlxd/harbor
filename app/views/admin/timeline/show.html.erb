@@ -1,6 +1,11 @@
 <%# app/views/admin/timeline/show.html.erb %>
 <%# Instance variables: @users_with_timeline_data, @primary_user, @date, @next_date, @prev_date %>
 
+<% content_for :head do %>
+  <meta name="current-user-is-admin" content="<%= current_user&.admin? ? 'true' : 'false' %>">
+  <meta name="current-user-is-superadmin" content="<%= current_user&.superadmin? ? 'true' : 'false' %>">
+<% end %>
+
 <%
   primary_user_tz = @primary_user&.timezone || (current_user&.timezone || 'UTC')
 
@@ -353,7 +358,20 @@ const trusts = {
 };
 
 window.setTrust = function(userId) {
-  const options = '🟢 Green (1) - Trusted\n🟡 Yellow (2) - Suspected\n🔴 Red (3) - Convicted (banned)\n🔵 Blue (4) - Unscored';
+  const isAdmin = document.querySelector('meta[name="current-user-is-admin"]')?.content === 'true';
+  const isSuperadmin = document.querySelector('meta[name="current-user-is-superadmin"]')?.content === 'true';
+  // we validate this on the server, dont kill me
+  
+  if (!isAdmin) {
+    alert('you dont have human rights to do that');
+    return;
+  }
+  
+  let options = '🟢 Green (1) - Trusted\n🟡 Yellow (2) - Suspected\n🔵 Blue (4) - Unscored';
+  if (isSuperadmin) {
+    options = '🟢 Green (1) - Trusted\n🟡 Yellow (2) - Suspected\n🔴Red (3) - Convicted (banned)\n🔵 Blue (4) - Unscored';
+  }
+  
   const input = prompt(`set the trust for ${userId}\n\n${options}\n\nenter number or color`);
   if (!input) return;
   
@@ -366,17 +384,37 @@ window.setTrust = function(userId) {
   }
   
   const levelForAPI = trust.level || normalizedInput;
-    fetch(`/users/${userId}/update_trust_level`, {
+  
+  if (levelForAPI === 'red' && !isSuperadmin) {
+    alert('nice try neon');
+    return;
+  }
+  
+  const reason = prompt('please explain why you are doing this to this poor soul');
+  if (!reason || reason.trim() === '') {
+    alert('you gotta put something down silly');
+    return;
+  }
+  
+  const notes = prompt('anything else you wanna add? (optional)');
+  
+  fetch(`/users/${userId}/update_trust_level`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
       'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
     },
-    body: JSON.stringify({ trust_level: levelForAPI })
+    body: JSON.stringify({ 
+      trust_level: levelForAPI,
+      reason: reason.trim(),
+      notes: notes ? notes.trim() : ''
+    })
   })
   .then(response => {
     if (!response.ok) {
-      throw new Error(`${response.status} ${response.statusText}`);
+      return response.json().then(err => {
+        throw new Error(err.error || `${response.status} ${response.statusText}`);
+      });
     }
     return response.json();
   })
@@ -395,7 +433,7 @@ window.setTrust = function(userId) {
       }
     }
     
-    alert(`set trust to ${trust.name}`);
+    alert(`set trust to ${trust.name}\nreason: ${reason}${notes ? '\nanything else? ' + notes : ''}`);
   })
   .catch(error => {
     console.error(error);

@@ -100,18 +100,6 @@
             <div class="flex-shrink-0 font-mono text-sm text-white font-medium">
               <%= short_time_detailed entry.total_seconds %>
             </div>
-            <% admin_tool do %>
-              <select class="ml-4 bg-dark border border-primary rounded px-2 py-1 text-sm text-white"
-                  data-controller="trust-level"
-                  data-trust-level-target="select"
-                  data-user-id="<%= entry.user.id %>"
-                  data-current-trust-level="<%= entry.user.trust_level %>">
-                <option value="blue" <%= 'selected' if entry.user.blue? %>>Unscored</option>
-                <option value="red" <%= 'selected' if entry.user.red? %>>Convicted</option>
-                <option value="green" <%= 'selected' if entry.user.green? %>>Trusted</option>
-                <option value="yellow" <%= 'selected' if entry.user.yellow? %>>Suspected</option>
-              </select>
-            <% end %>
           </div>
         <% end %>
       </div>
