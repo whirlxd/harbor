@@ -40,7 +40,6 @@ module Api
               admin: user.admin?,
               superadmin: user.superadmin?,
               trust_level: user.trust_level,
-              trust_status: user.trust_level_status,
               suspected: user.trust_level == "yellow",
               banned: user.trust_level == "red",
               created_at: user.created_at,
@@ -50,10 +49,10 @@ module Api
               api_keys_count: user.api_keys.count,
               stats: {
                 total_heartbeats: user.heartbeats.count,
-                total_coding_time: user.heartbeats.sum(:duration) || 0,
+                total_coding_time: user.heartbeats.duration_seconds || 0,
                 languages_used: user.heartbeats.distinct.pluck(:language).compact.count,
                 projects_worked_on: user.heartbeats.distinct.pluck(:project).compact.count,
-                days_active: user.heartbeats.distinct.pluck(:date).compact.count
+                days_active: user.heartbeats.select("DATE(time) as date").distinct.count
               }
             }
           }
@@ -93,7 +92,7 @@ module Api
               }
             end,
             total_heartbeats: heartbeats.count,
-            total_duration: heartbeats.sum(:duration) || 0
+            total_duration: heartbeats.duration_seconds || 0
           }
         end
 
@@ -102,11 +101,10 @@ module Api
           return unless user
 
           projects = user.heartbeats
-                        .select(:project)
-                        .distinct
+                        .select(:project, "COUNT(*) as heartbeat_count")
                         .where.not(project: nil)
                         .group(:project)
-                        .order("COUNT(*) DESC")
+                        .order(Arel.sql("COUNT(*) DESC"))
 
           project_data = projects.map do |heartbeat|
             project_name = heartbeat.project
@@ -117,11 +115,11 @@ module Api
             {
               name: project_name,
               total_heartbeats: project_heartbeats.count,
-              total_duration: project_heartbeats.sum(:duration) || 0,
+              total_duration: project_heartbeats.duration_seconds || 0,
               first_heartbeat: project_heartbeats.minimum(:time),
               last_heartbeat: project_heartbeats.maximum(:time),
               languages: project_heartbeats.distinct.pluck(:language).compact,
-              github_repo: repo_mapping&.github_repo_url,
+              repo: repo_mapping&.repo_url,
               repo_mapping_id: repo_mapping&.id
             }
           end
