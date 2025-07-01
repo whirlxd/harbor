@@ -147,14 +147,12 @@ Rails.application.routes.draw do
     # Admin-only API namespace
     namespace :admin do
       namespace :v1 do
-        get "stats", to: "stats#index"
-        get "heartbeats", to: "stats#heartbeats"
-
-        resources :users, only: [ :index, :show ] do
-          member do
-            patch :update_trust_level
-          end
-        end
+        get "check", to: "admin#check"
+        get "user/info", to: "admin#user_info"
+        get "user/stats", to: "admin#user_stats"
+        get "user/projects", to: "admin#user_projects"
+        post "user/convict", to: "admin#user_convict"
+        post "execute", to: "admin#execute"
       end
     end
 

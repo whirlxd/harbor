@@ -1,0 +1,262 @@
+module Api
+  module Admin
+    module V1
+      class AdminController < Api::Admin::V1::ApplicationController
+        def check
+          api_key = current_admin_api_key
+          creator = User.find(api_key.user_id)
+
+          render json: {
+            valid: true,
+            api_key: {
+              id: api_key.id,
+              name: api_key.name,
+              created_at: api_key.created_at
+            },
+            creator: {
+              id: creator.id,
+              username: creator.username,
+              display_name: creator.display_name,
+              admin: creator.admin?,
+              superadmin: creator.superadmin?
+            }
+          }
+        end
+
+        def user_info
+          user = find_user_by_id
+          return unless user
+
+          render json: {
+            user: {
+              id: user.id,
+              username: user.username,
+              display_name: user.display_name,
+              slack_uid: user.slack_uid,
+              slack_username: user.slack_username,
+              github_username: user.github_username,
+              timezone: user.timezone,
+              country_code: user.country_code,
+              admin: user.admin?,
+              superadmin: user.superadmin?,
+              trust_level: user.trust_level,
+              trust_status: user.trust_level_status,
+              suspected: user.trust_level == "yellow",
+              banned: user.trust_level == "red",
+              created_at: user.created_at,
+              updated_at: user.updated_at,
+              last_heartbeat_at: user.heartbeats.maximum(:time),
+              email_addresses: user.email_addresses.map(&:email),
+              api_keys_count: user.api_keys.count,
+              stats: {
+                total_heartbeats: user.heartbeats.count,
+                total_coding_time: user.heartbeats.sum(:duration) || 0,
+                languages_used: user.heartbeats.distinct.pluck(:language).compact.count,
+                projects_worked_on: user.heartbeats.distinct.pluck(:project).compact.count,
+                days_active: user.heartbeats.distinct.pluck(:date).compact.count
+              }
+            }
+          }
+        end
+
+        def user_stats
+          user = find_user_by_id
+          return unless user
+
+          date = parse_date_param
+          return unless date
+
+          start_time = date.beginning_of_day.utc
+          end_time = date.end_of_day.utc
+
+          heartbeats = user.heartbeats
+                          .where(time: start_time..end_time)
+                          .order(:time)
+
+          render json: {
+            user_id: user.id,
+            username: user.username,
+            date: date.iso8601,
+            timezone: user.timezone,
+            heartbeats: heartbeats.map do |hb|
+              {
+                id: hb.id,
+                time: hb.time.utc.iso8601,
+                project: hb.project,
+                language: hb.language,
+                file: hb.file,
+                editor: hb.editor,
+                operating_system: hb.operating_system,
+                machine: hb.machine,
+                duration: hb.duration,
+                is_debugging: hb.is_debugging
+              }
+            end,
+            total_heartbeats: heartbeats.count,
+            total_duration: heartbeats.sum(:duration) || 0
+          }
+        end
+
+        def user_projects
+          user = find_user_by_id
+          return unless user
+
+          projects = user.heartbeats
+                        .select(:project)
+                        .distinct
+                        .where.not(project: nil)
+                        .group(:project)
+                        .order("COUNT(*) DESC")
+
+          project_data = projects.map do |heartbeat|
+            project_name = heartbeat.project
+            project_heartbeats = user.heartbeats.where(project: project_name)
+
+            repo_mapping = user.project_repo_mappings.find_by(project_name: project_name)
+
+            {
+              name: project_name,
+              total_heartbeats: project_heartbeats.count,
+              total_duration: project_heartbeats.sum(:duration) || 0,
+              first_heartbeat: project_heartbeats.minimum(:time),
+              last_heartbeat: project_heartbeats.maximum(:time),
+              languages: project_heartbeats.distinct.pluck(:language).compact,
+              github_repo: repo_mapping&.github_repo_url,
+              repo_mapping_id: repo_mapping&.id
+            }
+          end
+
+          render json: {
+            user_id: user.id,
+            username: user.username,
+            projects: project_data,
+            total_projects: project_data.count
+          }
+        end
+
+        def user_convict
+          user = find_user_by_id
+          return unless user
+
+          trust_level = params[:trust_level]
+          reason = params[:reason]
+          notes = params[:notes]
+
+          if reason.blank?
+            return render json: { error: "you cant punish a mortal and not justify your actions" }, status: :unprocessable_entity
+          end
+
+          unless User.trust_levels.key?(trust_level)
+            return render json: { error: "read the docs you idiot" }, status: :unprocessable_entity
+          end
+
+          if trust_level == "red" && !current_user.can_convict_users?
+            return render json: { error: "no perms lmaooo" }, status: :forbidden
+          end
+
+          success = user.set_trust(
+            trust_level,
+            changed_by_user: current_user,
+            reason: reason,
+            notes: notes
+          )
+
+          if success
+            render json: {
+              success: true,
+              message: "gotcha, updated to #{trust_level}",
+              user: {
+                id: user.id,
+                username: user.username,
+                trust_level: user.trust_level,
+                updated_at: user.updated_at
+              },
+              audit_log: {
+                changed_by: current_user.username,
+                reason: reason,
+                notes: notes,
+                timestamp: Time.current
+              }
+            }
+          else
+            render json: { error: "no perms lmaooo" }, status: :unprocessable_entity
+          end
+        end
+
+        def execute
+          query = params[:query]
+
+          if query.blank?
+            return render json: { error: "whatcha doin'?" }, status: :unprocessable_entity
+          end
+
+          not_cool = %w[INSERT UPDATE DELETE DROP CREATE ALTER TRUNCATE EXEC EXECUTE]
+          if not_cool.any? { |keyword| query.upcase.include?(keyword) }
+            return render json: { error: "no perms lmaooo" }, status: :forbidden
+          end
+
+          unless query.strip.upcase.start_with?("SELECT")
+            return render json: { error: "no perms lmaooo" }, status: :forbidden
+          end
+
+          begin
+            limited_query = query.strip
+            unless limited_query.upcase.include?("LIMIT")
+              limited_query += " LIMIT 1000"
+            end
+
+            sanitized_query = ActiveRecord::Base.sanitize_sql(limited_query)
+            result = ActiveRecord::Base.connection.execute(sanitized_query)
+
+            columns = result.fields
+            rows = result.to_a.map { |row| columns.zip(row).to_h }
+
+            render json: {
+              success: true,
+              query: sanitized_query,
+              columns: columns,
+              rows: rows,
+              row_count: rows.count,
+              executed_by: current_user.username,
+              executed_at: Time.current
+            }
+          rescue => e
+            Rails.logger.error "execute failed: #{e.message}"
+            render json: {
+              error: "failed #{e.message}"
+            }, status: :unprocessable_entity
+          end
+        end
+
+        private
+
+        def find_user_by_id
+          user_id = params[:id]
+
+          if user_id.blank?
+            render json: { error: "who?" }, status: :unprocessable_entity
+            return nil
+          end
+
+          User.find(user_id)
+        rescue ActiveRecord::RecordNotFound
+          render json: { error: "user not found" }, status: :not_found
+          nil
+        end
+
+        def parse_date_param
+          date_param = params[:date]
+
+          if date_param.blank?
+            return Date.current
+          end
+
+          Date.parse(date_param)
+        rescue Date::Error
+          render json: { error: "tf is that date ya dumbass" }, status: :unprocessable_entity
+          nil
+        end
+      end
+    end
+  end
+end
