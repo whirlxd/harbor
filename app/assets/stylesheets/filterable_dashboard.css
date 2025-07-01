@@ -1,3 +1,11 @@
+:root {
+  --text-color: #222;
+}
+
+.dark-mode {
+  --text-color: #f5f5f5;
+}
+
 .filter .options-container {
   position: absolute;
   top: 100%;
