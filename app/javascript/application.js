@@ -14,7 +14,57 @@ function setupCurrentlyHacking() {
   }
 }
 
+function outta() {
+  // we should figure out a better way of doing this rather than this shit ass way, but it works for now
+  const modal = document.getElementById('logout-modal');
+  const can = document.getElementById('cancel-logout');
+  
+  if (!modal || !can) return;
+  modal.classList.remove('hidden');
+
+  function logshow() {
+    modal.classList.remove('pointer-events-none');
+    modal.classList.remove('opacity-0');
+    modal.querySelector('.bg-dark').classList.remove('scale-95');
+    modal.querySelector('.bg-dark').classList.add('scale-100');
+  }
+
+  function logquit() {
+    modal.classList.add('opacity-0');
+    modal.querySelector('.bg-dark').classList.remove('scale-100');
+    modal.querySelector('.bg-dark').classList.add('scale-95');
+    setTimeout(() => {
+      modal.classList.add('pointer-events-none');
+    }, 300);
+  }
+
+  window.showLogout = logshow;
+
+  can.addEventListener('click', logquit);
+
+  modal.addEventListener('click', function(e) {
+    if (e.target === modal) {
+      logquit();
+    }
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && !modal.classList.contains('pointer-events-none')) {
+      logquit();
+    }
+  });
+}
+
 // Handle both initial page load and subsequent Turbo navigations
-document.addEventListener('turbo:load', setupCurrentlyHacking);
-document.addEventListener('turbo:render', setupCurrentlyHacking);
-document.addEventListener('DOMContentLoaded', setupCurrentlyHacking);
+document.addEventListener('turbo:load', function() {
+  setupCurrentlyHacking();
+  outta();
+});
+document.addEventListener('turbo:render', function() {
+  setupCurrentlyHacking();
+  outta();
+});
+document.addEventListener('DOMContentLoaded', function() {
+  setupCurrentlyHacking();
+  outta();
+});

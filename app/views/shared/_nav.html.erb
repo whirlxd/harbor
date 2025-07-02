@@ -67,11 +67,17 @@
               Settings
             <% end %>
           </div>
-          <div>
-            <%= link_to signout_path, class: "block px-2 py-1 rounded-lg transition hover:bg-[#23272a]", data: { turbo_method: :delete, action: "click->nav#clickLink" } do %>
+            <div>
+            <button
+              onclick="showLogout()"
+              class="w-full text-left cursor-pointer block px-2 py-1 rounded-lg transition hover:text-primary"
+              style="display: block; padding: 10px 15px; border-radius: 6px; transition: background-color 0.15s, color 0.15s; text-decoration: none;"
+              onmouseover="this.style.color='var(--primary-color, #e13950)'"
+              onmouseout="this.style.color=''"
+            > <!-- sorry but what the fuck is this hover logic-->
               Logout
-            <% end %>
-          </div>
+            </button>
+            </div>
         <% end %>
         <% dev_tool(nil, "div") do %>
           <%= link_to letter_opener_web_path, class: "block px-2 py-1 rounded-lg transition #{current_page?(letter_opener_web_path) ? 'bg-primary/50 text-primary' : 'hover:bg-[#23272a]'}", data: { action: "click->nav#clickLink" } do %>
