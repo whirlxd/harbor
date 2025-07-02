@@ -174,8 +174,14 @@ class SessionsController < ApplicationController
       return
     end
 
-    session[:impersonater_user_id] ||= current_user.id
     user = User.find(params[:id])
+
+    if user.admin? && !current_user.superadmin?
+      redirect_to root_path, alert: "nice try, you cant do that"
+      return
+    end
+
+    session[:impersonater_user_id] ||= current_user.id
     session[:user_id] = user.id
     redirect_to root_path, notice: "Impersonating #{user.username}"
   end

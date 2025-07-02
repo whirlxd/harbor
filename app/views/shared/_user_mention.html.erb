@@ -28,8 +28,10 @@
   <% end %>
   <% unless current_user == user %>
     <% admin_tool('', 'span') do %>
-      <%= link_to impersonate_user_path(user), class: "text-primary font-bold hover:text-red-300 transition-colors duration-200", data: { turbo_frame: "_top", turbo_prefetch: "false" } do %>
-        🥸
+      <% if !user.admin? || current_user.superadmin? %>
+        <%= link_to impersonate_user_path(user), class: "text-primary font-bold hover:text-red-300 transition-colors duration-200", data: { turbo_frame: "_top", turbo_prefetch: "false" } do %>
+          🥸
+        <% end %>
       <% end %>
     <% end %>
   <% end %>
