@@ -186,12 +186,21 @@ export default class extends Controller {
     const v = p.repo_url ? 
       p.repo_url.replace(/^https:\/\/github\.com\//, 'https://tkww0gcc0gkwwo4gc8kgs0sw.a.selfhosted.hackclub.com/') : ''
     
+    const out = this.esc(p.name)
+    
     return `
       <div class="text-sm italic text-muted ml-2">
         working on 
-        ${p.repo_url ? `<a href="${p.repo_url}" target="_blank" class="text-accent hover:text-cyan-400 transition-colors">${p.name}</a>` : p.name}
+        ${p.repo_url ? `<a href="${p.repo_url}" target="_blank" class="text-accent hover:text-cyan-400 transition-colors">${out}</a>` : out}
         ${v ? `<a href="${v}" target="_blank" class="ml-1">🌌</a>` : ''}
       </div>
     `
+  }
+  
+  esc(str) {
+    if (str === null || str === undefined) return '';
+    return str.toString().replace(/[&<>"']/g, function (match) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[match];
+    });
   }
 }

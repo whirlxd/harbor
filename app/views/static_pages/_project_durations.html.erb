@@ -7,8 +7,8 @@
       <div class="bg-dark border border-primary rounded-xl p-6 shadow-lg transition-all duration-300 flex flex-col gap-4 hover:border-primary/40 hover:-translate-y-1 hover:shadow-xl backdrop-blur-sm">
         <div class="flex justify-between items-start gap-3">
           <div class="flex flex-col gap-2 flex-1 min-w-0">
-            <h3 class="text-lg font-semibold text-white truncate" title="<%= project[:project] %>">
-              <%= (project[:project].presence || "Unknown") %>
+            <h3 class="text-lg font-semibold text-white truncate" title="<%= h(project[:project]) %>">
+              <%= h(project[:project].presence || "Unknown") %>
             </h3>
             <% if project[:repository]&.stars.present? %>
               <div class="flex items-center gap-1 text-sm text-yellow-400">
@@ -59,7 +59,7 @@
 
         <% if project[:repository]&.description.present? %>
           <div class="text-sm text-white/70 leading-relaxed line-clamp-2">
-            <%= project[:repository].description %>
+            <%= h(project[:repository].description) %>
           </div>
         <% end %>
 

@@ -30,7 +30,7 @@
             <tr class="hover:bg-darkless">
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="text-sm font-medium text-white">
-                  <%= api_key.name %>
+                  <%= h(api_key.name) %>
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
@@ -39,7 +39,7 @@
                     <img class="h-6 w-6 rounded-full mr-2" src="<%= api_key.user.avatar_url %>" alt="">
                   <% end %>
                   <div>
-                    <div class="text-sm text-white"><%= api_key.user.display_name %></div>
+                    <div class="text-sm text-white"><%= h(api_key.user.display_name) %></div>
                     <div class="text-xs text-gray-400">ID: <%= api_key.user.id %></div>
                   </div>
                 </div>

@@ -23,16 +23,16 @@
         <div class="bg-darkless rounded-lg p-6 border-l-4 border-primary">
           <div class="space-y-2 text-lg">
             <p class="font-semibold text-white">
-              <%= @user.mailing_address.first_name %> <%= @user.mailing_address.last_name %>
+              <%= h(@user.mailing_address.first_name) %> <%= h(@user.mailing_address.last_name) %>
             </p>
-            <p class="text-secondary"><%= @user.mailing_address.line_1 %></p>
+            <p class="text-secondary"><%= h(@user.mailing_address.line_1) %></p>
             <% if @user.mailing_address.line_2.present? %>
-              <p class="text-secondary"><%= @user.mailing_address.line_2 %></p>
+              <p class="text-secondary"><%= h(@user.mailing_address.line_2) %></p>
             <% end %>
             <p class="text-secondary">
-              <%= @user.mailing_address.city %>, <%= @user.mailing_address.state %> <%= @user.mailing_address.zip_code %>
+              <%= h(@user.mailing_address.city) %>, <%= h(@user.mailing_address.state) %> <%= h(@user.mailing_address.zip_code) %>
             </p>
-            <p class="text-secondary font-semibold"><%= @user.mailing_address.country %></p>
+            <p class="text-secondary font-semibold"><%= h(@user.mailing_address.country) %></p>
           </div>
         </div>
       </section>

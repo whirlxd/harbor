@@ -68,10 +68,10 @@
               <% @ssp_users_recent.each_with_index do |user, index| %>
                 <div class="relative cursor-pointer transition-transform duration-200 hover:-translate-y-1 hover:z-10 group <%= index > 0 ? '-ml-4' : '' %>">
                   <div class="absolute -top-9 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-2 py-1 rounded text-xs whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-20">
-                    <%= user[:display_name] %>
+                    <%= h(user[:display_name]) %>
                     <div class="absolute top-full left-1/2 -ml-1 border-l-2 border-r-2 border-t-2 border-transparent border-t-gray-800"></div>
                   </div>
-                  <img src="<%= user[:avatar_url] %>" alt="<%= user[:display_name] %>" class="w-10 h-10 rounded-full border-2 border-primary object-cover shadow-sm" />
+                  <img src="<%= user[:avatar_url] %>" alt="<%= h(user[:display_name]) %>" class="w-10 h-10 rounded-full border-2 border-primary object-cover shadow-sm" />
                 </div>
               <% end %>
               <% if @ssp_users_size && @ssp_users_size > 5 %>
@@ -82,8 +82,8 @@
                     <div class="flex flex-col gap-2">
                       <% @ssp_users_recent.each do |user| %>
                         <div class="flex items-center p-1 rounded hover:bg-gray-700 transition-colors duration-200">
-                          <img src="<%= user[:avatar_url] %>" alt="<%= user[:display_name] %>" class="w-8 h-8 rounded-full mr-2 border border-primary" />
-                          <span class="font-medium text-sm"><%= user[:display_name] %></span>
+                          <img src="<%= user[:avatar_url] %>" alt="<%= h(user[:display_name]) %>" class="w-8 h-8 rounded-full mr-2 border border-primary" />
+                          <span class="font-medium text-sm"><%= h(user[:display_name]) %></span>
                         </div>
                       <% end %>
                     </div>
