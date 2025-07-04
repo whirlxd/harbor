@@ -21,7 +21,11 @@ module Api
           user = User.find_or_create_by!(slack_uid: slack_uid)
           existing = user.persisted?
 
-          unless user.email_addresses.exists?(email: email)
+          # fucky merge logic, if we see the email already present, we merge it
+          email_record = EmailAddress.find_by(email: email)
+          if email_record && email_record.user_id != user.id
+            email_record.update!(user_id: user.id)
+          elsif !user.email_addresses.exists?(email: email)
             user.email_addresses.create!(email: email)
           end
 
