@@ -52,7 +52,7 @@ module Api
                 total_coding_time: user.heartbeats.duration_seconds || 0,
                 languages_used: user.heartbeats.distinct.pluck(:language).compact.count,
                 projects_worked_on: user.heartbeats.distinct.pluck(:project).compact.count,
-                days_active: user.heartbeats.select("DATE(time) as date").distinct.count
+                days_active: user.heartbeats.distinct.count("DATE(time)")
               }
             }
           }
