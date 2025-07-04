@@ -24,11 +24,11 @@
     </span>
   <% end %>
   <% if local_assigns.fetch(:show, []).include?(:neighborhood) && user.slack_neighborhood_channel.present? %>
-    <%= link_to "🏘️", "https://slack.com/app_redirect?channel=#{user.slack_neighborhood_channel}", target: "_blank" %>
+    <%= link_to "🏘️", "https://slack.com/app_redirect?channel={user.slack_neighborhood_channel}", target: "_blank" %>
   <% end %>
   <% unless current_user == user %>
     <% admin_tool('', 'span') do %>
-      <% if !user.admin? || current_user.superadmin? %>
+      <% if (!user.admin? && !user.superadmin?) || (user.admin? && current_user.superadmin? && !user.superadmin?) %>
         <%= link_to impersonate_user_path(user), class: "text-primary font-bold hover:text-red-300 transition-colors duration-200", data: { turbo_frame: "_top", turbo_prefetch: "false" } do %>
           🥸
         <% end %>
