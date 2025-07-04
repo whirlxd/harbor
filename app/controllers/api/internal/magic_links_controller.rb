@@ -17,24 +17,29 @@ module Api
           }, status: 400
         end
 
-        existing_user = true
+        begin
+          user = User.find_or_create_by!(slack_uid: slack_uid)
+          existing = user.persisted?
 
-        user = User.find_or_create_by!(slack_uid:) do |u|
-          existing_user = false
-          u.email_addresses.build(email:)
-        end
+          unless user.email_addresses.exists?(email: email)
+            user.email_addresses.create!(email: email)
+          end
 
-        sign_in_token = user.sign_in_tokens.create!(
-          magic_link_params.merge(
-            auth_type: :program_magic_link,
-            expires_at: Time.now + 5.minutes
+          sign_in_token = user.sign_in_tokens.create!(
+            magic_link_params.merge(
+              auth_type: :program_magic_link,
+              expires_at: Time.now + 5.minutes
+            )
           )
-        )
 
-        render json: {
-          magic_link: auth_token_url(sign_in_token.token),
-          existing_user:
-        }
+          render json: {
+            magic_link: auth_token_url(sign_in_token.token),
+            existing:
+          }
+        rescue => e
+          Honeybadger.notify(e, context: { slack_uid: slack_uid, email: email, params: params.to_unsafe_h })
+          render json: { error: "internal error creating magic link" }, status: 500
+        end
       end
 
       def magic_link_params
