@@ -9,7 +9,7 @@ Doorkeeper.configure do
 
   admin_authenticator do
     if current_user
-      unless current_user && (current_user.admin_level == "admin" || current_user.admin_level == "superadmin")
+      unless current_user && (current_user.admin_level == "superadmin")
         head :forbidden
       end
     else
