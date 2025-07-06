@@ -92,7 +92,7 @@
             Mailers
           <% end %>
         <% end %>
-        <% if current_user&.admin_level == "admin" %>
+        <% if current_user&.admin_level == "admin" || current_user&.admin_level == "superadmin" %>
           <% admin_tool(nil, "div") do %>
             <%= link_to admin_timeline_path, class: "block px-2 py-1 rounded-lg transition #{current_page?(admin_timeline_path) ? 'bg-primary/50 text-primary' : 'hover:bg-[#23272a]'}", data: { action: "click->nav#clickLink" } do %>
               Review Timeline
@@ -106,7 +106,7 @@
           <% end %>
         <% end %>
 
-        <% if current_user&.admin_level == "admin" %>
+        <% if current_user&.admin_level == "admin" || current_user&.admin_level == "superadmin" %>
           <% admin_tool(nil, "div") do %>
             <%= link_to admin_trust_level_audit_logs_path, class: "block px-2 py-1 rounded-lg transition #{current_page?(admin_trust_level_audit_logs_path) || request.path.start_with?('/admin/trust_level_audit_logs') ? 'bg-primary/50 text-primary' : 'hover:bg-[#23272a]'}", data: { action: "click->nav#clickLink" } do %>
               Trust Level Logs
@@ -120,7 +120,7 @@
           <% end %>
         <% end %>
 
-        <% if current_user&.admin_level == "admin" %>
+        <% if current_user&.admin_level == "admin" || current_user&.admin_level == "superadmin" %>
           <% admin_tool(nil, "div") do %>
             <%= link_to admin_admin_api_keys_path, class: "block px-2 py-1 rounded-lg transition #{current_page?(admin_admin_api_keys_path) || request.path.start_with?('/admin/admin_api_keys') ? 'bg-primary/50 text-primary' : 'hover:bg-[#23272a]'}", data: { action: "click->nav#clickLink" } do %>
               Admin API Keys
