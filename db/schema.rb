@@ -519,7 +519,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_01_142553) do
     t.datetime "updated_at", null: false
     t.string "username"
     t.string "slack_avatar_url"
-    t.boolean "is_admin", default: false, null: false
     t.boolean "uses_slack_status", default: false, null: false
     t.string "slack_scopes", default: [], array: true
     t.text "slack_access_token"
@@ -536,7 +535,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_01_142553) do
     t.string "mailing_address_otc"
     t.boolean "allow_public_stats_lookup", default: true, null: false
     t.boolean "default_timezone_leaderboard", default: true, null: false
-    t.boolean "is_superadmin", default: false, null: false
+    t.integer "admin_level", default: 0, null: false
     t.index ["github_uid", "github_access_token"], name: "index_users_on_github_uid_and_access_token"
     t.index ["github_uid"], name: "index_users_on_github_uid"
     t.index ["slack_uid"], name: "index_users_on_slack_uid", unique: true

@@ -16,7 +16,7 @@ module ApplicationHelper
   end
 
   def admin_tool(class_name = "", element = "div", **options, &block)
-    return unless current_user&.is_admin?
+    return unless current_user && (current_user.admin_level == "admin" || current_user.admin_level == "superadmin")
     concat content_tag(element, class: "admin-tool #{class_name}", **options, &block)
   end
 

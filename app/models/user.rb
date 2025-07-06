@@ -27,6 +27,25 @@ class User < ApplicationRecord
     yellow: 3    # suspected (invisible to user)
   }
 
+  enum :admin_level, {
+    default: 0,   # pleebs
+    superadmin: 1,
+    admin: 2,
+    viewer: 3
+  }, prefix: :admin_level
+
+  def set_admin_level(level)
+    return false unless level.present? && self.class.admin_levels.key?(level)
+
+    previous_level = admin_level
+
+    if previous_level != level.to_s
+      update!(admin_level: level.to_s)
+    end
+
+    true
+  end
+
   def set_trust(level, changed_by_user: nil, reason: nil, notes: nil)
     return false unless level.present?
 
@@ -173,37 +192,6 @@ class User < ApplicationRecord
     end
   end
 
-  def admin?
-    is_admin || is_superadmin
-  end
-
-  def superadmin?
-    is_superadmin
-  end
-
-  def make_admin!
-    update!(is_admin: true)
-  end
-
-  def make_superadmin!
-    update!(is_superadmin: true, is_admin: true)
-  end
-
-  def remove_admin!
-    update!(is_admin: false)
-  end
-
-  def remove_superadmin!
-    update!(is_superadmin: false)
-  end
-
-  def can_convict_users?
-    superadmin?
-  end
-
-  def can_moderate_trust_levels?
-    admin?
-  end
 
   def raw_github_user_info
     return nil unless github_uid.present?

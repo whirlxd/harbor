@@ -3,7 +3,7 @@ class AdminConstraint
     return false unless request.session[:user_id]
 
     user = User.find_by(id: request.session[:user_id])
-    user&.admin?
+    user&.admin_level == "admin" || user&.admin_level == "superadmin"
   end
 end
 

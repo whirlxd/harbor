@@ -176,12 +176,11 @@ class SessionsController < ApplicationController
 
     user = User.find(params[:id])
 
-    if user.superadmin?
+    if user.admin_level == "superadmin"
       redirect_to root_path, alert: "nice try, you cant do that"
       return
     end
-
-    if user.admin? && !current_user.superadmin?
+    if user.admin_level == "admin" && current_user.admin_level != "superadmin"
       redirect_to root_path, alert: "nice try, you cant do that"
       return
     end

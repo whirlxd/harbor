@@ -17,8 +17,7 @@ module Api
               id: creator.id,
               username: creator.username,
               display_name: creator.display_name,
-              admin: creator.admin?,
-              superadmin: creator.superadmin?
+              admin_level: creator.admin_level
             }
           }
         end
@@ -37,8 +36,7 @@ module Api
               github_username: user.github_username,
               timezone: user.timezone,
               country_code: user.country_code,
-              admin: user.admin?,
-              superadmin: user.superadmin?,
+              admin_level: user.admin_level,
               trust_level: user.trust_level,
               suspected: user.trust_level == "yellow",
               banned: user.trust_level == "red",

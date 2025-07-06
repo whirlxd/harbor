@@ -36,7 +36,7 @@ class ApplicationController < ActionController::Base
   end
 
   def try_rack_mini_profiler_enable
-    if current_user && current_user.is_admin?
+    if current_user && (current_user.admin_level == "admin" || current_user.admin_level == "superadmin")
       Rack::MiniProfiler.authorize_request
     end
   end
