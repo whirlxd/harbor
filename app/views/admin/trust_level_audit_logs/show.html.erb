@@ -36,13 +36,17 @@
           <div class="flex items-center justify-between">
             <div class="flex items-center">
               <%= render "shared/user_mention", user: @audit_log.changed_by %>
-              <% if @audit_log.changed_by.superadmin? %>
+              <% if @audit_log.changed_by.admin_level == "superadmin" %>
                 <span class="inline-flex items-center px-1.5 py-0.2 rounded text-sm font-medium border border-red-950 text-red-500">
                   supa admin
                 </span>
-              <% elsif @audit_log.changed_by.admin? %>
-                <span class="inline-flex items-center px-1.5 py-0.2 rounded text-sm font-medium border border-blue-950 text-blue-500 ml-2">
+              <% elsif @audit_log.changed_by.admin_level == "admin" %>
+                <span class="inline-flex items-center px-1.5 py-0.2 rounded text-sm font-medium border border-yellow-950 text-yellow-500 ml-2">
                   admin
+                </span>
+              <% elsif @audit_log.changed_by.admin_level == "viewer" %>
+                <span class="inline-flex items-center px-1.5 py-0.2 rounded text-sm font-medium border border-blue-950 text-blue-500 ml-2">
+                  viewer
                 </span>
               <% end %>
             </div>

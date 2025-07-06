@@ -66,7 +66,7 @@ class Admin::TrustLevelAuditLogsController < Admin::BaseController
   private
 
   def require_admin
-    unless current_user && (current_user.admin_level == "admin" || current_user.admin_level == "superadmin")
+    unless current_user && current_user.admin_level.in?([ "admin", "superadmin", "viewer" ])
       redirect_to root_path, alert: "no perms lmaooo"
     end
   end

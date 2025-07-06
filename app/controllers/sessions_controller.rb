@@ -169,7 +169,7 @@ class SessionsController < ApplicationController
   end
 
   def impersonate
-    unless current_user.admin?
+    unless current_user && current_user.admin_level.in?([ "admin", "superadmin" ])
       redirect_to root_path, alert: "You are not authorized to impersonate users"
       return
     end

@@ -41,8 +41,9 @@
     <%= csp_meta_tag %>
     
     <% if current_user %>
-      <meta name="user-is-superadmin" content="<%= current_user.superadmin? %>">
-      <meta name="user-is-admin" content="<%= current_user.admin? %>">
+      <meta name="user-is-superadmin" content="<%= current_user.admin_level == "superadmin" %>">
+      <meta name="user-is-admin" content="<%= current_user.admin_level == "admin" %>">
+      <meta name="user-is-viewer" content="<%= current_user.admin_level == "viewer" %>">
     <% end %>
 
     <%= yield :head %>

@@ -13,7 +13,7 @@ module Api
 
           if @admin_api_key
             @current_user = @admin_api_key.user
-            @current_user.admin?
+            @current_user.admin_level.in?([ "admin", "superadmin" ])
           else
             false
           end
