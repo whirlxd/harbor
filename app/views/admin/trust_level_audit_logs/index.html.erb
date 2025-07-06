@@ -150,13 +150,17 @@
                   <div>
                     <div class="text-sm text-white">
                       <%= log.changed_by.display_name %>
-                      <% if log.changed_by.superadmin? %>
+                      <% if log.changed_by.admin_level == "superadmin" %>
                         <span class="inline-flex items-center px-1.5 py-0.2 rounded text-sm font-medium border border-red-950 text-red-500">
                           supa admin
                         </span>
-                      <% elsif log.changed_by.admin? %>
-                        <span class="inline-flex items-center px-1.5 py-0.2 rounded text-sm font-medium border border-blue-950 text-blue-500">
+                      <% elsif log.changed_by.admin_level == "admin" %>
+                        <span class="inline-flex items-center px-1.5 py-0.2 rounded text-sm font-medium border border-yellow-950 text-yellow-500">
                           admin
+                        </span>
+                      <% elsif log.changed_by.admin_level == "viewer" %>
+                        <span class="inline-flex items-center px-1.5 py-0.2 rounded text-sm font-medium border border-blue-950 text-blue-500">
+                          viewer
                         </span>
                       <% end %>
                     </div>

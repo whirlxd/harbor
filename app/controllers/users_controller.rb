@@ -82,12 +82,12 @@ class UsersController < ApplicationController
     reason = params[:reason]
     notes = params[:notes]
 
-    if @user && current_user.admin? && trust_level.present?
+    if @user && (current_user.admin_level == "admin" || current_user.admin_level == "superadmin") && trust_level.present?
       unless User.trust_levels.key?(trust_level)
         return render json: { error: "you fucked it up lmaooo" }, status: :unprocessable_entity
       end
 
-      if trust_level == "red" && !current_user.can_convict_users?
+      if trust_level == "red" && current_user.admin_level != "superadmin"
         return render json: { error: "no perms lmaooo" }, status: :forbidden
       end
 
@@ -115,7 +115,7 @@ class UsersController < ApplicationController
   private
 
   def require_admin
-    unless current_user.admin?
+    unless current_user && (current_user.admin_level == "admin" || current_user.admin_level == "superadmin")
       redirect_to root_path, alert: "You are not authorized to access this page"
     end
   end

@@ -16,6 +16,9 @@
       <div class="px-2 rounded-lg flex flex-col items-center gap-2">
         <%= render "shared/user_mention", user: current_user %>
         <%= render "static_pages/streak", user: current_user, show_text: true, turbo_frame: false %>
+        <% if current_user.admin_level != 0 %>
+          <%= render "static_pages/admin_level", user: current_user %>
+        <% end %>
       </div>
     <% else %>
       <div class="mb-1">
@@ -52,7 +55,7 @@
               Docs
             <% end %>
           </div>
-          <% admin_tool(nil, "div") do %>
+          <% superadmin_tool(nil, "div") do %>
             <%= link_to my_mailing_address_path, class: "block px-2 py-1 rounded-lg transition #{current_page?(my_mailing_address_path) ? 'bg-primary/50 text-primary' : 'hover:bg-[#23272a]'}", data: { action: "click->nav#clickLink" } do %>
               Mailing Address
             <% end %>
@@ -89,39 +92,65 @@
             Mailers
           <% end %>
         <% end %>
-        <% admin_tool(nil, "div") do %>
-          <%= link_to admin_timeline_path, class: "block px-2 py-1 rounded-lg transition #{current_page?(admin_timeline_path) ? 'bg-primary/50 text-primary' : 'hover:bg-[#23272a]'}", data: { action: "click->nav#clickLink" } do %>
-            Review Timeline
+        <% if current_user&.admin_level == "admin" || current_user&.admin_level == "superadmin" %>
+          <% admin_tool(nil, "div") do %>
+            <%= link_to admin_timeline_path, class: "block px-2 py-1 rounded-lg transition #{current_page?(admin_timeline_path) ? 'bg-primary/50 text-primary' : 'hover:bg-[#23272a]'}", data: { action: "click->nav#clickLink" } do %>
+              Review Timeline
+            <% end %>
+          <% end %>
+        <% elsif current_user&.admin_level == "viewer" %>
+          <% viewer_tool(nil, "div") do %>
+            <%= link_to admin_timeline_path, class: "block px-2 py-1 rounded-lg transition #{current_page?(admin_timeline_path) ? 'bg-primary/50 text-primary' : 'hover:bg-[#23272a]'}", data: { action: "click->nav#clickLink" } do %>
+              Review Timeline
+            <% end %>
           <% end %>
         <% end %>
-        <% admin_tool(nil, "div") do %>
+
+        <% if current_user&.admin_level == "admin" || current_user&.admin_level == "superadmin" %>
+          <% admin_tool(nil, "div") do %>
+            <%= link_to admin_trust_level_audit_logs_path, class: "block px-2 py-1 rounded-lg transition #{current_page?(admin_trust_level_audit_logs_path) || request.path.start_with?('/admin/trust_level_audit_logs') ? 'bg-primary/50 text-primary' : 'hover:bg-[#23272a]'}", data: { action: "click->nav#clickLink" } do %>
+              Trust Level Logs
+            <% end %>
+          <% end %>
+        <% elsif current_user&.admin_level == "viewer" %>
+          <% viewer_tool(nil, "div") do %>
+            <%= link_to admin_trust_level_audit_logs_path, class: "block px-2 py-1 rounded-lg transition #{current_page?(admin_trust_level_audit_logs_path) || request.path.start_with?('/admin/trust_level_audit_logs') ? 'bg-primary/50 text-primary' : 'hover:bg-[#23272a]'}", data: { action: "click->nav#clickLink" } do %>
+              Trust Level Logs
+            <% end %>
+          <% end %>
+        <% end %>
+
+        <% if current_user&.admin_level == "admin" || current_user&.admin_level == "superadmin" %>
+          <% admin_tool(nil, "div") do %>
+            <%= link_to admin_admin_api_keys_path, class: "block px-2 py-1 rounded-lg transition #{current_page?(admin_admin_api_keys_path) || request.path.start_with?('/admin/admin_api_keys') ? 'bg-primary/50 text-primary' : 'hover:bg-[#23272a]'}", data: { action: "click->nav#clickLink" } do %>
+              Admin API Keys
+            <% end %>
+          <% end %>
+        <% elsif current_user&.admin_level == "viewer" %>
+          <% viewer_tool(nil, "div") do %>
+            <%= link_to admin_admin_api_keys_path, class: "block px-2 py-1 rounded-lg transition #{current_page?(admin_admin_api_keys_path) || request.path.start_with?('/admin/admin_api_keys') ? 'bg-primary/50 text-primary' : 'hover:bg-[#23272a]'}", data: { action: "click->nav#clickLink" } do %>
+              Admin API Keys
+            <% end %>
+          <% end %>
+        <% end %>
+        <% superadmin_tool(nil, "div") do %>
           <%= link_to ahoy_captain_path, class: "block px-2 py-1 rounded-lg transition #{current_page?(ahoy_captain_path) ? 'bg-primary/50 text-primary' : 'hover:bg-[#23272a]'}", data: { action: "click->nav#clickLink" } do %>
             Ahoy Captain
           <% end %>
         <% end %>
-        <% admin_tool(nil, "div") do %>
+        <% superadmin_tool(nil, "div") do %>
           <%= link_to good_job_path, class: "block px-2 py-1 rounded-lg transition #{current_page?(good_job_path) ? 'bg-primary/50 text-primary' : 'hover:bg-[#23272a]'}", data: { action: "click->nav#clickLink" } do %>
             GoodBoy
           <% end %>
         <% end %>
-        <% admin_tool(nil, "div") do %>
+        <% superadmin_tool(nil, "div") do %>
           <%= link_to oauth_applications_path, class: "block px-2 py-1 rounded-lg transition #{current_page?(oauth_applications_path) ? 'bg-primary/50 text-primary' : 'hover:bg-[#23272a]'}", data: { action: "click->nav#clickLink" } do %>
             OAuth2 apps
           <% end %>
         <% end %>
-        <% admin_tool(nil, "div") do %>
-          <%= link_to admin_admin_api_keys_path, class: "block px-2 py-1 rounded-lg transition #{current_page?(admin_admin_api_keys_path) || request.path.start_with?('/admin/admin_api_keys') ? 'bg-primary/50 text-primary' : 'hover:bg-[#23272a]'}", data: { action: "click->nav#clickLink" } do %>
-            Admin API Keys
-          <% end %>
-        <% end %>
-        <% admin_tool(nil, "div") do %>
+        <% superadmin_tool(nil, "div") do %>
           <%= link_to flipper_path, class: "block px-2 py-1 rounded-lg transition #{current_page?(flipper_path) ? 'bg-primary/50 text-primary' : 'hover:bg-[#23272a]'}", data: { action: "click->nav#clickLink" } do %>
             Feature Flags
-          <% end %>
-        <% end %>
-        <% admin_tool(nil, "div") do %>
-          <%= link_to admin_trust_level_audit_logs_path, class: "block px-2 py-1 rounded-lg transition #{current_page?(admin_trust_level_audit_logs_path) || request.path.start_with?('/admin/trust_level_audit_logs') ? 'bg-primary/50 text-primary' : 'hover:bg-[#23272a]'}", data: { action: "click->nav#clickLink" } do %>
-            Trust Level Logs
           <% end %>
         <% end %>
       </div>

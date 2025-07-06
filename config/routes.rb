@@ -1,37 +1,45 @@
-class AdminConstraint
-  def self.matches?(request)
-    return false unless request.session[:user_id]
+class AdminLevelConstraint
+  def initialize(*require)
+    @require = require.map(&:to_s)
+  end
 
+  def matches?(request)
+    return false unless request.session[:user_id]
     user = User.find_by(id: request.session[:user_id])
-    user&.admin?
+    user && @require.include?(user.admin_level)
   end
 end
 
 Rails.application.routes.draw do
   use_doorkeeper
 
-  constraints AdminConstraint do
+  root "static_pages#index"
+
+  constraints AdminLevelConstraint.new(:superadmin) do
     mount GoodJob::Engine => "good_job"
     mount AhoyCaptain::Engine => "/ahoy_captain"
     mount Flipper::UI.app(Flipper) => "flipper", as: :flipper
 
     get "/impersonate/:id", to: "sessions#impersonate", as: :impersonate_user
+    get "/my/mailing_address", to: "my/mailing_address#show", as: :my_mailing_address
   end
   get "/stop_impersonating", to: "sessions#stop_impersonating", as: :stop_impersonating
 
-  namespace :admin do
-    get "timeline", to: "timeline#show", as: :timeline
-    get "timeline/search_users", to: "timeline#search_users"
-    get "timeline/leaderboard_users", to: "timeline#leaderboard_users"
+  constraints AdminLevelConstraint.new(:superadmin, :admin, :viewer) do
+    namespace :admin do
+      get "timeline", to: "timeline#show", as: :timeline
+      get "timeline/search_users", to: "timeline#search_users"
+      get "timeline/leaderboard_users", to: "timeline#leaderboard_users"
 
-    get "post_reviews/:post_id", to: "post_reviews#show", as: :post_review
-    patch "post_reviews/:post_id", to: "post_reviews#update"
-    get "post_reviews/:post_id/date/:date", to: "post_reviews#show", as: :post_review_on_date
+      get "post_reviews/:post_id", to: "post_reviews#show", as: :post_review
+      patch "post_reviews/:post_id", to: "post_reviews#update"
+      get "post_reviews/:post_id/date/:date", to: "post_reviews#show", as: :post_review_on_date
 
-    get "ysws_reviews/:record_id", to: "ysws_reviews#show", as: :ysws_review
+      get "ysws_reviews/:record_id", to: "ysws_reviews#show", as: :ysws_review
 
-    resources :trust_level_audit_logs, only: [ :index, :show ]
-    resources :admin_api_keys, except: [ :edit, :update ]
+      resources :trust_level_audit_logs, only: [ :index, :show ]
+      resources :admin_api_keys, except: [ :edit, :update ]
+    end
   end
 
   if Rails.env.development?
@@ -45,8 +53,6 @@ Rails.application.routes.draw do
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
-
-  root "static_pages#index"
 
   resources :static_pages, only: [ :index ] do
     collection do

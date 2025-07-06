@@ -9,7 +9,9 @@ Doorkeeper.configure do
 
   admin_authenticator do
     if current_user
-      head :forbidden unless current_user.admin?
+      unless current_user && (current_user.admin_level == "superadmin")
+        head :forbidden
+      end
     else
       redirect_to sign_in_url
     end
