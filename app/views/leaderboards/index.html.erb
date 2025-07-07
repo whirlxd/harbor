@@ -63,7 +63,7 @@
     <% if @entries&.any? %>
       <div class="divide-y divide-gray-800">
         <% @entries.each_with_index do |entry, index| %>
-          <div class="flex items-center p-2 hover:bg-dark transition-colors duration-200 <%= 'bg-dark border-l-4 border-l-primary' if entry.user_id == current_user&.id %> <%= 'opacity-40 hover:opacity-60' if entry.user.red? && current_user.admin_level.in?([ "admin", "superadmin" ]) %>">
+          <div class="flex items-center p-2 hover:bg-dark transition-colors duration-200 <%= 'bg-dark border-l-4 border-l-primary' if entry.user_id == current_user&.id %> <%= 'opacity-40 hover:opacity-60' if entry.user.red? && current_user&.admin_level.in?([ "admin", "superadmin" ]) %>">
             <div class="w-12 flex-shrink-0 text-center font-medium text-muted">
               <% case index %>
               <% when 0 then %>
