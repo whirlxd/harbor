@@ -112,7 +112,7 @@ class Api::V1::StatsController < ApplicationController
   def user_projects
     return render json: { error: "User not found" }, status: :not_found unless @user
 
-    since = 30.days.ago.beginning_of_day
+    since = 30.days.ago.beginning_of_day.to_f
     projects = @user.heartbeats
       .where("time >= ?", since)
       .where.not(project: [ nil, "" ])
@@ -131,8 +131,8 @@ class Api::V1::StatsController < ApplicationController
     heartbeats = @user.heartbeats.where(project: project_name)
     return render json: { error: "found nuthin" }, status: :not_found if heartbeats.empty?
 
-    repo_url = heartbeats.where.not(repo_url: [ nil, "" ]).order(time: :desc).limit(1).pluck(:repo_url).first
-    last_commit = heartbeats.where.not(commit: [ nil, "" ]).order(time: :desc).limit(1).pluck(:commit).first
+    repo_url = nil
+    last_commit = nil
     languages = heartbeats.where.not(language: [ nil, "" ]).distinct.pluck(:language)
 
     render json: {
