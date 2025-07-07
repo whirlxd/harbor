@@ -39,19 +39,29 @@ class Api::V1::StatsController < ApplicationController
     end_date = params[:end_date].to_datetime if params[:end_date].present?
     end_date ||= Date.today.end_of_day
 
+    # /api/v1/users/current/stats?filter_by_project=harbor,high-seas
+    scope = nil
+    if params[:filter_by_project].present?
+      filter_by_project = params[:filter_by_project].split(",")
+      scope = Heartbeat.where(project: filter_by_project)
+    end
+
     limit = params[:limit].to_i
 
     enabled_features = params[:features]&.split(",")&.map(&:to_sym)
     enabled_features ||= %i[languages]
 
-    summary = WakatimeService.new(
+    service_params = {
       user: @user,
       specific_filters: enabled_features,
       allow_cache: false,
       limit: limit,
       start_date: start_date,
       end_date: end_date
-    ).generate_summary
+    }
+    service_params[:scope] = scope if scope.present?
+
+    summary = WakatimeService.new(service_params).generate_summary
 
     trust_level = @user.trust_level
     trust_level = "blue" if trust_level == "yellow"
