@@ -1,6 +1,6 @@
 class Api::V1::StatsController < ApplicationController
   before_action :ensure_authenticated!, only: [ :show ], unless: -> { Rails.env.development? }
-  before_action :set_user, only: [ :user_stats, :user_spans, :trust_factor ]
+  before_action :set_user, only: [ :user_stats, :user_spans, :trust_factor, :user_projects, :user_project ]
 
   def show
     # take either user_id with a start date & end date
@@ -96,6 +96,40 @@ class Api::V1::StatsController < ApplicationController
     render json: {
       trust_level: trust_level,
       trust_value: trust_value
+    }
+  end
+
+  def user_projects
+    return render json: { error: "User not found" }, status: :not_found unless @user
+
+    since = 30.days.ago.beginning_of_day
+    projects = @user.heartbeats
+      .where("time >= ?", since)
+      .where.not(project: [ nil, "" ])
+      .select(:project)
+      .distinct
+      .pluck(:project)
+
+    render json: { projects: projects }
+  end
+
+  def user_project
+    return render json: { error: "User not found" }, status: :not_found unless @user
+    project_name = params[:project_name]
+    return render json: { error: "whats the name?" }, status: :bad_request unless project_name.present?
+
+    heartbeats = @user.heartbeats.where(project: project_name)
+    return render json: { error: "found nuthin" }, status: :not_found if heartbeats.empty?
+
+    repo_url = heartbeats.where.not(repo_url: [ nil, "" ]).order(time: :desc).limit(1).pluck(:repo_url).first
+    last_commit = heartbeats.where.not(commit: [ nil, "" ]).order(time: :desc).limit(1).pluck(:commit).first
+    languages = heartbeats.where.not(language: [ nil, "" ]).distinct.pluck(:language)
+
+    render json: {
+      project: project_name,
+      repo_url: repo_url,
+      last_commit: last_commit,
+      languages: languages
     }
   end
 

@@ -129,6 +129,8 @@ Rails.application.routes.draw do
       get "users/:username/stats", to: "stats#user_stats"
       get "users/:username/heartbeats/spans", to: "stats#user_spans"
       get "users/:username/trust_factor", to: "stats#trust_factor"
+      get "users/:username/projects", to: "stats#user_projects"
+      get "users/:username/project/:project_name", to: "stats#user_project"
 
       get "users/lookup_email/:email", to: "users#lookup_email", constraints: { email: /[^\/]+/ }
       get "users/lookup_slack_uid/:slack_uid", to: "users#lookup_slack_uid"
