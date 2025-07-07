@@ -103,13 +103,15 @@ class Api::V1::StatsController < ApplicationController
 
   def set_user
     token = request.headers["Authorization"]&.split(" ")&.last
-    username = params[:username]
+    identifier = params[:username] || params[:username_or_id] || params[:user_id]
 
     @user = begin
-      if username == "my" && token.present?
+      if identifier == "my" && token.present?
         ApiKey.find_by(token: token)&.user
       else
-        User.where(id: username).or(User.where(slack_uid: username)).first
+        User.find_by(id: identifier) ||
+          User.find_by(slack_uid: identifier) ||
+          User.find_by(username: identifier)
       end
     end
   end
