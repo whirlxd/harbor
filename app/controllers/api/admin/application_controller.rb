@@ -13,9 +13,9 @@ module Api
 
           if @admin_api_key
             @current_user = @admin_api_key.user
-            @current_user.admin_level.in?([ "admin", "superadmin" ])
+            @current_user.admin_level.in?([ "admin", "superadmin", "viewer" ])
           else
-            false
+            render json: { error: "lmao no perms" }, status: :unauthorized
           end
         end
       end
