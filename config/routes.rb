@@ -107,7 +107,7 @@ Rails.application.routes.draw do
   post "my/settings/migrate_heartbeats", to: "users#migrate_heartbeats", as: :my_settings_migrate_heartbeats
 
   namespace :my do
-    resources :project_repo_mappings, param: :project_name, only: [ :edit, :update ]
+    resources :project_repo_mappings, param: :project_name, only: [ :edit, :update ], constraints: { project_name: /[^\/]+/ }
     resource :mailing_address, only: [ :show, :edit ]
     get "mailroom", to: "mailroom#index"
   end
