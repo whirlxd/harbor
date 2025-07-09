@@ -430,9 +430,16 @@ class User < ApplicationRecord
   def avatar_url
     return self.slack_avatar_url if self.slack_avatar_url.present?
     return self.github_avatar_url if self.github_avatar_url.present?
-    initials = self.email_addresses&.first&.email[0..1]&.upcase
-    hashed_initials = Digest::SHA256.hexdigest(initials)[0..5]
-    "https://i2.wp.com/ui-avatars.com/api/#{initials}/48/#{hashed_initials}/fff?ssl=1" if initials.present?
+
+    email = self.email_addresses&.first&.email
+    if email.present?
+      initials = email[0..1]&.upcase
+      hashed_initials = Digest::SHA256.hexdigest(initials)[0..5]
+      return "https://i2.wp.com/ui-avatars.com/api/#{initials}/48/#{hashed_initials}/fff?ssl=1"
+    end
+
+    base64_identicon = RubyIdenticon.create_base64(id.to_s)
+    "data:image/png;base64,#{base64_identicon}"
   end
 
   def display_name
