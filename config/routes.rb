@@ -131,6 +131,7 @@ Rails.application.routes.draw do
       get "users/:username/trust_factor", to: "stats#trust_factor"
       get "users/:username/projects", to: "stats#user_projects"
       get "users/:username/project/:project_name", to: "stats#user_project"
+      get "users/:username/projects/details", to: "stats#user_projects_details"
 
       get "users/lookup_email/:email", to: "users#lookup_email", constraints: { email: /[^\/]+/ }
       get "users/lookup_slack_uid/:slack_uid", to: "users#lookup_slack_uid"
