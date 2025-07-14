@@ -20,10 +20,8 @@ Rails.application.routes.draw do
     mount AhoyCaptain::Engine => "/ahoy_captain"
     mount Flipper::UI.app(Flipper) => "flipper", as: :flipper
 
-    get "/impersonate/:id", to: "sessions#impersonate", as: :impersonate_user
     get "/my/mailing_address", to: "my/mailing_address#show", as: :my_mailing_address
   end
-  get "/stop_impersonating", to: "sessions#stop_impersonating", as: :stop_impersonating
 
   constraints AdminLevelConstraint.new(:superadmin, :admin, :viewer) do
     namespace :admin do
@@ -40,7 +38,9 @@ Rails.application.routes.draw do
       resources :trust_level_audit_logs, only: [ :index, :show ]
       resources :admin_api_keys, except: [ :edit, :update ]
     end
+    get "/impersonate/:id", to: "sessions#impersonate", as: :impersonate_user
   end
+  get "/stop_impersonating", to: "sessions#stop_impersonating", as: :stop_impersonating
 
   if Rails.env.development?
     mount LetterOpenerWeb::Engine, at: "/letter_opener"
