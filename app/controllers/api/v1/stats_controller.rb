@@ -62,6 +62,10 @@ class Api::V1::StatsController < ApplicationController
 
     summary = WakatimeService.new(**service_params).generate_summary
 
+    if params[:total_seconds] == "true"
+      return render json: { total_seconds: summary[:total_seconds] }
+    end
+
     trust_level = @user.trust_level
     trust_level = "blue" if trust_level == "yellow"
     trust_value = User.trust_levels[trust_level]
