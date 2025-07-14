@@ -60,11 +60,22 @@ class Api::V1::StatsController < ApplicationController
     service_params[:end_date] = end_date
     service_params[:scope] = scope if scope.present?
 
-    summary = WakatimeService.new(**service_params).generate_summary
-
     if params[:total_seconds] == "true"
-      return render json: { total_seconds: summary[:total_seconds] }
+      query = @user.heartbeats
+                   .coding_only
+                   .with_valid_timestamps
+                   .where(time: start_date..end_date)
+
+      if params[:filter_by_project].present?
+        filter_by_project = params[:filter_by_project].split(",")
+        query = query.where(project: filter_by_project)
+      end
+
+      total_seconds = query.duration_seconds || 0
+      return render json: { total_seconds: total_seconds }
     end
+
+    summary = WakatimeService.new(**service_params).generate_summary
 
     trust_level = @user.trust_level
     trust_level = "blue" if trust_level == "yellow"
