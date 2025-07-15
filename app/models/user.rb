@@ -34,6 +34,10 @@ class User < ApplicationRecord
     viewer: 3
   }, prefix: :admin_level
 
+  def can_convict_users?
+    admin_level_superadmin?
+  end
+
   def set_admin_level(level)
     return false unless level.present? && self.class.admin_levels.key?(level)
 
