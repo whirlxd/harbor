@@ -94,18 +94,19 @@ class Api::V1::StatsController < ApplicationController
   def user_spans
     return render json: { error: "User not found" }, status: :not_found unless @user
 
-    start_date = Date.parse(params[:start_date]) if params[:start_date].present?
+    start_date = params[:start_date].to_datetime if params[:start_date].present?
     start_date ||= 10.years.ago
-    end_date = Date.parse(params[:end_date]) if params[:end_date].present?
-    end_date ||= Date.today
+    end_date = params[:end_date].to_datetime if params[:end_date].present?
+    end_date ||= Date.today.end_of_day
 
-    timespan = (start_date.beginning_of_day.to_f..end_date.end_of_day.to_f)
+    timespan = (start_date.to_f..end_date.to_f)
 
-    heartbeats = @user.heartbeats
-                      .where(time: timespan)
+    heartbeats = @user.heartbeats.where(time: timespan)
 
     if params[:project].present?
       heartbeats = heartbeats.where(project: params[:project])
+    elsif params[:filter_by_project].present?
+      heartbeats = heartbeats.where(project: params[:filter_by_project].split(","))
     end
 
     render json: { spans: heartbeats.to_span }
