@@ -71,7 +71,14 @@ class Api::V1::StatsController < ApplicationController
         query = query.where(project: filter_by_project)
       end
 
-      total_seconds = query.duration_seconds || 0
+      # do the boundary thingie if requested
+      use_boundary_aware = params[:boundary_aware] == "true"
+      total_seconds = if use_boundary_aware
+        Heartbeat.duration_seconds_boundary_aware(query, start_date.to_f, end_date.to_f) || 0
+      else
+        query.duration_seconds || 0
+      end
+
       return render json: { total_seconds: total_seconds }
     end
 
