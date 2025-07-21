@@ -77,6 +77,16 @@ class Api::V1::StatsController < ApplicationController
 
     summary = WakatimeService.new(**service_params).generate_summary
 
+    if params[:features]&.include?("projects") && params[:filter_by_project].present?
+      filter_by_project = params[:filter_by_project].split(",")
+      heartbeats = @user.heartbeats
+        .coding_only
+        .with_valid_timestamps
+        .where(time: start_date..end_date, project: filter_by_project)
+      unique_seconds = unique_heartbeat_seconds(heartbeats)
+      summary[:unique_total_seconds] = unique_seconds
+    end
+
     trust_level = @user.trust_level
     trust_level = "blue" if trust_level == "yellow"
     trust_value = User.trust_levels[trust_level]
@@ -282,5 +292,21 @@ class Api::V1::StatsController < ApplicationController
     end
 
     data.sort_by { |project| -project[:total_seconds] }
+  end
+
+  def unique_heartbeat_seconds(heartbeats)
+    timestamps = heartbeats.order(:time).pluck(:time)
+    intervals = timestamps.each_cons(2).map { |a, b| [ a, b ] }
+    return 0 if intervals.empty?
+    merged = [ intervals.first ]
+    intervals[1..].each do |current|
+      last = merged.last
+      if current.first <= last.last
+        merged[-1] = [ last.first, [ last.last, current.last ].max ]
+      else
+        merged << current
+      end
+    end
+    merged.sum { |a, b| b - a }
   end
 end
