@@ -296,17 +296,16 @@ class Api::V1::StatsController < ApplicationController
 
   def unique_heartbeat_seconds(heartbeats)
     timestamps = heartbeats.order(:time).pluck(:time)
-    intervals = timestamps.each_cons(2).map { |a, b| [ a, b ] }
-    return 0 if intervals.empty?
-    merged = [ intervals.first ]
-    intervals[1..].each do |current|
-      last = merged.last
-      if current.first <= last.last
-        merged[-1] = [ last.first, [ last.last, current.last ].max ]
-      else
-        merged << current
+    return 0 if timestamps.empty?
+
+    total_seconds = 0
+    timestamps.each_cons(2) do |prev_time, curr_time|
+      gap = curr_time - prev_time
+      if gap > 0 && gap <= 2.minutes
+        total_seconds += gap
       end
     end
-    merged.sum { |a, b| b - a }
+
+    total_seconds.to_i
   end
 end
