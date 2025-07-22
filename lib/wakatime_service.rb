@@ -1,18 +1,24 @@
 include ApplicationHelper
 
 class WakatimeService
-  def initialize(user: nil, specific_filters: [], allow_cache: true, limit: 10, start_date: nil, end_date: nil, scope: nil)
+  def initialize(user: nil, specific_filters: [], allow_cache: true, limit: 10, start_date: nil, end_date: nil, scope: nil, boundary_aware: false)
     @scope = scope || Heartbeat.all
     @user = user
+    @boundary_aware = boundary_aware
 
     @start_date = convert_to_unix_timestamp(start_date)
     @end_date = convert_to_unix_timestamp(end_date)
+
+    # apply with_valid_timestamps filter if no custom scope provided-- this is copied from query in stats_controller
+    if scope.nil?
+      @scope = @scope.with_valid_timestamps
+    end
 
     # Default to 1 year ago if no start_date provided or if no data exists
     @start_date = @start_date || @scope.minimum(:time) || 1.year.ago.to_i
     @end_date = @end_date || @scope.maximum(:time) || Time.current.to_i
 
-    @scope = @scope.where("time >= ? AND time < ?", @start_date, @end_date)
+    @scope = @scope.where(time: @start_date..@end_date)
 
     @limit = limit
     @limit = nil if @limit&.zero?
@@ -41,7 +47,14 @@ class WakatimeService
     summary[:range] = "all_time"
     summary[:human_readable_range] = "All Time"
 
-    @total_seconds = @scope.duration_seconds || 0
+    @total_seconds = if @boundary_aware
+      result = Heartbeat.duration_seconds_boundary_aware(@scope, @start_date, @end_date) || 0
+      result
+    else
+      result = @scope.duration_seconds || 0
+      result
+    end
+
     summary[:total_seconds] = @total_seconds
 
     @total_days = (@end_time - @start_time) / 86400
