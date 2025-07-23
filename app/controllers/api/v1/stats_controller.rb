@@ -61,13 +61,38 @@ class Api::V1::StatsController < ApplicationController
     service_params[:scope] = scope if scope.present?
 
     if params[:total_seconds] == "true"
-      service_params[:boundary_aware] = params[:boundary_aware] == "true"
+      query = @user.heartbeats
+                   .coding_only
+                   .with_valid_timestamps
+                   .where(time: start_date..end_date)
 
-      summary = WakatimeService.new(**service_params).generate_summary
-      return render json: { total_seconds: summary[:total_seconds] }
+      if params[:filter_by_project].present?
+        filter_by_project = params[:filter_by_project].split(",")
+        query = query.where(project: filter_by_project)
+      end
+
+      # do the boundary thingie if requested
+      use_boundary_aware = params[:boundary_aware] == "true"
+      total_seconds = if use_boundary_aware
+        Heartbeat.duration_seconds_boundary_aware(query, start_date.to_f, end_date.to_f) || 0
+      else
+        query.duration_seconds || 0
+      end
+
+      return render json: { total_seconds: total_seconds }
     end
 
     summary = WakatimeService.new(**service_params).generate_summary
+
+    if params[:features]&.include?("projects") && params[:filter_by_project].present?
+      filter_by_project = params[:filter_by_project].split(",")
+      heartbeats = @user.heartbeats
+        .coding_only
+        .with_valid_timestamps
+        .where(time: start_date..end_date, project: filter_by_project)
+      unique_seconds = unique_heartbeat_seconds(heartbeats)
+      summary[:unique_total_seconds] = unique_seconds
+    end
 
     trust_level = @user.trust_level
     trust_level = "blue" if trust_level == "yellow"
@@ -274,5 +299,20 @@ class Api::V1::StatsController < ApplicationController
     end
 
     data.sort_by { |project| -project[:total_seconds] }
+  end
+
+  def unique_heartbeat_seconds(heartbeats)
+    timestamps = heartbeats.order(:time).pluck(:time)
+    return 0 if timestamps.empty?
+
+    total_seconds = 0
+    timestamps.each_cons(2) do |prev_time, curr_time|
+      gap = curr_time - prev_time
+      if gap > 0 && gap <= 2.minutes
+        total_seconds += gap
+      end
+    end
+
+    total_seconds.to_i
   end
 end
