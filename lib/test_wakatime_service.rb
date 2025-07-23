@@ -3,7 +3,8 @@ include ApplicationHelper
 class TestWakatimeService
   def initialize(user: nil, specific_filters: [], allow_cache: true, limit: 10, start_date: nil, end_date: nil, scope: nil, boundary_aware: false)
     @scope = scope || Heartbeat.all
-    @scope = @scope.coding_only
+    # trusting time from hackatime extensions..... 
+    # @scope = @scope.coding_only
     @scope = @scope.with_valid_timestamps
     @user = user
     @boundary_aware = boundary_aware
