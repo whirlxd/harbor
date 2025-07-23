@@ -61,10 +61,25 @@ class Api::V1::StatsController < ApplicationController
     service_params[:scope] = scope if scope.present?
 
     if params[:total_seconds] == "true"
-      service_params[:boundary_aware] = params[:boundary_aware] == "true"
+      query = @user.heartbeats
+                   .coding_only
+                   .with_valid_timestamps
+                   .where(time: start_date..end_date)
 
-      summary = WakatimeService.new(**service_params).generate_summary
-      return render json: { total_seconds: summary[:total_seconds] }
+      if params[:filter_by_project].present?
+        filter_by_project = params[:filter_by_project].split(",")
+        query = query.where(project: filter_by_project)
+      end
+
+      # do the boundary thingie if requested
+      use_boundary_aware = params[:boundary_aware] == "true"
+      total_seconds = if use_boundary_aware
+        Heartbeat.duration_seconds_boundary_aware(query, start_date.to_f, end_date.to_f) || 0
+      else
+        query.duration_seconds || 0
+      end
+
+      return render json: { total_seconds: total_seconds }
     end
 
     summary = WakatimeService.new(**service_params).generate_summary
