@@ -3,16 +3,13 @@ include ApplicationHelper
 class TestWakatimeService
   def initialize(user: nil, specific_filters: [], allow_cache: true, limit: 10, start_date: nil, end_date: nil, scope: nil, boundary_aware: false)
     @scope = scope || Heartbeat.all
+    @scope = @scope.coding_only
+    @scope = @scope.with_valid_timestamps
     @user = user
     @boundary_aware = boundary_aware
 
     @start_date = convert_to_unix_timestamp(start_date)
     @end_date = convert_to_unix_timestamp(end_date)
-
-    # apply with_valid_timestamps filter if no custom scope provided-- this is copied from query in stats_controller
-    if scope.nil?
-      @scope = @scope.with_valid_timestamps
-    end
 
     # Default to 1 year ago if no start_date provided or if no data exists
     @start_date = @start_date || @scope.minimum(:time) || 1.year.ago.to_i
