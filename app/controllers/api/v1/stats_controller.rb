@@ -60,14 +60,18 @@ class Api::V1::StatsController < ApplicationController
     service_params[:end_date] = end_date
     service_params[:scope] = scope if scope.present?
 
-    if params[:total_seconds] == "true"
-      # dis just test and we don't want to affect other services!
-      if params[:test_param] == "true"
-        service_params[:boundary_aware] = params[:boundary_aware] == "true"
+    # use TestWakatimeService when test_param=true for all requests
+    if params[:test_param] == "true"
+      service_params[:boundary_aware] = true  # always and i mean always use boundary aware in testwakatime service
 
+      if params[:total_seconds] == "true"
         summary = TestWakatimeService.new(**service_params).generate_summary
         return render json: { total_seconds: summary[:total_seconds] }
-      else
+      end
+
+      summary = TestWakatimeService.new(**service_params).generate_summary
+    else
+      if params[:total_seconds] == "true"
         query = @user.heartbeats
                      .coding_only
                      .with_valid_timestamps
@@ -88,9 +92,9 @@ class Api::V1::StatsController < ApplicationController
 
         return render json: { total_seconds: total_seconds }
       end
-    end
 
-    summary = WakatimeService.new(**service_params).generate_summary
+      summary = WakatimeService.new(**service_params).generate_summary
+    end
 
     if params[:features]&.include?("projects") && params[:filter_by_project].present?
       filter_by_project = params[:filter_by_project].split(",")
