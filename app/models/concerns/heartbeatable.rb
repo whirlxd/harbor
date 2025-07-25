@@ -285,9 +285,12 @@ module Heartbeatable
         .order(time: :asc)
 
       connection.select_value(
-        "SELECT COALESCE(SUM(diff), 0)::integer
-         FROM (#{capped_diffs.to_sql}) AS diffs
-         WHERE time >= #{start_time}"
+        ActiveRecord::Base.sanitize_sql([
+          "SELECT COALESCE(SUM(diff), 0)::integer
+           FROM (#{capped_diffs.to_sql}) AS diffs
+           WHERE time >= ?",
+          start_time
+        ])
       ).to_i
     end
   end
