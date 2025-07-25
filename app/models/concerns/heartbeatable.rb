@@ -279,18 +279,15 @@ module Heartbeatable
       capped_diffs = combined_scope
         .select("time, CASE
           WHEN LAG(time) OVER (ORDER BY time) IS NULL THEN 0
-          ELSE LEAST(EXTRACT(EPOCH FROM (to_timestamp(time) - to_timestamp(LAG(time) OVER (ORDER BY time)))), ?)
-        END as diff", heartbeat_timeout_duration.to_i)
+          ELSE LEAST(EXTRACT(EPOCH FROM (to_timestamp(time) - to_timestamp(LAG(time) OVER (ORDER BY time)))), #{heartbeat_timeout_duration.to_i})
+        END as diff")
         .where.not(time: nil)
         .order(time: :asc)
 
       connection.select_value(
-        connection.sanitize_sql_array([
-          "SELECT COALESCE(SUM(diff), 0)::integer
-           FROM (#{capped_diffs.to_sql}) AS diffs
-           WHERE time >= ?",
-          start_time
-        ])
+        "SELECT COALESCE(SUM(diff), 0)::integer
+         FROM (#{capped_diffs.to_sql}) AS diffs
+         WHERE time >= #{start_time}"
       ).to_i
     end
   end
