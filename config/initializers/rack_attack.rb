@@ -31,6 +31,10 @@ class Rack::Attack
     false
   end
 
+  Rack::Attack.safelist("admin abooze") do |req|
+    req.path.start_with?("/api/admin/")
+  end
+
   Rack::Attack.throttle("general", limit: 300, period: 1.minute) do |req|
     req.ip unless req.path.start_with?("/assets")
   end
