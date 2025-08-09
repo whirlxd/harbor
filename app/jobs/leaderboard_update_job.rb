@@ -34,7 +34,7 @@ class LeaderboardUpdateJob < ApplicationJob
     board = ::Leaderboard.find_or_create_by!(
       start_date: date,
       period_type: period,
-      timezone_utc_offset: nil
+      timezone_offset: nil
     ) do |lb|
       lb.finished_generating_at = nil
     end
@@ -82,12 +82,14 @@ class LeaderboardUpdateJob < ApplicationJob
   def build_timezones(date, period)
     range = LeaderboardDateRange.calculate(date, period)
 
-    offsets = User.joins(:heartbeats)
-                  .where(heartbeats: { time: range })
-                  .where.not(timezone_utc_offset: nil)
-                  .distinct
-                  .pluck(:timezone_utc_offset)
-                  .compact
+    active_timezones = User.joins(:heartbeats)
+                          .where(heartbeats: { time: range })
+                          .where.not(timezone: nil)
+                          .distinct
+                          .pluck(:timezone)
+                          .compact
+
+    offsets = active_timezones.map { |tz| User.timezone_to_utc_offset(tz) }.compact.uniq
 
     Rails.logger.info "Generating timezone leaderboards for #{offsets.size} active UTC offsets"
 
