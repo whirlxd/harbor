@@ -34,7 +34,7 @@ class LeaderboardUpdateJob < ApplicationJob
     board = ::Leaderboard.find_or_create_by!(
       start_date: date,
       period_type: period,
-      timezone_offset: nil
+      timezone_utc_offset: nil
     ) do |lb|
       lb.finished_generating_at = nil
     end
