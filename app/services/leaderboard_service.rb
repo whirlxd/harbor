@@ -39,7 +39,7 @@ class LeaderboardService
     board = LeaderboardCache.read(key)
     return board if board.present?
     board = ::Leaderboard.where.not(finished_generating_at: nil)
-                         .find_by(start_date: date, period_type: period, timezone_offset: nil, deleted_at: nil)
+                         .find_by(start_date: date, period_type: period, timezone_utc_offset: nil, deleted_at: nil)
 
     if board.present?
       LeaderboardCache.write(key, board)
