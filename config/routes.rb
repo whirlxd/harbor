@@ -165,6 +165,7 @@ Rails.application.routes.draw do
         get "user/info", to: "admin#user_info"
         get "user/stats", to: "admin#user_stats"
         get "user/projects", to: "admin#user_projects"
+        get "user/trust_logs", to: "admin#trust_logs"
         post "user/convict", to: "admin#user_convict"
         post "execute", to: "admin#execute"
       end
