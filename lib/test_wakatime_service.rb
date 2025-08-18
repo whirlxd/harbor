@@ -6,6 +6,9 @@ class TestWakatimeService
     # trusting time from hackatime extensions.....
     # @scope = @scope.coding_only
     @scope = @scope.with_valid_timestamps
+
+    # yeah macha we're removing unwated categories
+    @scope = @scope.where.not("LOWER(category) IN (?)", [ "browsing", "ai coding", "meeting", "communicating" ])
     @user = user
     @boundary_aware = boundary_aware
 
