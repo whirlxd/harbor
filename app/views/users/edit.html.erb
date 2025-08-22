@@ -347,6 +347,23 @@
     <%# This is copied from the github thingie blog, Im not good at UI so I copied :) %>
 
     <div class="border border-primary rounded-xl p-6 bg-dark transition-all duration-200 md:col-span-2">
+      <% if @user.trust_level == "red" %>
+      <div class="flex items-center gap-3 mb-4">
+        <div class="p-2 bg-red-600/10 rounded">
+          <span class="text-2xl">💾</span>
+        </div>
+        <h2 class="text-xl font-semibold text-white" id="download_user_data">Download Your Data</h2>
+      </div>
+        <div class="bg-red-900 border border-red-700 rounded-lg p-4">
+          <div class="flex items-center gap-2">
+            <span class="text-red-400">⚠️</span>
+            <span class="text-red-300 font-medium">Export Restricted</span>
+          </div>
+          <p class="text-red-200 text-sm mt-2">
+            Sorry, due to your account standing, you are unable to perform this action.
+          </p>
+        </div>
+      <% else %>
       <div class="flex items-center gap-3 mb-4">
         <div class="p-2 bg-red-600/10 rounded">
           <span class="text-2xl">💾</span>
@@ -447,14 +464,11 @@
                       data: { confirm: "Are you sure you want to import heartbeats? This will add new data to your account." } %>
                 </div>
               <% end %>
-
-
             </div>
           <% end %>
-
-
         </div>
       </div>
+      <% end %>
     </div>
 
     <% admin_tool do %>

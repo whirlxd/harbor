@@ -1,7 +1,7 @@
 module My
   class HeartbeatsController < ApplicationController
     before_action :ensure_current_user
-
+    before_action :ensure_no_ban, only: [ :export ]
 
     def export
       all_data = params[:all_data] == "true"
@@ -130,6 +130,12 @@ module My
 
     def ensure_current_user
       redirect_to root_path, alert: "You must be logged in to view this page!!" unless current_user
+    end
+
+    def ensure_no_ban
+      if current_user.trust_level == "red"
+        redirect_to my_settings_path, alert: "Sorry, you are not permitted to this action."
+      end
     end
   end
 end
