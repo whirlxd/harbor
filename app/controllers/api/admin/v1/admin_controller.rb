@@ -248,17 +248,15 @@ module Api
             return render json: { error: "whatcha doin'?" }, status: :unprocessable_entity
           end
 
+          cool = %w[created_at deleted_at]
           not_cool = %w[INSERT UPDATE DELETE DROP CREATE ALTER TRUNCATE EXEC EXECUTE]
-          if not_cool.any? { |keyword| query.upcase.include?(keyword) }
+
+          if not_cool.any? { |keyword| query.upcase.include?(keyword) } &&
+             cool.none? { |field| query.upcase.include?(field.upcase) }
             return render json: { error: "no perms lmaooo" }, status: :forbidden
           end
 
           unless query.strip.upcase.start_with?("SELECT")
-            return render json: { error: "no perms lmaooo" }, status: :forbidden
-          end
-
-          cool = %w[created_at deleted_at]
-          if query.upcase.match?(/\b(#{not_cool.join('|')})\b/) && !query.upcase.match?(/\b(#{cool.join('|')})\b/)
             return render json: { error: "no perms lmaooo" }, status: :forbidden
           end
 
